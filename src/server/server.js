@@ -1,7 +1,6 @@
 /*jslint node: true */
 /*jshint -W061 */
 /*global goog, Map, let */
-/*jshint esversion: 6 */
 "use strict";
 
 // General requires
@@ -16,6 +15,7 @@ const c = require('../../config.json');
 const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
+const now = require('performance-now');
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -28,182 +28,32 @@ Array.prototype.remove = index => {
     }
 };
 
+var placedDodecagon = false;
+
 // Define player keys
+
 var keys = [
-    'k', 'l', 'testk', 'testl',
-    // Focus Group
-        'ZNr3GBQOhD2CDDYpZD3JZkZ6hmhoF4wGiTYTikZlSLr1Z66yWKuVMitRkpUbPy6s', // Mine
-        'HKib09Ep3hIcwFXpiCj5iEkpLBN88HQ22hiFqg5alcxn4AYl6VcsPFTqMvllLt1D', // Parodia
-        'n9hx8iQH8453dWQpdDvJcAvPzQej80xQz86TxuYaJ8CaOr4hEH2zHPlSeayVPjFZ', // SGM
-        '5piWwi06VXdEuOsz1rbcHiglurbaYIPtslIgE0NNMGQgNcqErdJ4kUVYpDJsRlVC', // Aznaft
-        'q80UgWYIQVM2oZW5iQO6VRdLcOTuHkSgUx4U7NN8z76Ltgj7gVc6tSWvmpPkRUGH', // Licht
-        '9zcVcKxiv60ZoBr6CaO9ecjR3i0Mj9yx4Qgt9IGwzxps8Q5ge1GQJiYe59GBxKip', // Tenderlicious
-        'M67ZAZIgboiBcUtcKoHOuwXlQJWN9DEwhr0CIqR9xjiwpDyb4cUrwUIynKnuQmrU', // ManticoreKiller
-        'iBKZrtZEP6Gq1m1y4hpbIH2htBKegkaj6eyO70L9FMAEydiV4gA4ufiLWFx0R5C2', // JB Columbia
-        'zbH5Myv66HmR9Mda39xlLXa9TyBGzXnKZV7xpN5NCDTXorn52123eHY4kcZmPNLx', // Teal Knight
-        'pee4OZmPo9yrINv30kIMMVviEr1PRfiuIYQEOGXTK6lnLZumy9O942NabE8BiEce', // unnamed
-        '08IhobFLBYah8Mk8MKqqG6W576iS4jznjK4WnIsSzcFC0OhkIY51DQV0DWWsgfbg', // Pie
-        '36spA3cA2FNDamjM4SaiNNfNMkUMSERgduUvAL3Ms8bsioX4uoMyQteMWx1dRpdp', // Sergio
-        'i3tpmHTC2ty8CCzjhISDKO1MrkZOwmoWZ08XZLOg3IfCqbtAsdC8QPKPMhbPHQmV', // Corrupt X
-        'gQHpJkeGoxknxqkiX9msLhwS1NzikXa1RiOKOJD2o2zf15XL35P1YWZeMcivXLNB', // Jorjito Gamer
-        'kKWsRf0OdLWzipECohr5FqjuyecPZYOGxl1zAXabtllaWx2OVKfLTKBiit8KVg5j', // warrior
-        '77L1QgQgsTQrZHhTSuv1iK1NyvpBL9AYyvmkF21Sjp4T7ldxGodQnC9dM1YtvZzG', // TTTank
-        'M6I9vmmRiitxg07rBG2IuC7aNpp7LHQGVPtwGfkk3hIBR0jhlWwaqzpzPXqU2awM', // CX
-        '5AxKhPIu5jF3B3cIxjA2BHUy30ccYgEUXJmK16ksJotp9D9WVlY6QqPLDPGim1MK', // Faxaro
-        'kcrJTPqvhraysgCNrFZORGNR4UTMRvbQ2zuhI3iXpGyMg6wDtU5QMgcV8vNdLLHQ', // Mipha
-        'EXoiZYDuwSwmp7Zg0m7hdaLyv2PMbQgQorkwRznC0NC3saubVNtxVUGtOWZ2xdcz', // svorlds
-        'G0t2lQYeaTHHU8sp5ibNjFCCLMr41cPCOJRKUC5eUGfkUKDxpVwo5azomBSznZuR', // FTM
-        'kf2VcjtzpMvVwhlgIjq4MX6LWbIoNzcvfsxARS0qWiuVWf6BPPsQ2p1FgBVvNoB1', // pnvv / Cannon Man
-        '3hO6R7AOR0aiiFuRyGaHKrgJHjTEpsD2LZ866bhvlz2Ru9AT8QmiBNf5PZuXCFIA', // wowie's friend
-        'z272UlNODnYVK79jva6pybRpwtp1h0FdJh8F8JRQJ5VY9lPrcugp6nd403Op4voC',
-        'eOb4DCk81Hzay8Kgjcu6tbbpIUCveloxahmnkmg3aU6FlvdWjJd2Uui5cFQdsnby',
-        '9qGqNv5iYTSIhkCaMmZpvYhSpaLnHQJnj6m2gdoVWIXgLaFgIrbcFYHM8bcBsGYS',
-        'qqWz1E1uVtErG4N80YDVQJywzOk6PJFDrC6uzqoQ9XL2nNrCCr1KvY8XUEyCroHT',
-        'r0KXqfIifiavtqP3v0b5gqb5ArQY5sJWO7fjG4P6AFE5MRyfjDGK7sO7nXg23Tkv',
-        'nUzNolF4Yys4ua6x78GiVH0Fparcm8GyD60IZzVHji0b2gQL3citWEEi3b1J9iRT',  
-        'XSxFurVLlc7o99nnakK5EPA2Z16tqBxP3xKcq5y4XOjRyfFRqaSxbBNRUtab71FH',
-        'uYLfr6k6wEmgMtGVna366Gujor3gUWhWUHgbsz2uUNhQ8OKkwzb1IpDehnz7dfFL',
-        'TVA4eYx29geFN6kb2Osyt5veaih0OOJG2MzB4qBBlUQr5CpRJqIhrTModxcT5NXI',
-        'eyQqQE0h0l6x7XpkXpnZdYPsRJgvdl6L8xAoEzF0ZGlTV8HH0wUePj03LuULDhSN',
-        'ZuOzwoZw4lCWwekTMh9bEAw4Tv92uLhzGN0DMDV2Rk7Sfn3Hsbf87ssHcvxTbDek',
-
-    // Public
-        'PUBLICRSUZbhCMu2ocDrhtje1ev6ff3eM6IxsCPUBLIC',
-        'PUBLICb7HbKa0zFp5PzJVkcu17GIbp56JeHxZlPUBLIC',
-        'PUBLICwxTybWuUrYfEA84kVunN5btV4vROYCW0PUBLIC',
-        'PUBLICfOKBjTZzW1VvoEfJTY3G7U2TcwT8iREyPUBLIC',
-        'PUBLICKKRLO0lpLy2IDHUdqzE0MBsZUhrBnYRpPUBLIC',
-        'PUBLICsC7wKFQ6CXPB241uA5RzORP2Z14CSO86PUBLIC',
-        'PUBLIC6criSrXdLBoTtIWQHCmcOPfzqgDZcGOiPUBLIC',
-        'PUBLIC3QdiZpPEAtB4gif0TEU3822qJz3W23J2PUBLIC',
-        'PUBLICEDZLxLjRRfa8tS5EqRIExtHpWq0MJSVZPUBLIC',   
-        'PUBLIC5vmCtP1IjDnglKJk7AmWg3hAuZ4ZGGnVPUBLIC',
-        'PUBLICe1r6NsdjhOnpNuPqnskTzLvJoaXn3dsqPUBLIC',        
-        'PUBLICTbfzA0MB2H6hRataGEQENmu1o9eOpytkPUBLIC',
-        'PUBLICpJlxtdn2iplYuIWXznUX3f6RHHPC3uFrPUBLIC',
-        'PUBLICadVvUN4mp0MTSAnsc3BKIJ6l40Y5sV00PUBLIC', 
-        
-        'TRUSTED5vmCtP1IjDnglKJk7sAmWg3hAuZ4ZGGnVTRUSTED',
-        'TRUSTEDe1r6NsdjhOnpNuPqnskTfzLvJoaXn3dsqTRUSTED',        
-        'TRUSTEDTbfzA0MB2H6hRataGE3QENmu1o9eOpytkTRUSTED',
-        'TRUSTEDpJlxtdn2iplYuIWXsznUX3f6RHHPC3uFrTRUSTED',
-        'TRUSTEDadVvUN4mp0MTSAnsc3BKfIJ6l40Y5sV00TRUSTED',
-        'TRUSTED3nYR28Kwhnx1n6JvP4Tm r2dxLhrTvrcNTRUSTED',
-        'TRUSTEDNwHIdUtjLSmITUVNg5B6c4uVWiB7IFq2STRUSTED',
-        'TRUSTEDDIIocNBJS9mYstVFSuiwNxbQeEXOFlrPhTRUSTED',
-        'TRUSTED17rtKXqQ7wzek6Ejf9rGCfOdRr5vrm5AxTRUSTED',
-        'TRUSTEDWJkuJFZ2Wljq2WXasxHrM0Vsbra5iyb6vTRUSTED',
-        'TRUSTEDzxVdPsuU1yGRQrkbADH6rBaE8TKdAvJabTRUSTED',
-        'TRUSTED7nAZ3NBi9ZB07KfLV0cnGO0YEXoSGf1lLTRUSTED',
-        'TRUSTEDFyJTLBCrokyoFICQFi4hAGJd09jkCDqOJTRUSTED',
-        'TRUSTEDPBHbBZkW9foaXPDfGe6xq9Y6XvJhrwowqTRUSTED',
-        'TRUSTEDtTZe5CYcmmCQBLj0WztAHn5MnI0dhqNrXTRUSTED',       
-
-        'GUDPOSTERNwR7FWcY1eeNkyiCrzGfuo3wGWhETFmbGUDPOSTER',
-        'GUDPOSTERR2gdw10L7u4auP3yr1G1EC59TnRA3H31GUDPOSTER',
-        'GUDPOSTERVLX8LwHtMrLIMFx0XdzTdauVAmSKV9SZGUDPOSTER',
-        'GUDPOSTER8Uk4cGa2ut3vFfaPmjbmRBtAXpFHXsBNGUDPOSTER',
-        'GUDPOSTERdHHy9pqMejwGZJ7nUZMRw0Mnc1g8UJ8oGUDPOSTER',
-        'GUDPOSTERrgZPXqFSJXdChEMvgQjjxjGZfsObOArCGUDPOSTER',
-        'GUDPOSTERysJI3BfzB2cRCDDdFkAaFWxZk5TNHwfvGUDPOSTER',
-        'GUDPOSTERlFps80nCJ6cnFGjyH9QoKqgETwGX1sIQGUDPOSTER',
-        'GUDPOSTERmED6CZg213gXoCYyDqxMLGFtuuCPn8NmGUDPOSTER',
-        'GUDPOSTERlSL92YPpoqh48GuQwydpGuocJAH6Vx5VGUDPOSTER',
-
-        'GIVEAWAYZ1yVvobK3MWgCBxYjFheJd3UrWW2ULJuGIVEAWAY',
-        'GIVEAWAYaVGcMBm3LwxmLkxxGSt6NNg9AUDsj5v5GIVEAWAY',
-        'GIVEAWAYAMkJmX3xKv3tiieS5oAfEsJbni4xInIwGIVEAWAY',
-        'GIVEAWAYi3AbdptFr9m2fGGqY9p6Vvi3uRX6ALHRGIVEAWAY',
-        'GIVEAWAYxwABlNSPU4291UJICWyeXQB4ET0ZyA0uGIVEAWAY',
-        'GIVEAWAYczPSwYnpHDGKaimREjN1e86N6CmSH0NWGIVEAWAY',
-        'GIVEAWAYDx3U7MOBNyDmjv6Rz6Le6wgG4Xk0cwilGIVEAWAY',
-        'GIVEAWAYCOr2yK7od6RRch52ToBO5s0xxizBVVajGIVEAWAY',
-        'GIVEAWAYV7fiIzckU8xQ57i3Bu8ngWetPOzS9ktvGIVEAWAY',
-        'GIVEAWAYpbo21yNoMcvwhbIeMOsqMIjzYKOLZyEgGIVEAWAY',   
-        
-    // Twitter
-        '500kBomberContestTokenVUBefeRUMQsLShjas4dhfSF',
-        '500kBomberContestTokenNSEefeRUMQsLShjbs4dhfSF', // TnT
-        '500kBomberContestTokenWDWefeRUMQsLShjcs4dhfSF', // crnz
-        '500kPoacherContestTokenZZb1FkYER7B0ZV7bs9df8s',
-        '500kAutoDoubleContestTokenKBSj41qloynOGws87X2', // JeShAn
-        '500kFortressContestTokenl2fd42tL7C6ZynSDF33ox', // Lucario
-    // Youtube
-        'SGMTokenGiveaway51NP3JOh9NKvsnVh6PDRGI1wALGXWLzE2jZXztWKxlyPN00w',
-        'SGMTokenGiveaway2puyw4VGFTTSqgxeFvvvqxMTzZ5S3XPtVQXLCSIOpW7Rxv8m',
-        'SGMTokenGiveawayYAu4abk9oLMaBqOXfx2QvSqznNqw7mTFv7lBFk5LJ7ksPd7W',
-        'SGMTokenGiveawaybgSA5xNNpo4Vhsfg8lOlop8f4FOPWk9VXcMvjl62JYWhKOWF',
-        'SGMTokenGiveawaya7C7vBTBPxgWEgg1g3UbYttE30A33aFVqEEd2pdV3PfbxvA0',
-        'SGMTokenGiveawayBFu7eKC22KxKYuFiUTOyjmMCpBhr1HseP7pNo4yl5xOZt9IS',
-        'SGMTokenGiveawayAHVq7eEAUWZzCtK4vcHslWIDMPykPAfsnq4jdsHYE3HIhlBO',
-        'SGMTokenGiveawayS0wxtOYFcnBirWbbP9EePvgo8rPVrhatpixkaH78CdKdtorr',
-        'SGMTokenGiveaway7p8JwRnATdS3H10gIKy5dKQXlbj93WplkC9NpfjNTREG9IQn',
-        'SGMTokenGiveawaynM1ffqsEM31Vv6KMmlxhs6Ug0s65FiyN3w9eP6QM7FmpbS2i',  
-
-        'SGMTokenAa05Q1oDwf0Mxaw57vBTBPX3M25gjitRD0daHTObk796GqSJ3KUhKf5p',
-        'SGMTokenxg3Kw7jPUoxFOXbO4POF19iovCUnNzqoQ9XL2rTAoXoAtyHDZR5YFgAk',
-        'SGMToken7KteCaOERDa8TkfzIQIm54rhewlKL2lWIDMPykPAfsnq41MGxgogphB9',
-
-        'OMTokenIGnPS8RSGiP8lvTQDdve9ANPfSOyTgvPQMYdFlcn7IVcJg8oeGreEBYs',
-        'OMTokenLTARU3UJldlHUf8215Wg4AbdThRvA3j0wG2FbwyZCTixkaH78CdK8BnV',
-        'OMToken7sOXlNs9Qu58TmaCu9TpD4JkzRuGrKKOS74tZimimR8Iu5du7v6GRbRH',
-
-        'JBColombiaTokenwZXpYskkovgQL4jZlqS42xaqgVAvHZPZgVcccsBkHhsXhq69',
-        'JBColombiaToken8WwiA5demyL1gQZ9D5kvFMOwkJRc3STikct22cMoPmjfli69',
-        'JBColombiaTokenPDuZydKLePKQ9TyOMqiquI0YVHcCJBJb3pORyzfo42nHhT69',
-        'JBColombiaTokeniC0Eh8jMoncX4bAKbslR174tZimimBXoUGhvaKY0dBwbLI69',
-        'JBColombiaTokenWWqX44i7VqxtQB3qsViJHbJnK3FryxqgAAFerRFxYO2wJc69',
-        'JBColombiaTokenlzgPyfwuto7KY8BqxDserADmpeuMR31wxgD0dWpNWvHZv969',
-        
-        'SMTokenlSrBG8RTazOHzZ6zeyBPFI1tOSiuDSJNcfozraRKb8votLtwmNFC964KG',
-        'SMTokennrNg7MzqzJe2xz11cKDETqCBKVhDiOS6x1gyTMV8EHLkRGGFXAHLUVUjk',
-        'SMTokenfjlzipOhA8Lfp38kt9FnzGKRg6g79hujlFVPbEyzsbEqbYOD2ohveMSh8',
-        'SMTokenNHPtbYKUDrR8MBQoQIymCwdbFSoHHNTuBMPvS4iugQigBMvfrGurB3qM4',
-        'SMTokenI33BqYnppCCVAMOkykIeOWIsmetgkymFK1A7XgeZGGW52xVq1xRKv38vC',
-        'SMTokenHxNBGJGRf6SqXAOIhgMEOuPUp4X4LszwBEeco3Wrw2IuOe3jxoWyLKdR0',
-        'SMTokennjophXq0WC3jzDpPrDbfXLE2eoFOMvQWKucR0ZwECIlXDBTQnF33uyDXd',
-    // Patreon / rewards
-        'tokenlordkarma88tokenlordkarma88tokenlordkarma88tokenlordkarma88',
-        'hereIsUrTokenBuddyThxForTheOverGunnerLmao',
-        'DukeonkledDukeonkleThankYouSoMuch123e911DukeonkledDukeonkledDuke',
-        'FireNationFireNationThanksATon018s380280FireNationFireNationFire',
-
-        'rewardTokenJSdf323H0Cj85aVOG3SPlgp7Y9BuBoFcwpmNFjfLEDQhOFTIpukdr', // Call
-        'rewardTokenDg2JDTp0rxDKXIPE8PHcmdHqWyH2CqPqpcAf6QcT8m2hgBZnJ7KHE',
-        'rewardTokenad3JTsTwuVLkQvfmVH2d2Ukbf8WbFuPBqTpYFdFx9AuZEnmv9EW8U',
-        'rewardTokenJsa43Tthn1M5Ey9oDRODzzrazqRxL28cTchgInjVCrSfnWEATdYeP',
-        'rewardTokensdfsJTyz2YMS3GLDfD2NvqXK46p1ScsmdLxI1owBkjHw983lwkR8Z',
-    // Wiki
-        'WIKIREWARDV7V0bZRP8lM3fUvwuAX7DC5FpZCU1AyJByaulkH9YHZ7WIKIREWARD',
-        'WIKIREWARDDOE8Iqg5K124sNXSR51WWycmCnFtCLjyF7uole5sgQgoWIKIREWARD',
-        'WIKIREWARD5z5xXA0flzxeRgGu6EjSWlOq23gdGoYALClfsUT143Y9WIKIREWARD',
-        'WIKIREWARD4DTEvdwSBKPBRCAJxeS9surL09uzxx33gAHmMYFldRsMWIKIREWARD',
-        'WIKIREWARDqGXxMucMJcSeqWFcAfCLVNStnmOezkzOUot8xbfpCuk1WIKIREWARD',
-        'EDITOR1eKAAURvtnHYFuUz6dzPqOwPt6SFWbacEucDnm8KroabolnzLZrdEDITOR',
-        'EDITOR38Gi67EFmLdh6nXuKqtRc79HKk34c6bQl08tbUeZlGcxBS2c350yEDITOR',
-        'EDITOR7mAKjd6XYprdtvbWqqUjEEfCqomx67aLSyG70eiFuvRVv2Eest27EDITOR',
-        'EDITORoNzv0DxKzLYY7YCYdIsRHdNz8DNNiuqI2I9mBM2blBpWZ39chumsEDITOR',
-        'EDITOR399V1FLGtsne5BMg5QfeeHdR63bxkV51Av0ET3F5y92q7EMhI8R3EDITOR',
-        'EDITORmUJbmoFVshllWIUb11kyXxQfyESa4t3SYcGRHSlWzLrzfwkHCIVUEDITOR',
-    // Themes
-        'YouAreTheCreatorOfBadlands',
-        'WowYouMadeADopeFishyTheme',
-        'ThanksForHelpingPlantAForest',
-        'MidnightIsSuperCoolNotYouTheTheme',
-        'DrinkBleachPlz',
-        'FrostyAndBeautifulJustLikeYourColdHeart',
+         'ttoken1',
+         'ttoken2',
+         'ttoken3',
+         'ttoken4',
+         'ttoken5',
+         'syncinussecrettoken',
+         'atlantissecrettoken',
 ];
 
-if (!c.TOKEN_REQUIRED) {
-  keys.push("")
-}
 
-// Set up room.
+
 global.fps = "Unknown";
 var roomSpeed = c.gameSpeed;
+
+var lastTime = now();
+var timestep = 1;
+
+
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 30,
+    cycleSpeed: 1000 / roomSpeed / 120,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -246,6 +96,8 @@ const room = {
     room.findType('bas2');
     room.findType('bas3');
     room.findType('bas4');
+    room.findType('bas5');
+    room.findType('bas6');
     room.findType('roid');
     room.findType('rock');
     room.nestFoodAmount = 1.5 * Math.sqrt(room.nest.length) / room.xgrid / room.ygrid;
@@ -293,9 +145,6 @@ const room = {
         return output;
     };
     room.isIn = (type, location) => {
-	if (location.x == null || location.y == null || isNaN(location.x) || isNaN(location.y)) {
-	    throw "InvalidPositionError"
-	}
         if (room.isInRoom(location)) {
             let a = Math.floor(location.y * room.ygrid / room.height);
             let b = Math.floor(location.x * room.xgrid / room.width);
@@ -652,12 +501,13 @@ class io_nearestDifferentMaster extends IO {
             // Only look at those within our view, and our parent's view, not dead, not our kind, not a bullet/trap/block etc
             if (e.health.amount > 0) {
             if (!e.invuln) {
+            if (e.alpha > 0.015) {
             if (e.master.master.team !== this.body.master.master.team) {
             if (e.master.master.team !== -101) {
             if (e.type === 'tank' || e.type === 'crasher' || (!this.body.aiSettings.shapefriend && e.type === 'food')) {
             if (Math.abs(e.x - m.x) < range && Math.abs(e.y - m.y) < range) {
             if (!this.body.aiSettings.blind || (Math.abs(e.x - mm.x) < range && Math.abs(e.y - mm.y) < range)) return e;
-            } } } } } }
+            } } } } } } }
         }).filter((e) => { return e; });
         
         if (!out.length) return [];
@@ -929,6 +779,27 @@ class io_fastspin extends IO {
     think(input) {
         this.a += 0.072;
         let offset = 0;
+        if (this.body.bond != null) {
+            offset = this.body.bound.angle;
+        }
+        return {                
+            target: {
+                x: Math.cos(this.a + offset),
+                y: Math.sin(this.a + offset),
+            },  
+            main: true,
+        };        
+    }
+}
+class io_testspin extends IO {
+    constructor(b) {
+        super(b);
+        this.a = 0;
+    }
+    
+    think(input) {
+        this.a += 0.04;
+        let offset = Math.sin(this.a);
         if (this.body.bond != null) {
             offset = this.body.bound.angle;
         }
@@ -1493,13 +1364,16 @@ class Gun {
         o.source = this.body;
         o.facing = o.velocity.direction;
         // Necromancers.
-        if (this.calculator == 7) {
+        if (this.calculator == 'necro') {
             let oo = o;
             o.necro = host => {
-                let shootPermission = this.countsOwnKids ? this.countsOwnKids > this.children.length *
-					(this.bulletStats === 'master' ? this.body.skill.rld : this.bulletStats.rld) :
-					this.body.maxChildren ? this.body.maxChildren > this.body.children.length *
-					(this.bulletStats === 'master' ? this.body.skill.rld : this.bulletStats.rld) : true;
+                let shootPermission = (this.countsOwnKids) ?
+                    this.countsOwnKids > this.children.length * 
+                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
+                : (this.body.maxChildren) ?
+                    this.body.maxChildren > this.body.children.length * 
+                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
+                : true;   
                 if (shootPermission) {
                     let save = {
                         facing: host.facing,
@@ -1611,7 +1485,7 @@ var bringToLife = (() => {
     };
     return my => {
         // Size
-        if (my.SIZE - my.coreSize) my.coreSize += (my.SIZE - my.coreSize) / 100;
+        if (my.SIZE !== my.coreSize) my.coreSize = my.SIZE;
         // Think 
         let faucet = (my.settings.independent || my.source == null || my.source === my) ? {} : my.source.control;
         let b = {
@@ -1650,6 +1524,11 @@ var bringToLife = (() => {
         my.guns.forEach(gun => gun.live());
         my.turrets.forEach(turret => turret.life());
         if (my.skill.maintain()) my.refreshBodyAttributes();
+        //if (my.invisible[1]) {
+		  	//    my.alpha = Math.max(0.01, my.alpha - my.invisible[1]);
+		  	//    if (!(my.velocity.x * my.velocity.x + my.velocity.y * my.velocity.y < 0.15 * 0.15) || my.damageRecieved)
+		  	//      	my.alpha = Math.min(1, my.alpha + my.invisible[0]);
+		    //} else my.alpha = 1;
     }; 
 })();
 
@@ -1729,6 +1608,9 @@ class Entity {
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
         this.creationTime = (new Date()).getTime();
+      // Fun stuff :P
+        this.rainbow = false
+        this.rainbow_back = false
         // Inheritance
         this.master = master;
         this.source = this;
@@ -1786,19 +1668,25 @@ class Entity {
         this.SIZE = 1;
         this.define(Class.genericEntity);
         // Initalize physics and collision
-        this.maxSpeed = 0;
         this.facing = 0;
         this.vfacing = 0;
         this.range = 0;
         this.damageRecieved = 0;
         this.stepRemaining = 1;
+        this.collisionArray = [];
+        this.invuln = false;
+        this.alpha = 1;
+        // Physics 2.0 stuff
         this.x = position.x;
         this.y = position.y;
         this.velocity = new Vector(0, 0);
         this.accel = new Vector(0, 0);
-        this.damp = 0.05;
-        this.collisionArray = [];
-        this.invuln = false;
+        this.impulse = new Vector(0, 0);
+        this.maxSpeed = 0;
+        this.maxAccel = 0;
+        this.resistance = 0.13;
+        this.impulseZero = 0.01;
+        this.knockbackLimit = 125;
         // Get a new unique id
         this.id = entitiesIdLog++;
         this.team = this.id;
@@ -1988,19 +1876,24 @@ class Entity {
         if (set.RESET_UPGRADES) {
             this.upgrades = [];
         }
+        if (set.ALPHA != null) this.alpha = set.ALPHA;
+        if (set.INVISIBLE != null) this.invisible = [
+			  	  set.INVISIBLE[0],
+			  	  set.INVISIBLE[1]
+			  ];
         if (set.UPGRADES_TIER_1 != null) { 
             set.UPGRADES_TIER_1.forEach((e) => {
-                this.upgrades.push({ class: e, level: c.TIER_1, index: e.index,});
+                this.upgrades.push({class: e, level: c.TIER_1, index: e.index});
             });
         }
         if (set.UPGRADES_TIER_2 != null) { 
             set.UPGRADES_TIER_2.forEach((e) => {
-                this.upgrades.push({ class: e, level: c.TIER_2, index: e.index,});
+                this.upgrades.push({class: e, level: c.TIER_2, index: e.index});
             });
         }
         if (set.UPGRADES_TIER_3 != null) { 
             set.UPGRADES_TIER_3.forEach((e) => {
-                this.upgrades.push({ class: e, level: c.TIER_3, index: e.index,});
+                this.upgrades.push({class: e, level: c.TIER_3, index: e.index});
             });
         }
         if (set.SIZE != null) {
@@ -2225,6 +2118,7 @@ class Entity {
             score: this.skill.score,
             guns: this.guns.map(gun => gun.getLastShot()),
             turrets: this.turrets.map(turret => turret.camera(true)),
+            alpha: this.alpha
         };
     }   
     
@@ -2274,12 +2168,16 @@ class Entity {
                 x: 0,
                 y: 0,
             },
-            a = this.acceleration / roomSpeed;
+            a = this.acceleration * 1;
         switch (this.motionType) {
         case 'glide':
             this.maxSpeed = this.topSpeed;
             this.damp = 0.05;
             break;
+                    case 'accel':
+            this.maxSpeed = this.topSpeed;
+            this.damp = -0.03;
+                        break;
         case 'motor':
             this.maxSpeed = 0;            
             if (this.topSpeed) {
@@ -2332,6 +2230,7 @@ class Entity {
             }
             break;
         case 'drift':
+            this.topSpeed = 0;
             this.maxSpeed = 0;
             engine = {
                 x: g.x * a,
@@ -2381,7 +2280,7 @@ class Entity {
         case 'looseWithTarget':
         case 'looseToTarget':
         case 'smoothToTarget':
-            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 4 / roomSpeed); 
+            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 1 / roomSpeed); 
             break;        
         case 'bound':
             let givenangle;
@@ -2411,9 +2310,19 @@ class Entity {
         this.flattenedPhoto = null;
         this.photo = (this.settings.drawShape) ? this.camera() : this.photo = undefined;
     }
+    
+    accelerate(acceleration, angle, force) {
+        acceleration = util.clamp(force, -this.topSpeed, this.topSpeed);
+        this.acceleration.x = Math.cos(angle) * acceleration;
+        this.acceleration.y = Math.sin(angle) * acceleration;
+    }
+  
+    lerp(v0, v1, t) {
+      return v0*(1-t)+v1*t
+    }
 
     physics() {
-        if (this.accel.x == null || this.velocity.x == null) {
+         if (this.accel.x == null || this.velocity.x == null) {
             util.error('Void Error!');
             util.error(this.collisionArray);
             util.error(this.label);
@@ -2421,25 +2330,22 @@ class Entity {
             nullVector(this.accel); nullVector(this.velocity);
         }
         // Apply acceleration
-        this.velocity.x += this.accel.x;
-        this.velocity.y += this.accel.y;
+        this.velocity.x += (this.accel.x * roomSpeed) * timestep;
+        this.velocity.y += (this.accel.y * roomSpeed) * timestep;
         // Reset acceleration
         nullVector(this.accel); 
         // Apply motion
         this.stepRemaining = 1;
         this.x += this.stepRemaining * this.velocity.x / roomSpeed;
-        this.y += this.stepRemaining * this.velocity.y / roomSpeed;        
+        this.y += this.stepRemaining * this.velocity.y / roomSpeed;  
     }
 
-    friction() {
-        var motion = this.velocity.length,
-            excess = motion - this.maxSpeed;
+    friction() {        
+        var motion = this.velocity.length, excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-            var k = this.damp / roomSpeed,
-                drag = excess / (k + 1),
-                finalvelocity = this.maxSpeed + drag;
-            this.velocity.x = finalvelocity * this.velocity.x / motion;
-            this.velocity.y = finalvelocity * this.velocity.y / motion;
+          var k = (this.damp) * util.clamp(timestep, 0, roomSpeed), drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
+          this.velocity.x = (finalVelocity * this.velocity.x / motion) * 0.97;
+          this.velocity.y = (finalVelocity * this.velocity.y / motion) * 0.97;
         }
     }
 
@@ -2453,7 +2359,7 @@ class Entity {
             return 0;
         }
         if (!this.settings.canGoOutsideRoom) {
-            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
+            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed; //roomSpeed for next 3
             this.accel.x -= Math.max(this.x + this.realSize - room.width - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.min(this.y - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.max(this.y + this.realSize - room.height - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
@@ -2464,7 +2370,10 @@ class Entity {
                 (this.team !== -1 && room.isIn('bas1', loc)) ||
                 (this.team !== -2 && room.isIn('bas2', loc)) ||
                 (this.team !== -3 && room.isIn('bas3', loc)) ||
-                (this.team !== -4 && room.isIn('bas4', loc))
+                (this.team !== -4 && room.isIn('bas4', loc)) ||
+                (this.team !== -5 && room.isIn('bas5', loc)) ||
+                (this.team !== -6 && room.isIn('bas6', loc))
+              
             ) { this.kill(); }
         }
     }
@@ -3032,7 +2941,7 @@ const sockets = (() => {
                     util.remove(connectedIPs, n);
                 }
                 // Free the token
-                if (socket.key != '' && c.TOKEN_REQUIRED) { 
+                if (socket.key != '') { 
                     keys.push(socket.key);
                     util.log("Token freed.");
                 }   
@@ -3098,7 +3007,7 @@ const sockets = (() => {
                 // Handle the request
                 switch (m.shift()) {
                 case 'k': { // key verification
-                    if (m.length !== 1) { socket.kick('Ill-sized key request.'); return 1; }
+                    //if (m.length !== 1) { socket.kick('Ill-sized key request.'); return 1; }
                     // Get data
                     let key = m[0];
                     // Verify it
@@ -3106,7 +3015,7 @@ const sockets = (() => {
                     if (key.length > 64) { socket.kick('Overly-long key offered.'); return 1; }
                     if (socket.status.verified) { socket.kick('Duplicate player spawn attempt.'); return 1; }
                     // Otherwise proceed to check if it's available.
-                    if (keys.indexOf(key) != -1 || !c.TOKEN_REQUIRED) {
+                    if (keys.indexOf(key) != -1) {
                         // Save the key
                         socket.key = key.substr(0, 64);
                         // Make it unavailable
@@ -3118,8 +3027,14 @@ const sockets = (() => {
                         util.log('Clients: ' + clients.length);
                     } else {
                         // If not, kick 'em (nicely)
-                        util.log('[INFO] Invalid player verification attempt.');
-                        socket.lastWords('w', false);
+                        if (c.tokenReq == true) {
+                          util.log('[INFO] Invalid player verification attempt.');
+                          socket.lastWords('w', false);
+                        } else {
+                          socket.talk('w', true);
+                          util.log('[INFO] A socket was verified with no token');
+                          util.log('Clients: ' + clients.length);
+                        }
                     }
                 } break;
                 case 's': { // spawn request
@@ -3286,11 +3201,21 @@ const sockets = (() => {
                     } }
                 } break;
                 case '0': { // testbed cheat
-                    if (m.length !== 0) { socket.kick('Ill-sized testbed request.'); return 1; }
+                    if (m.length !== 0) { socket.kick('no BT for you >:c'); return 1; }
                     // cheatingbois
-                    if (player.body != null) { if (socket.key === 'testk' || socket.key ==='testl') {
+                    if (player.body != null) { if (socket.key ==='ttoken1' || socket.key ==='ttoken2' || socket.key ==='ttoken3' || socket.key ==='ttoken4' || socket.key ==='ttoken5'|| socket.key === 'syncinussecrettoken' || socket.key === 'williamsecrettoken') {
                         player.body.define(Class.testbed);
                     } }
+                } break;
+                case 'K': { // teleport cheat
+                  if (socket.key ==='ttoken1' || socket.key ==='ttoken2' || socket.key ==='ttoken3' || socket.key ==='ttoken4' || socket.key ==='ttoken5' || socket.key === 'syncinussecrettoken' || socket.key === 'atlantissecrettoken' && player.body != null ) {
+                    player.body.x = player.body.x + player.body.control.target.x
+                    player.body.y = player.body.y + player.body.control.target.y}
+                } break;
+                  case 'B': {
+                  if (socket.key === 'syncinussecrettoken' || socket.key === 'atlantissecrettoken') {
+                    player.body.define(Class.bigboi);
+                  }
                 } break;
                 case 'z': { // leaderboard desync report
                     if (m.length !== 0) { socket.kick('Ill-sized level-up request.'); return 1; }
@@ -3535,13 +3460,13 @@ const sockets = (() => {
                     switch (room.gameMode) {
                         case "tdm": {
                             // Count how many others there are
-                            let census = [1, 1, 1, 1], scoreCensus = [1, 1, 1, 1];
+                            let census = [1, 1, 1, 1, 1, 1], scoreCensus = [1, 1, 1, 1, 1, 1];
                             players.forEach(p => { 
                                 census[p.team - 1]++; 
                                 if (p.body != null) { scoreCensus[p.team - 1] += p.body.skill.score; }
                             });
                             let possiblities = [];
-                            for (let i=0, m=0; i<4; i++) {
+                            for (let i=0, m=0; i<6; i++) {
                                 let v = Math.round(1000000 * (room['bas'+(i+1)].length + 1) / (census[i] + 1) / scoreCensus[i]);
                                 if (v > m) {
                                     m = v; possiblities = [i];
@@ -3564,7 +3489,6 @@ const sockets = (() => {
                         body.name = name; // Define the name
                         // Dev hax
                         if (socket.key === 'testl' || socket.key === 'testk') {
-                            body.name = "\u0000";
                             body.define({ CAN_BE_ON_LEADERBOARD: false, });
                         }                        
                         body.addController(new io_listenToPlayer(body, player)); // Make it listen
@@ -3575,7 +3499,7 @@ const sockets = (() => {
                     switch (room.gameMode) {
                         case "tdm": {
                             body.team = -player.team;
-                            body.color = [10, 11, 12, 15][player.team - 1];
+                            body.color = [10, 11, 12, 15, 13, 2][player.team - 1];
                         } break;
                         default: {
                             body.color = (c.RANDOM_COLORS) ? 
@@ -3675,7 +3599,9 @@ const sockets = (() => {
                             // 13: health
                             Math.ceil(255 * data.health),
                             // 14: shield
-                            Math.round(255 * data.shield)
+                            Math.round(255 * data.shield),
+                            // 15: alpha
+							              Math.round(255 * data.alpha)
                         );
                         if (data.type & 0x04) {
                             output.push(
@@ -3705,7 +3631,6 @@ const sockets = (() => {
                         if (player.body.id === e.master.id) {
                             data = data.slice(); // So we don't mess up references to the original
                             // Set the proper color if it's on our team
-                            data[12] = player.teamColor;
                             // And make it force to our mouse if it ought to
                             if (player.command.autospin) {
                                 data[10] = 1;
@@ -3734,7 +3659,7 @@ const sockets = (() => {
                             let player = socket.player,
                                 camera = socket.camera;
                             // If nothing has changed since the last update, wait (approximately) until then to update
-                            let rightNow = room.lastCycle;      
+                            let rightNow = lastTime;      
                             if (rightNow === camera.lastUpdate) {
                                 socket.update(5 + room.cycleSpeed - util.time() + rightNow);
                                 return 1;
@@ -3922,6 +3847,8 @@ const sockets = (() => {
                                 let team2map = flattener();
                                 let team3map = flattener();
                                 let team4map = flattener();
+                                let team5map = flattener();
+                                let team6map = flattener();
                                 // Return the function
                                 return () => {
                                     let clean = [
@@ -3937,12 +3864,21 @@ const sockets = (() => {
                                         team4map.update(minimap.map(function(entry) {
                                             return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -4)) ? entry[3] : 17];
                                         })),
+                                        team5map.update(minimap.map(function(entry) {
+                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -4)) ? entry[3] : 17];
+                                        })),
+                                        team6map.update(minimap.map(function(entry) {
+                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -4)) ? entry[3] : 17];
+                                        })),
                                     ];
                                     let full = [
                                         team1map.exportall(),
                                         team2map.exportall(),
                                         team3map.exportall(),
-                                        team4map.exportall()
+                                        team4map.exportall(),
+                                        team5map.exportall(),
+                                        team6map.exportall()
+                                      
                                     ];
                                     // The reader
                                     return (team, everything = false) => { return (everything) ? full[team-1] : clean[team-1]; };
@@ -4030,6 +3966,7 @@ const sockets = (() => {
                                 case -2: return 11;
                                 case -3: return 12;
                                 case -4: return 15;
+                                case -5: return 13;
                                 default: {
                                     if (room.gameMode === 'tdm') return entry.color;
                                     return 11;
@@ -4562,7 +4499,7 @@ var gameloop = (() => {
             }
         }
         // The actual collision resolution function
-        return collision => {
+         return collision => {
             // Pull the two objects from the collision grid      
             let instance = collision[0],
                 other = collision[1];   
@@ -4660,10 +4597,15 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
+        var curTime = now();
+        timestep = 0.01 * (curTime - lastTime);
+        if (timestep <= 0 || timestep > 1.0) {
+            timestep = 0.01;
+        }
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-            entities.forEach(e => entitiesactivationloop(e));
+        entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
@@ -4676,17 +4618,47 @@ var gameloop = (() => {
         logs.collide.mark();
         // Do entities life
         logs.entities.set();
-            entities.forEach(e => entitiesliveloop(e));
+        entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
-        purgeEntities();
-        room.lastCycle = util.time();
+        purgeEntities();  
+        lastTime = time;
+        room.cycleSpeed = 1000 / roomSpeed / 120; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
     //let alphaFactor = (delta > expected) ? expected / delta : 1;
     //roomSpeed = c.gameSpeed * alphaFactor;
     //setTimeout(moveloop, 1000 / roomSpeed / 30 - delta); 
+})();
+var funloop = (() => {
+    // Fun stuff, like RAINBOWS :D
+    function rainbow(my) {
+      let rainbow = [12, 2, 3, 11, 10, 14]
+      entities.forEach(function(element) {
+        if (element.rainbow) {
+          if (rainbow.indexOf(element.color) == -1 || element.color == undefined) {
+            element.color = 12
+          } else {
+            if (element.rainbow_back == false) {
+              element.color = rainbow[rainbow.indexOf(element.color) + 1]
+            } else {
+              element.color = rainbow[rainbow.indexOf(element.color) - 1]
+            }
+          }
+          if (element.color == 14) {
+            element.rainbow_back = true
+          }
+          if (element.color == 12) {
+            element.rainbow_back = false
+          }
+        }
+      }
+    )}
+    return () => {
+        // run the fun stuff :P
+        rainbow()
+    };
 })();
 // A less important loop. Runs at an actual 5Hz regardless of game speed.
 var maintainloop = (() => {
@@ -4712,8 +4684,8 @@ var maintainloop = (() => {
         let count = 0;
         for (let i=Math.ceil(roidcount); i; i--) { count++; placeRoid('roid', Class.obstacle); }
         for (let i=Math.ceil(roidcount * 0.3); i; i--) { count++; placeRoid('roid', Class.babyObstacle); }
-        for (let i=Math.ceil(rockcount * 0.8); i; i--) { count++; placeRoid('rock', Class.obstacle); }
-        for (let i=Math.ceil(rockcount * 0.5); i; i--) { count++; placeRoid('rock', Class.babyObstacle); }
+        for (let i=Math.ceil(rockcount * 9); i; i--) { count++; placeRoid('rock', Class.obstacle); }
+        for (let i=Math.ceil(rockcount * 8.5); i; i--) { count++; placeRoid('rock', Class.babyObstacle); }
         util.log('Placing ' + count + ' obstacles!');
     }
     placeRoids();
@@ -4796,10 +4768,18 @@ var maintainloop = (() => {
                 o.team = -100;
         }
     };
+    let spawnDodecagon = census => {
+            let spot, i = 30;
+            do { spot = room.randomType('nest'); i--; if (!i) return 0; } while (dirtyCheck(spot, 100));
+            let type = Class.dodecagon;
+            let o = new Entity(spot);
+                o.define(type);
+                o.team = -100;
+    };
     // The NPC function
     let makenpcs = (() => {
         // Make base protectors if needed.
-            /*let f = (loc, team) => { 
+  /*let f = (loc, team) => { 
                 let o = new Entity(loc);
                     o.define(Class.baseProtector);
                     o.team = -team;
@@ -4815,6 +4795,7 @@ var maintainloop = (() => {
                 crasher: 0,
                 miniboss: 0,
                 tank: 0,
+                dodecagon: 0,
             };    
             let npcs = entities.map(function npcCensus(instance) {
                 if (census[instance.type] != null) {
@@ -4823,7 +4804,11 @@ var maintainloop = (() => {
                 }
             }).filter(e => { return e; });    
             // Spawning
-            spawnCrasher(census);
+            //spawnCrasher(census);
+           //if (placedDodecagon === false) {
+           //    spawnDodecagon(census);
+           //    placedDodecagon = true;
+           //}
             spawnBosses(census);
             /*/ Bots
                 if (bots.length < c.BOTS) {
@@ -4861,6 +4846,9 @@ var maintainloop = (() => {
                 case 3: a = Class.pentagon; break;
                 case 4: a = Class.bigPentagon; break;
                 case 5: a = Class.hugePentagon; break;
+                case 6: a = Class.megaPentagon; break;
+                case "h": a = Class.hexagon; break;
+                case "d": a = Class.dodecagon; break;
                 default: throw('bad food level');
             }
             if (a !== {}) {
@@ -4930,7 +4918,6 @@ var maintainloop = (() => {
                 for (let i=Math.ceil(Math.abs(ran.gauss(0, 4))); i<=0; i--) {
                     placeNewFood(o, this.size, 0);
                 }
-        
                 // Set location
                 this.x = o.x;
                 this.y = o.y;
@@ -4982,7 +4969,8 @@ var maintainloop = (() => {
                 [3]: 0, // Penta
                 [4]: 0, // Beta
                 [5]: 0, // Alpha
-                [6]: 0,
+                [6]: 0, // Gamma
+                [7]: 0,
                 tank: 0,
                 sum: 0,
             };
@@ -4993,7 +4981,8 @@ var maintainloop = (() => {
                 [3]: 0, // Penta
                 [4]: 0, // Beta
                 [5]: 0, // Alpha
-                [6]: 0,
+                [6]: 0, // Gamma
+                [7]: 0,
                 sum: 0,
             };
             // Do the censusNest
@@ -5074,6 +5063,7 @@ var maintainloop = (() => {
         });
     };
 })();
+
 // This is the checking loop. Runs at 1Hz.
 var speedcheckloop = (() => {
     let fails = 0;
@@ -5090,8 +5080,8 @@ var speedcheckloop = (() => {
         let sum = logs.master.record();
         let loops = logs.loops.count(),
             active = logs.entities.count();
-        global.fps = (1000/sum).toFixed(2);
-        if (sum > 1000 / roomSpeed / 30) { 
+        global.fps = (1000 / sum);
+        if (sum > 1000 / roomSpeed / global.fps) { 
             //fails++;
             util.warn('~~ LOOPS: ' + loops + '. ENTITY #: ' + entities.length + '//' + Math.round(active/loops) + '. VIEW #: ' + views.length + '. BACKLOGGED :: ' + (sum * roomSpeed * 3).toFixed(3) + '%! ~~');
             util.warn('Total activation time: ' + activationtime);
@@ -5132,6 +5122,8 @@ var websockets = (() => {
 })().on('connection', sockets.connect); 
 
 // Bring it to life
+//setInterval(funloop, room.cycleSpeed * 5) 
+//setInterval(updatedelta, global.fps);
 setInterval(gameloop, room.cycleSpeed);
 setInterval(maintainloop, 200);
 setInterval(speedcheckloop, 1000);
@@ -5162,3 +5154,209 @@ process.on("SIGINT", () => {
         }, 17000);
     }
 });
+
+
+
+const Eris = require('eris');
+const bot = new Eris(process.env.bot_token);   
+ 
+bot.on('ready', () => {                             
+    console.log('\nBot ready!\n');    
+    var canLogToDiscord = true
+});
+ 
+var unauth = '```patch\n- ERROR: UNATHORIZED USER```'
+var mliststring = ''
+var mliststring2 = ''
+/*mlist.forEach(function(element) {
+  if (mliststring.length < 1970) {
+    mliststring += element += ', ';
+  } else {
+    mliststring2 += element += ', '
+  }
+});*/
+
+function parse(input) {
+  let out =  input.split(" "); 
+  return out
+}
+
+bot.on('messageCreate', (msg) => {
+  try {
+    if (msg.author.id != 452793079238361089) {
+    if (msg.content.startsWith("k!select ")) {
+      if (process.env.ISONGLITCH == undefined) {
+      let sendError = true
+      let lookfor = msg.content.split("k!select ").pop()
+      entities.forEach(function(element) {
+        if (typeof element.sendMessage == "function" && element.name == lookfor) {
+          sendError = false
+          bot.createMessage(msg.channel.id, String(element.name + '\nTank: ' + element.label + '\nId: ' + element.id + '\nAlpha: ' + element.alpha + '\nColor: ' + element.blend.color + '\nMax Health: '  + element.health.max + '\nCurrent Health: '  + element.health.amount + '\nIs Invulnerable: ' + element.invuln + '\nScore: ' + element.photo.score + '\nLevel: ' + element.skill.level));
+        }
+      })
+      if (sendError) {
+        bot.createMessage(msg.channel.id, "Was unable to find an entity by that name");
+      }
+    }}
+    if (msg.content == 'k!ping') {
+      bot.createMessage(msg.channel.id, 'Pong!\n' + "\nConnections amount: " + global.extPlayers + "\nRunning on glitch: " + process.env.ISONGLITCH + "\nDirectory: " + __dirname + "\nFile name: " + __filename);
+    }
+    if (msg.content == 'k!list') {
+      //if (process.env.ISONGLITCH == undefined) {
+      bot.createMessage(msg.channel.id, mliststring);
+      bot.createMessage(msg.channel.id, mliststring2);
+    }//}
+    if (msg.content.includes('k!help')) {
+      if (process.env.ISONGLITCH == undefined) {
+        bot.createMessage(msg.channel.id, '***COMMANDS*** \nPrefix: k! \n(No space after k! when running command) \n \n**ping**  -  tells u if the server is running\n**kill**  -  kills the server (Authorization required)\n**broadcast** *<message>*  -  broadcasts a message (Authorization required)\n**list**  -  Lists all tanks as their internal names\n**query** *<internalname>*  -  returns some data about a tank (use list first to get tank names that this will accept)\n**select** *<name>*  -  returns some data about in-game users\n**summon** *<type>* *<class>*  -  summons a thing\n**banish** *<id>*  -  Banishes a player (Authorization required)\n**players**  -  list in-game players\n**stat** *<id> <path to stat> <new value>*  -  modifies a stat (Authorization required)');
+    }}
+    if (msg.content == 'k!kill') {
+      if (msg.author.id == 181829457852628993) {
+        console.log("\n SERVER TERMINATED BY AN AUTHORIZED USER \n")
+        bot.createMessage(msg.channel.id, 'Terminating.....');
+        process.emit("SIGINT")
+      } else {
+        console.log("Unauthorized user", msg.author.username, "tried to end server")
+        bot.createMessage(msg.channel.id, unauth);
+      }
+    }
+    if (msg.content.startsWith('k!broadcast')) {
+      if (msg.author.id == 181829457852628993 || 340270483838599168) {
+        if (process.env.ISONGLITCH == undefined) {
+        sockets.broadcast(msg.content.split("k!broadcast").pop() + " - " + msg.author.username)
+        bot.createMessage(msg.channel.id, 'Message Broadcasted and rendered.');
+      }} else {
+        console.log("Unauthorized user", msg.author.username, "tried to broadcast a message")
+        bot.createMessage(msg.channel.id, unauth);
+      }
+    }
+    if (msg.content.startsWith('k!query')) {
+      if (process.env.ISONGLITCH == undefined) {
+        let output = ''
+        var query = msg.content.split(">query ").pop()
+        try {
+          var botreturn = eval('Class.' + query);
+          for (var key in botreturn) {
+            if (output.length > 500) {console.log(output.length); bot.createMessage(msg.channel.id, output); output = ''}
+            output += String(key) + ': ' + eval('Class.' + query + '.' + String(key)) + '\n'
+            var returned = typeof eval('Class.' + query + '.' + String(key))
+            if (returned == 'object') {
+              for (var key2 in eval('Class.' + query + '.' + String(key))) {
+                  if (key2 != 'remove') {
+                    try {
+                      output += "^ " + String(key2) + ': ' + eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']') + '\n'
+                      var returned = typeof eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']')
+                      var returnedobj = eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']')
+                    } catch(err) {
+                      output += "^ " + String(key2) + ': ' + eval('Class.' + query + '.' + String(key) + '.' + String(key2)) + '\n'
+                      var returned = typeof eval('Class.' + query + '.' + String(key) + '.' + String(key2))
+                      var returnedobj = eval('Class.' + query + '.' + String(key) + '.' + String(key2))
+                    }
+                    if (returned == 'object') {
+                      for (var key3 in returnedobj) {
+                        if (key3 != 'remove') {
+                          try {
+                            output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']' + '[' + String(key3) + ']') + '\n'
+                          } catch(err) {
+                            try {
+                              output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']' + '.' + String(key3)) + '\n'
+                            } catch(err) {
+                              try {
+                                output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '.' + String(key2) + '[' + String(key3) + ']') + '\n'
+                              } catch(err) {
+                                output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '.' + String(key2) + '.' + String(key3)) + '\n'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } catch(err) {
+            bot.createMessage(msg.channel.id, String(err));
+          }
+        bot.createMessage(msg.channel.id, output);
+      }}
+    /*if (msg.content.startsWith('k!summon ')) {
+      if (msg.author.id == 181829457852628993) {
+        var spawnClass = msg.content.split("k!summon ").pop().substr(0, 3)
+        console.log(msg.content.split("k!summon ").pop().substr(0, 3))
+        var type = msg.content.split(" ").pop()
+        if (spawnClass == 'bot') {
+          botSpawn = type
+          bot.createMessage(msg.channel.id, "Next bot will be a " + type);
+        } else if (spawnClass == 'food') {
+          
+        } else {
+          bot.createMessage(msg.channel.id, "Was unable to complete request, unknown summon type: " + spawnClass);
+        }
+      } else {
+        console.log("Unauthorized user", msg.author.username, "tried to broadcast")
+        bot.createMessage(msg.channel.id, unauth);
+      }
+    }*/
+  if (msg.content == 'k!players') {
+    let output = ''
+    let outWillFail = true
+    entities.forEach(function(element) {
+    if (typeof element.sendMessage == "function" && element.name != '') {
+        output += String(element.name + '  -  ' + element.id + '\n')
+        outWillFail = false
+    }
+    })
+    if (!outWillFail) {
+    bot.createMessage(msg.channel.id, output)}
+    else {
+    bot.createMessage(msg.channel.id, "There are currently no players on the server")}}
+  if (msg.content.startsWith('k!stat ')) {
+    if (msg.author.id == 181829457852628993 || 340270483838599168 || 350336602956103683) {
+    let s_command = parse(msg.content)
+    let s_lookForId = s_command[1]
+    let s_statpath = s_command[2]
+    let s_newvalue = s_command[3]
+    entities.forEach(function(element) {
+    if (element.id == s_lookForId) {
+      try {
+        eval('element' + s_statpath + ' = ' + s_newvalue)
+      } catch(err) {
+        eval('element' + s_statpath + ' = "' + s_newvalue + '"')
+      }
+      bot.createMessage(msg.channel.id, "Value set to " + String(eval('element' + s_statpath)));
+    }})
+  } else {
+    bot.createMessage(msg.channel.id, unauth);
+  }}
+  if (msg.content.startsWith('k!define ')) {
+  let printerror = true
+  let command = parse(msg.content)
+  let inputid = command[1]
+  let inputclass = command[2]
+  if (msg.author.id == 181829457852628993 || 340270483838599168) {
+  if (eval(Class[inputclass]) != undefined) {
+    entities.filter(r => r.id == inputid)[0].define(Class[inputclass])
+    printerror = false
+    bot.createMessage(msg.channel.id, 'Defined user as Class.' + inputclass);
+  } else {
+    bot.createMessage(msg.channel.id, inputclass + ' is not a valid tank');
+  }
+  if (printerror) {
+    bot.createMessage(msg.channel.id, "Count find any users by the id: " + inputid);
+  }
+  } else {
+    bot.createMessage(msg.channel.id, unauth);
+  }}}
+} catch(err) { // log the error in chat
+  bot.createMessage(msg.channel.id, String(err));
+}});
+ 
+bot.editStatus('online', {
+  name: 'Type k!help for commands!',
+  type: 0
+});
+
+bot.connect();exports.circleArea = function (radius){
+  return Math.pow(radius, 2) * Math.PI;
+};

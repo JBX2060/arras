@@ -3,6 +3,9 @@
 "use strict";
 
 // General requires
+
+var _this = this;
+
 require('google-closure-library');
 goog.require('goog.structs.PriorityQueue');
 goog.require('goog.structs.QuadTree');
@@ -17,180 +20,60 @@ const hshg = require('./lib/hshg');
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
-    if(index === this.length - 1){
-        return this.pop();
+    if (index === _this.length - 1) {
+        return _this.pop();
     } else {
-        let r = this[index];
-        this[index] = this.pop();
+        let r = _this[index];
+        _this[index] = _this.pop();
         return r;
     }
 };
 
 // Define player keys
-const keys = [
-    'k', 'l', 'testk', 'testl',
-    // Focus Group
-        'ZNr3GBQOhD2CDDYpZD3JZkZ6hmhoF4wGiTYTikZlSLr1Z66yWKuVMitRkpUbPy6s', // Mine
-        'HKib09Ep3hIcwFXpiCj5iEkpLBN88HQ22hiFqg5alcxn4AYl6VcsPFTqMvllLt1D', // Parodia
-        'n9hx8iQH8453dWQpdDvJcAvPzQej80xQz86TxuYaJ8CaOr4hEH2zHPlSeayVPjFZ', // SGM
-        '5piWwi06VXdEuOsz1rbcHiglurbaYIPtslIgE0NNMGQgNcqErdJ4kUVYpDJsRlVC', // Aznaft
-        'q80UgWYIQVM2oZW5iQO6VRdLcOTuHkSgUx4U7NN8z76Ltgj7gVc6tSWvmpPkRUGH', // Licht
-        '9zcVcKxiv60ZoBr6CaO9ecjR3i0Mj9yx4Qgt9IGwzxps8Q5ge1GQJiYe59GBxKip', // Tenderlicious
-        'M67ZAZIgboiBcUtcKoHOuwXlQJWN9DEwhr0CIqR9xjiwpDyb4cUrwUIynKnuQmrU', // ManticoreKiller
-        'iBKZrtZEP6Gq1m1y4hpbIH2htBKegkaj6eyO70L9FMAEydiV4gA4ufiLWFx0R5C2', // JB Columbia
-        'zbH5Myv66HmR9Mda39xlLXa9TyBGzXnKZV7xpN5NCDTXorn52123eHY4kcZmPNLx', // Teal Knight
-        'pee4OZmPo9yrINv30kIMMVviEr1PRfiuIYQEOGXTK6lnLZumy9O942NabE8BiEce', // unnamed
-        '08IhobFLBYah8Mk8MKqqG6W576iS4jznjK4WnIsSzcFC0OhkIY51DQV0DWWsgfbg', // Pie
-        '36spA3cA2FNDamjM4SaiNNfNMkUMSERgduUvAL3Ms8bsioX4uoMyQteMWx1dRpdp', // Sergio
-        'i3tpmHTC2ty8CCzjhISDKO1MrkZOwmoWZ08XZLOg3IfCqbtAsdC8QPKPMhbPHQmV', // Corrupt X
-        'gQHpJkeGoxknxqkiX9msLhwS1NzikXa1RiOKOJD2o2zf15XL35P1YWZeMcivXLNB', // Jorjito Gamer
-        'kKWsRf0OdLWzipECohr5FqjuyecPZYOGxl1zAXabtllaWx2OVKfLTKBiit8KVg5j', // warrior
-        '77L1QgQgsTQrZHhTSuv1iK1NyvpBL9AYyvmkF21Sjp4T7ldxGodQnC9dM1YtvZzG', // TTTank
-        'M6I9vmmRiitxg07rBG2IuC7aNpp7LHQGVPtwGfkk3hIBR0jhlWwaqzpzPXqU2awM', // CX
-        '5AxKhPIu5jF3B3cIxjA2BHUy30ccYgEUXJmK16ksJotp9D9WVlY6QqPLDPGim1MK', // Faxaro
-        'kcrJTPqvhraysgCNrFZORGNR4UTMRvbQ2zuhI3iXpGyMg6wDtU5QMgcV8vNdLLHQ', // Mipha
-        'EXoiZYDuwSwmp7Zg0m7hdaLyv2PMbQgQorkwRznC0NC3saubVNtxVUGtOWZ2xdcz', // svorlds
-        'G0t2lQYeaTHHU8sp5ibNjFCCLMr41cPCOJRKUC5eUGfkUKDxpVwo5azomBSznZuR', // FTM
-        'kf2VcjtzpMvVwhlgIjq4MX6LWbIoNzcvfsxARS0qWiuVWf6BPPsQ2p1FgBVvNoB1', // pnvv / Cannon Man
-        '3hO6R7AOR0aiiFuRyGaHKrgJHjTEpsD2LZ866bhvlz2Ru9AT8QmiBNf5PZuXCFIA', // wowie's friend
-        'z272UlNODnYVK79jva6pybRpwtp1h0FdJh8F8JRQJ5VY9lPrcugp6nd403Op4voC',
-        'eOb4DCk81Hzay8Kgjcu6tbbpIUCveloxahmnkmg3aU6FlvdWjJd2Uui5cFQdsnby',
-        '9qGqNv5iYTSIhkCaMmZpvYhSpaLnHQJnj6m2gdoVWIXgLaFgIrbcFYHM8bcBsGYS',
-        'qqWz1E1uVtErG4N80YDVQJywzOk6PJFDrC6uzqoQ9XL2nNrCCr1KvY8XUEyCroHT',
-        'r0KXqfIifiavtqP3v0b5gqb5ArQY5sJWO7fjG4P6AFE5MRyfjDGK7sO7nXg23Tkv',
-        'nUzNolF4Yys4ua6x78GiVH0Fparcm8GyD60IZzVHji0b2gQL3citWEEi3b1J9iRT',  
-        'XSxFurVLlc7o99nnakK5EPA2Z16tqBxP3xKcq5y4XOjRyfFRqaSxbBNRUtab71FH',
-        'uYLfr6k6wEmgMtGVna366Gujor3gUWhWUHgbsz2uUNhQ8OKkwzb1IpDehnz7dfFL',
-        'TVA4eYx29geFN6kb2Osyt5veaih0OOJG2MzB4qBBlUQr5CpRJqIhrTModxcT5NXI',
-        'eyQqQE0h0l6x7XpkXpnZdYPsRJgvdl6L8xAoEzF0ZGlTV8HH0wUePj03LuULDhSN',
-        'ZuOzwoZw4lCWwekTMh9bEAw4Tv92uLhzGN0DMDV2Rk7Sfn3Hsbf87ssHcvxTbDek',
+const keys = ['k', 'l', 'testk', 'testl',
+// Focus Group
+'ZNr3GBQOhD2CDDYpZD3JZkZ6hmhoF4wGiTYTikZlSLr1Z66yWKuVMitRkpUbPy6s', // Mine
+'HKib09Ep3hIcwFXpiCj5iEkpLBN88HQ22hiFqg5alcxn4AYl6VcsPFTqMvllLt1D', // Parodia
+'n9hx8iQH8453dWQpdDvJcAvPzQej80xQz86TxuYaJ8CaOr4hEH2zHPlSeayVPjFZ', // SGM
+'5piWwi06VXdEuOsz1rbcHiglurbaYIPtslIgE0NNMGQgNcqErdJ4kUVYpDJsRlVC', // Aznaft
+'q80UgWYIQVM2oZW5iQO6VRdLcOTuHkSgUx4U7NN8z76Ltgj7gVc6tSWvmpPkRUGH', // Licht
+'9zcVcKxiv60ZoBr6CaO9ecjR3i0Mj9yx4Qgt9IGwzxps8Q5ge1GQJiYe59GBxKip', // Tenderlicious
+'M67ZAZIgboiBcUtcKoHOuwXlQJWN9DEwhr0CIqR9xjiwpDyb4cUrwUIynKnuQmrU', // ManticoreKiller
+'iBKZrtZEP6Gq1m1y4hpbIH2htBKegkaj6eyO70L9FMAEydiV4gA4ufiLWFx0R5C2', // JB Columbia
+'zbH5Myv66HmR9Mda39xlLXa9TyBGzXnKZV7xpN5NCDTXorn52123eHY4kcZmPNLx', // Teal Knight
+'pee4OZmPo9yrINv30kIMMVviEr1PRfiuIYQEOGXTK6lnLZumy9O942NabE8BiEce', // unnamed
+'08IhobFLBYah8Mk8MKqqG6W576iS4jznjK4WnIsSzcFC0OhkIY51DQV0DWWsgfbg', // Pie
+'36spA3cA2FNDamjM4SaiNNfNMkUMSERgduUvAL3Ms8bsioX4uoMyQteMWx1dRpdp', // Sergio
+'i3tpmHTC2ty8CCzjhISDKO1MrkZOwmoWZ08XZLOg3IfCqbtAsdC8QPKPMhbPHQmV', // Corrupt X
+'gQHpJkeGoxknxqkiX9msLhwS1NzikXa1RiOKOJD2o2zf15XL35P1YWZeMcivXLNB', // Jorjito Gamer
+'kKWsRf0OdLWzipECohr5FqjuyecPZYOGxl1zAXabtllaWx2OVKfLTKBiit8KVg5j', // warrior
+'77L1QgQgsTQrZHhTSuv1iK1NyvpBL9AYyvmkF21Sjp4T7ldxGodQnC9dM1YtvZzG', // TTTank
+'M6I9vmmRiitxg07rBG2IuC7aNpp7LHQGVPtwGfkk3hIBR0jhlWwaqzpzPXqU2awM', // CX
+'5AxKhPIu5jF3B3cIxjA2BHUy30ccYgEUXJmK16ksJotp9D9WVlY6QqPLDPGim1MK', // Faxaro
+'kcrJTPqvhraysgCNrFZORGNR4UTMRvbQ2zuhI3iXpGyMg6wDtU5QMgcV8vNdLLHQ', // Mipha
+'EXoiZYDuwSwmp7Zg0m7hdaLyv2PMbQgQorkwRznC0NC3saubVNtxVUGtOWZ2xdcz', // svorlds
+'G0t2lQYeaTHHU8sp5ibNjFCCLMr41cPCOJRKUC5eUGfkUKDxpVwo5azomBSznZuR', // FTM
+'kf2VcjtzpMvVwhlgIjq4MX6LWbIoNzcvfsxARS0qWiuVWf6BPPsQ2p1FgBVvNoB1', // pnvv / Cannon Man
+'3hO6R7AOR0aiiFuRyGaHKrgJHjTEpsD2LZ866bhvlz2Ru9AT8QmiBNf5PZuXCFIA', // wowie's friend
+'z272UlNODnYVK79jva6pybRpwtp1h0FdJh8F8JRQJ5VY9lPrcugp6nd403Op4voC', 'eOb4DCk81Hzay8Kgjcu6tbbpIUCveloxahmnkmg3aU6FlvdWjJd2Uui5cFQdsnby', '9qGqNv5iYTSIhkCaMmZpvYhSpaLnHQJnj6m2gdoVWIXgLaFgIrbcFYHM8bcBsGYS', 'qqWz1E1uVtErG4N80YDVQJywzOk6PJFDrC6uzqoQ9XL2nNrCCr1KvY8XUEyCroHT', 'r0KXqfIifiavtqP3v0b5gqb5ArQY5sJWO7fjG4P6AFE5MRyfjDGK7sO7nXg23Tkv', 'nUzNolF4Yys4ua6x78GiVH0Fparcm8GyD60IZzVHji0b2gQL3citWEEi3b1J9iRT', 'XSxFurVLlc7o99nnakK5EPA2Z16tqBxP3xKcq5y4XOjRyfFRqaSxbBNRUtab71FH', 'uYLfr6k6wEmgMtGVna366Gujor3gUWhWUHgbsz2uUNhQ8OKkwzb1IpDehnz7dfFL', 'TVA4eYx29geFN6kb2Osyt5veaih0OOJG2MzB4qBBlUQr5CpRJqIhrTModxcT5NXI', 'eyQqQE0h0l6x7XpkXpnZdYPsRJgvdl6L8xAoEzF0ZGlTV8HH0wUePj03LuULDhSN', 'ZuOzwoZw4lCWwekTMh9bEAw4Tv92uLhzGN0DMDV2Rk7Sfn3Hsbf87ssHcvxTbDek',
 
-    // Public
-        'PUBLICRSUZbhCMu2ocDrhtje1ev6ff3eM6IxsCPUBLIC',
-        'PUBLICb7HbKa0zFp5PzJVkcu17GIbp56JeHxZlPUBLIC',
-        'PUBLICwxTybWuUrYfEA84kVunN5btV4vROYCW0PUBLIC',
-        'PUBLICfOKBjTZzW1VvoEfJTY3G7U2TcwT8iREyPUBLIC',
-        'PUBLICKKRLO0lpLy2IDHUdqzE0MBsZUhrBnYRpPUBLIC',
-        'PUBLICsC7wKFQ6CXPB241uA5RzORP2Z14CSO86PUBLIC',
-        'PUBLIC6criSrXdLBoTtIWQHCmcOPfzqgDZcGOiPUBLIC',
-        'PUBLIC3QdiZpPEAtB4gif0TEU3822qJz3W23J2PUBLIC',
-        'PUBLICEDZLxLjRRfa8tS5EqRIExtHpWq0MJSVZPUBLIC',   
-        'PUBLIC5vmCtP1IjDnglKJk7AmWg3hAuZ4ZGGnVPUBLIC',
-        'PUBLICe1r6NsdjhOnpNuPqnskTzLvJoaXn3dsqPUBLIC',        
-        'PUBLICTbfzA0MB2H6hRataGEQENmu1o9eOpytkPUBLIC',
-        'PUBLICpJlxtdn2iplYuIWXznUX3f6RHHPC3uFrPUBLIC',
-        'PUBLICadVvUN4mp0MTSAnsc3BKIJ6l40Y5sV00PUBLIC', 
-        
-        'TRUSTED5vmCtP1IjDnglKJk7sAmWg3hAuZ4ZGGnVTRUSTED',
-        'TRUSTEDe1r6NsdjhOnpNuPqnskTfzLvJoaXn3dsqTRUSTED',        
-        'TRUSTEDTbfzA0MB2H6hRataGE3QENmu1o9eOpytkTRUSTED',
-        'TRUSTEDpJlxtdn2iplYuIWXsznUX3f6RHHPC3uFrTRUSTED',
-        'TRUSTEDadVvUN4mp0MTSAnsc3BKfIJ6l40Y5sV00TRUSTED',
-        'TRUSTED3nYR28Kwhnx1n6JvP4Tm r2dxLhrTvrcNTRUSTED',
-        'TRUSTEDNwHIdUtjLSmITUVNg5B6c4uVWiB7IFq2STRUSTED',
-        'TRUSTEDDIIocNBJS9mYstVFSuiwNxbQeEXOFlrPhTRUSTED',
-        'TRUSTED17rtKXqQ7wzek6Ejf9rGCfOdRr5vrm5AxTRUSTED',
-        'TRUSTEDWJkuJFZ2Wljq2WXasxHrM0Vsbra5iyb6vTRUSTED',
-        'TRUSTEDzxVdPsuU1yGRQrkbADH6rBaE8TKdAvJabTRUSTED',
-        'TRUSTED7nAZ3NBi9ZB07KfLV0cnGO0YEXoSGf1lLTRUSTED',
-        'TRUSTEDFyJTLBCrokyoFICQFi4hAGJd09jkCDqOJTRUSTED',
-        'TRUSTEDPBHbBZkW9foaXPDfGe6xq9Y6XvJhrwowqTRUSTED',
-        'TRUSTEDtTZe5CYcmmCQBLj0WztAHn5MnI0dhqNrXTRUSTED',       
+// Public
+'PUBLICRSUZbhCMu2ocDrhtje1ev6ff3eM6IxsCPUBLIC', 'PUBLICb7HbKa0zFp5PzJVkcu17GIbp56JeHxZlPUBLIC', 'PUBLICwxTybWuUrYfEA84kVunN5btV4vROYCW0PUBLIC', 'PUBLICfOKBjTZzW1VvoEfJTY3G7U2TcwT8iREyPUBLIC', 'PUBLICKKRLO0lpLy2IDHUdqzE0MBsZUhrBnYRpPUBLIC', 'PUBLICsC7wKFQ6CXPB241uA5RzORP2Z14CSO86PUBLIC', 'PUBLIC6criSrXdLBoTtIWQHCmcOPfzqgDZcGOiPUBLIC', 'PUBLIC3QdiZpPEAtB4gif0TEU3822qJz3W23J2PUBLIC', 'PUBLICEDZLxLjRRfa8tS5EqRIExtHpWq0MJSVZPUBLIC', 'PUBLIC5vmCtP1IjDnglKJk7AmWg3hAuZ4ZGGnVPUBLIC', 'PUBLICe1r6NsdjhOnpNuPqnskTzLvJoaXn3dsqPUBLIC', 'PUBLICTbfzA0MB2H6hRataGEQENmu1o9eOpytkPUBLIC', 'PUBLICpJlxtdn2iplYuIWXznUX3f6RHHPC3uFrPUBLIC', 'PUBLICadVvUN4mp0MTSAnsc3BKIJ6l40Y5sV00PUBLIC', 'TRUSTED5vmCtP1IjDnglKJk7sAmWg3hAuZ4ZGGnVTRUSTED', 'TRUSTEDe1r6NsdjhOnpNuPqnskTfzLvJoaXn3dsqTRUSTED', 'TRUSTEDTbfzA0MB2H6hRataGE3QENmu1o9eOpytkTRUSTED', 'TRUSTEDpJlxtdn2iplYuIWXsznUX3f6RHHPC3uFrTRUSTED', 'TRUSTEDadVvUN4mp0MTSAnsc3BKfIJ6l40Y5sV00TRUSTED', 'TRUSTED3nYR28Kwhnx1n6JvP4Tm r2dxLhrTvrcNTRUSTED', 'TRUSTEDNwHIdUtjLSmITUVNg5B6c4uVWiB7IFq2STRUSTED', 'TRUSTEDDIIocNBJS9mYstVFSuiwNxbQeEXOFlrPhTRUSTED', 'TRUSTED17rtKXqQ7wzek6Ejf9rGCfOdRr5vrm5AxTRUSTED', 'TRUSTEDWJkuJFZ2Wljq2WXasxHrM0Vsbra5iyb6vTRUSTED', 'TRUSTEDzxVdPsuU1yGRQrkbADH6rBaE8TKdAvJabTRUSTED', 'TRUSTED7nAZ3NBi9ZB07KfLV0cnGO0YEXoSGf1lLTRUSTED', 'TRUSTEDFyJTLBCrokyoFICQFi4hAGJd09jkCDqOJTRUSTED', 'TRUSTEDPBHbBZkW9foaXPDfGe6xq9Y6XvJhrwowqTRUSTED', 'TRUSTEDtTZe5CYcmmCQBLj0WztAHn5MnI0dhqNrXTRUSTED', 'GUDPOSTERNwR7FWcY1eeNkyiCrzGfuo3wGWhETFmbGUDPOSTER', 'GUDPOSTERR2gdw10L7u4auP3yr1G1EC59TnRA3H31GUDPOSTER', 'GUDPOSTERVLX8LwHtMrLIMFx0XdzTdauVAmSKV9SZGUDPOSTER', 'GUDPOSTER8Uk4cGa2ut3vFfaPmjbmRBtAXpFHXsBNGUDPOSTER', 'GUDPOSTERdHHy9pqMejwGZJ7nUZMRw0Mnc1g8UJ8oGUDPOSTER', 'GUDPOSTERrgZPXqFSJXdChEMvgQjjxjGZfsObOArCGUDPOSTER', 'GUDPOSTERysJI3BfzB2cRCDDdFkAaFWxZk5TNHwfvGUDPOSTER', 'GUDPOSTERlFps80nCJ6cnFGjyH9QoKqgETwGX1sIQGUDPOSTER', 'GUDPOSTERmED6CZg213gXoCYyDqxMLGFtuuCPn8NmGUDPOSTER', 'GUDPOSTERlSL92YPpoqh48GuQwydpGuocJAH6Vx5VGUDPOSTER', 'GIVEAWAYZ1yVvobK3MWgCBxYjFheJd3UrWW2ULJuGIVEAWAY', 'GIVEAWAYaVGcMBm3LwxmLkxxGSt6NNg9AUDsj5v5GIVEAWAY', 'GIVEAWAYAMkJmX3xKv3tiieS5oAfEsJbni4xInIwGIVEAWAY', 'GIVEAWAYi3AbdptFr9m2fGGqY9p6Vvi3uRX6ALHRGIVEAWAY', 'GIVEAWAYxwABlNSPU4291UJICWyeXQB4ET0ZyA0uGIVEAWAY', 'GIVEAWAYczPSwYnpHDGKaimREjN1e86N6CmSH0NWGIVEAWAY', 'GIVEAWAYDx3U7MOBNyDmjv6Rz6Le6wgG4Xk0cwilGIVEAWAY', 'GIVEAWAYCOr2yK7od6RRch52ToBO5s0xxizBVVajGIVEAWAY', 'GIVEAWAYV7fiIzckU8xQ57i3Bu8ngWetPOzS9ktvGIVEAWAY', 'GIVEAWAYpbo21yNoMcvwhbIeMOsqMIjzYKOLZyEgGIVEAWAY',
 
-        'GUDPOSTERNwR7FWcY1eeNkyiCrzGfuo3wGWhETFmbGUDPOSTER',
-        'GUDPOSTERR2gdw10L7u4auP3yr1G1EC59TnRA3H31GUDPOSTER',
-        'GUDPOSTERVLX8LwHtMrLIMFx0XdzTdauVAmSKV9SZGUDPOSTER',
-        'GUDPOSTER8Uk4cGa2ut3vFfaPmjbmRBtAXpFHXsBNGUDPOSTER',
-        'GUDPOSTERdHHy9pqMejwGZJ7nUZMRw0Mnc1g8UJ8oGUDPOSTER',
-        'GUDPOSTERrgZPXqFSJXdChEMvgQjjxjGZfsObOArCGUDPOSTER',
-        'GUDPOSTERysJI3BfzB2cRCDDdFkAaFWxZk5TNHwfvGUDPOSTER',
-        'GUDPOSTERlFps80nCJ6cnFGjyH9QoKqgETwGX1sIQGUDPOSTER',
-        'GUDPOSTERmED6CZg213gXoCYyDqxMLGFtuuCPn8NmGUDPOSTER',
-        'GUDPOSTERlSL92YPpoqh48GuQwydpGuocJAH6Vx5VGUDPOSTER',
-
-        'GIVEAWAYZ1yVvobK3MWgCBxYjFheJd3UrWW2ULJuGIVEAWAY',
-        'GIVEAWAYaVGcMBm3LwxmLkxxGSt6NNg9AUDsj5v5GIVEAWAY',
-        'GIVEAWAYAMkJmX3xKv3tiieS5oAfEsJbni4xInIwGIVEAWAY',
-        'GIVEAWAYi3AbdptFr9m2fGGqY9p6Vvi3uRX6ALHRGIVEAWAY',
-        'GIVEAWAYxwABlNSPU4291UJICWyeXQB4ET0ZyA0uGIVEAWAY',
-        'GIVEAWAYczPSwYnpHDGKaimREjN1e86N6CmSH0NWGIVEAWAY',
-        'GIVEAWAYDx3U7MOBNyDmjv6Rz6Le6wgG4Xk0cwilGIVEAWAY',
-        'GIVEAWAYCOr2yK7od6RRch52ToBO5s0xxizBVVajGIVEAWAY',
-        'GIVEAWAYV7fiIzckU8xQ57i3Bu8ngWetPOzS9ktvGIVEAWAY',
-        'GIVEAWAYpbo21yNoMcvwhbIeMOsqMIjzYKOLZyEgGIVEAWAY',   
-        
-    // Twitter
-        '500kBomberContestTokenVUBefeRUMQsLShjas4dhfSF',
-        '500kBomberContestTokenNSEefeRUMQsLShjbs4dhfSF', // TnT
-        '500kBomberContestTokenWDWefeRUMQsLShjcs4dhfSF', // crnz
-        '500kPoacherContestTokenZZb1FkYER7B0ZV7bs9df8s',
-        '500kAutoDoubleContestTokenKBSj41qloynOGws87X2', // JeShAn
-        '500kFortressContestTokenl2fd42tL7C6ZynSDF33ox', // Lucario
-    // Youtube
-        'SGMTokenGiveaway51NP3JOh9NKvsnVh6PDRGI1wALGXWLzE2jZXztWKxlyPN00w',
-        'SGMTokenGiveaway2puyw4VGFTTSqgxeFvvvqxMTzZ5S3XPtVQXLCSIOpW7Rxv8m',
-        'SGMTokenGiveawayYAu4abk9oLMaBqOXfx2QvSqznNqw7mTFv7lBFk5LJ7ksPd7W',
-        'SGMTokenGiveawaybgSA5xNNpo4Vhsfg8lOlop8f4FOPWk9VXcMvjl62JYWhKOWF',
-        'SGMTokenGiveawaya7C7vBTBPxgWEgg1g3UbYttE30A33aFVqEEd2pdV3PfbxvA0',
-        'SGMTokenGiveawayBFu7eKC22KxKYuFiUTOyjmMCpBhr1HseP7pNo4yl5xOZt9IS',
-        'SGMTokenGiveawayAHVq7eEAUWZzCtK4vcHslWIDMPykPAfsnq4jdsHYE3HIhlBO',
-        'SGMTokenGiveawayS0wxtOYFcnBirWbbP9EePvgo8rPVrhatpixkaH78CdKdtorr',
-        'SGMTokenGiveaway7p8JwRnATdS3H10gIKy5dKQXlbj93WplkC9NpfjNTREG9IQn',
-        'SGMTokenGiveawaynM1ffqsEM31Vv6KMmlxhs6Ug0s65FiyN3w9eP6QM7FmpbS2i',  
-
-        'SGMTokenAa05Q1oDwf0Mxaw57vBTBPX3M25gjitRD0daHTObk796GqSJ3KUhKf5p',
-        'SGMTokenxg3Kw7jPUoxFOXbO4POF19iovCUnNzqoQ9XL2rTAoXoAtyHDZR5YFgAk',
-        'SGMToken7KteCaOERDa8TkfzIQIm54rhewlKL2lWIDMPykPAfsnq41MGxgogphB9',
-
-        'OMTokenIGnPS8RSGiP8lvTQDdve9ANPfSOyTgvPQMYdFlcn7IVcJg8oeGreEBYs',
-        'OMTokenLTARU3UJldlHUf8215Wg4AbdThRvA3j0wG2FbwyZCTixkaH78CdK8BnV',
-        'OMToken7sOXlNs9Qu58TmaCu9TpD4JkzRuGrKKOS74tZimimR8Iu5du7v6GRbRH',
-
-        'JBColombiaTokenwZXpYskkovgQL4jZlqS42xaqgVAvHZPZgVcccsBkHhsXhq69',
-        'JBColombiaToken8WwiA5demyL1gQZ9D5kvFMOwkJRc3STikct22cMoPmjfli69',
-        'JBColombiaTokenPDuZydKLePKQ9TyOMqiquI0YVHcCJBJb3pORyzfo42nHhT69',
-        'JBColombiaTokeniC0Eh8jMoncX4bAKbslR174tZimimBXoUGhvaKY0dBwbLI69',
-        'JBColombiaTokenWWqX44i7VqxtQB3qsViJHbJnK3FryxqgAAFerRFxYO2wJc69',
-        'JBColombiaTokenlzgPyfwuto7KY8BqxDserADmpeuMR31wxgD0dWpNWvHZv969',
-        
-        'SMTokenlSrBG8RTazOHzZ6zeyBPFI1tOSiuDSJNcfozraRKb8votLtwmNFC964KG',
-        'SMTokennrNg7MzqzJe2xz11cKDETqCBKVhDiOS6x1gyTMV8EHLkRGGFXAHLUVUjk',
-        'SMTokenfjlzipOhA8Lfp38kt9FnzGKRg6g79hujlFVPbEyzsbEqbYOD2ohveMSh8',
-        'SMTokenNHPtbYKUDrR8MBQoQIymCwdbFSoHHNTuBMPvS4iugQigBMvfrGurB3qM4',
-        'SMTokenI33BqYnppCCVAMOkykIeOWIsmetgkymFK1A7XgeZGGW52xVq1xRKv38vC',
-        'SMTokenHxNBGJGRf6SqXAOIhgMEOuPUp4X4LszwBEeco3Wrw2IuOe3jxoWyLKdR0',
-        'SMTokennjophXq0WC3jzDpPrDbfXLE2eoFOMvQWKucR0ZwECIlXDBTQnF33uyDXd',
-    // Patreon / rewards
-        'tokenlordkarma88tokenlordkarma88tokenlordkarma88tokenlordkarma88',
-        'hereIsUrTokenBuddyThxForTheOverGunnerLmao',
-        'DukeonkledDukeonkleThankYouSoMuch123e911DukeonkledDukeonkledDuke',
-        'FireNationFireNationThanksATon018s380280FireNationFireNationFire',
-
-        'rewardTokenJSdf323H0Cj85aVOG3SPlgp7Y9BuBoFcwpmNFjfLEDQhOFTIpukdr', // Call
-        'rewardTokenDg2JDTp0rxDKXIPE8PHcmdHqWyH2CqPqpcAf6QcT8m2hgBZnJ7KHE',
-        'rewardTokenad3JTsTwuVLkQvfmVH2d2Ukbf8WbFuPBqTpYFdFx9AuZEnmv9EW8U',
-        'rewardTokenJsa43Tthn1M5Ey9oDRODzzrazqRxL28cTchgInjVCrSfnWEATdYeP',
-        'rewardTokensdfsJTyz2YMS3GLDfD2NvqXK46p1ScsmdLxI1owBkjHw983lwkR8Z',
-    // Wiki
-        'WIKIREWARDV7V0bZRP8lM3fUvwuAX7DC5FpZCU1AyJByaulkH9YHZ7WIKIREWARD',
-        'WIKIREWARDDOE8Iqg5K124sNXSR51WWycmCnFtCLjyF7uole5sgQgoWIKIREWARD',
-        'WIKIREWARD5z5xXA0flzxeRgGu6EjSWlOq23gdGoYALClfsUT143Y9WIKIREWARD',
-        'WIKIREWARD4DTEvdwSBKPBRCAJxeS9surL09uzxx33gAHmMYFldRsMWIKIREWARD',
-        'WIKIREWARDqGXxMucMJcSeqWFcAfCLVNStnmOezkzOUot8xbfpCuk1WIKIREWARD',
-        'EDITOR1eKAAURvtnHYFuUz6dzPqOwPt6SFWbacEucDnm8KroabolnzLZrdEDITOR',
-        'EDITOR38Gi67EFmLdh6nXuKqtRc79HKk34c6bQl08tbUeZlGcxBS2c350yEDITOR',
-        'EDITOR7mAKjd6XYprdtvbWqqUjEEfCqomx67aLSyG70eiFuvRVv2Eest27EDITOR',
-        'EDITORoNzv0DxKzLYY7YCYdIsRHdNz8DNNiuqI2I9mBM2blBpWZ39chumsEDITOR',
-        'EDITOR399V1FLGtsne5BMg5QfeeHdR63bxkV51Av0ET3F5y92q7EMhI8R3EDITOR',
-        'EDITORmUJbmoFVshllWIUb11kyXxQfyESa4t3SYcGRHSlWzLrzfwkHCIVUEDITOR',
-    // Themes
-        'YouAreTheCreatorOfBadlands',
-        'WowYouMadeADopeFishyTheme',
-        'ThanksForHelpingPlantAForest',
-        'MidnightIsSuperCoolNotYouTheTheme',
-        'DrinkBleachPlz',
-        'FrostyAndBeautifulJustLikeYourColdHeart',
-];
+// Twitter
+'500kBomberContestTokenVUBefeRUMQsLShjas4dhfSF', '500kBomberContestTokenNSEefeRUMQsLShjbs4dhfSF', // TnT
+'500kBomberContestTokenWDWefeRUMQsLShjcs4dhfSF', // crnz
+'500kPoacherContestTokenZZb1FkYER7B0ZV7bs9df8s', '500kAutoDoubleContestTokenKBSj41qloynOGws87X2', // JeShAn
+'500kFortressContestTokenl2fd42tL7C6ZynSDF33ox', // Lucario
+// Youtube
+'SGMTokenGiveaway51NP3JOh9NKvsnVh6PDRGI1wALGXWLzE2jZXztWKxlyPN00w', 'SGMTokenGiveaway2puyw4VGFTTSqgxeFvvvqxMTzZ5S3XPtVQXLCSIOpW7Rxv8m', 'SGMTokenGiveawayYAu4abk9oLMaBqOXfx2QvSqznNqw7mTFv7lBFk5LJ7ksPd7W', 'SGMTokenGiveawaybgSA5xNNpo4Vhsfg8lOlop8f4FOPWk9VXcMvjl62JYWhKOWF', 'SGMTokenGiveawaya7C7vBTBPxgWEgg1g3UbYttE30A33aFVqEEd2pdV3PfbxvA0', 'SGMTokenGiveawayBFu7eKC22KxKYuFiUTOyjmMCpBhr1HseP7pNo4yl5xOZt9IS', 'SGMTokenGiveawayAHVq7eEAUWZzCtK4vcHslWIDMPykPAfsnq4jdsHYE3HIhlBO', 'SGMTokenGiveawayS0wxtOYFcnBirWbbP9EePvgo8rPVrhatpixkaH78CdKdtorr', 'SGMTokenGiveaway7p8JwRnATdS3H10gIKy5dKQXlbj93WplkC9NpfjNTREG9IQn', 'SGMTokenGiveawaynM1ffqsEM31Vv6KMmlxhs6Ug0s65FiyN3w9eP6QM7FmpbS2i', 'SGMTokenAa05Q1oDwf0Mxaw57vBTBPX3M25gjitRD0daHTObk796GqSJ3KUhKf5p', 'SGMTokenxg3Kw7jPUoxFOXbO4POF19iovCUnNzqoQ9XL2rTAoXoAtyHDZR5YFgAk', 'SGMToken7KteCaOERDa8TkfzIQIm54rhewlKL2lWIDMPykPAfsnq41MGxgogphB9', 'OMTokenIGnPS8RSGiP8lvTQDdve9ANPfSOyTgvPQMYdFlcn7IVcJg8oeGreEBYs', 'OMTokenLTARU3UJldlHUf8215Wg4AbdThRvA3j0wG2FbwyZCTixkaH78CdK8BnV', 'OMToken7sOXlNs9Qu58TmaCu9TpD4JkzRuGrKKOS74tZimimR8Iu5du7v6GRbRH', 'JBColombiaTokenwZXpYskkovgQL4jZlqS42xaqgVAvHZPZgVcccsBkHhsXhq69', 'JBColombiaToken8WwiA5demyL1gQZ9D5kvFMOwkJRc3STikct22cMoPmjfli69', 'JBColombiaTokenPDuZydKLePKQ9TyOMqiquI0YVHcCJBJb3pORyzfo42nHhT69', 'JBColombiaTokeniC0Eh8jMoncX4bAKbslR174tZimimBXoUGhvaKY0dBwbLI69', 'JBColombiaTokenWWqX44i7VqxtQB3qsViJHbJnK3FryxqgAAFerRFxYO2wJc69', 'JBColombiaTokenlzgPyfwuto7KY8BqxDserADmpeuMR31wxgD0dWpNWvHZv969', 'SMTokenlSrBG8RTazOHzZ6zeyBPFI1tOSiuDSJNcfozraRKb8votLtwmNFC964KG', 'SMTokennrNg7MzqzJe2xz11cKDETqCBKVhDiOS6x1gyTMV8EHLkRGGFXAHLUVUjk', 'SMTokenfjlzipOhA8Lfp38kt9FnzGKRg6g79hujlFVPbEyzsbEqbYOD2ohveMSh8', 'SMTokenNHPtbYKUDrR8MBQoQIymCwdbFSoHHNTuBMPvS4iugQigBMvfrGurB3qM4', 'SMTokenI33BqYnppCCVAMOkykIeOWIsmetgkymFK1A7XgeZGGW52xVq1xRKv38vC', 'SMTokenHxNBGJGRf6SqXAOIhgMEOuPUp4X4LszwBEeco3Wrw2IuOe3jxoWyLKdR0', 'SMTokennjophXq0WC3jzDpPrDbfXLE2eoFOMvQWKucR0ZwECIlXDBTQnF33uyDXd',
+// Patreon / rewards
+'tokenlordkarma88tokenlordkarma88tokenlordkarma88tokenlordkarma88', 'hereIsUrTokenBuddyThxForTheOverGunnerLmao', 'DukeonkledDukeonkleThankYouSoMuch123e911DukeonkledDukeonkledDuke', 'FireNationFireNationThanksATon018s380280FireNationFireNationFire', 'rewardTokenJSdf323H0Cj85aVOG3SPlgp7Y9BuBoFcwpmNFjfLEDQhOFTIpukdr', // Call
+'rewardTokenDg2JDTp0rxDKXIPE8PHcmdHqWyH2CqPqpcAf6QcT8m2hgBZnJ7KHE', 'rewardTokenad3JTsTwuVLkQvfmVH2d2Ukbf8WbFuPBqTpYFdFx9AuZEnmv9EW8U', 'rewardTokenJsa43Tthn1M5Ey9oDRODzzrazqRxL28cTchgInjVCrSfnWEATdYeP', 'rewardTokensdfsJTyz2YMS3GLDfD2NvqXK46p1ScsmdLxI1owBkjHw983lwkR8Z',
+// Wiki
+'WIKIREWARDV7V0bZRP8lM3fUvwuAX7DC5FpZCU1AyJByaulkH9YHZ7WIKIREWARD', 'WIKIREWARDDOE8Iqg5K124sNXSR51WWycmCnFtCLjyF7uole5sgQgoWIKIREWARD', 'WIKIREWARD5z5xXA0flzxeRgGu6EjSWlOq23gdGoYALClfsUT143Y9WIKIREWARD', 'WIKIREWARD4DTEvdwSBKPBRCAJxeS9surL09uzxx33gAHmMYFldRsMWIKIREWARD', 'WIKIREWARDqGXxMucMJcSeqWFcAfCLVNStnmOezkzOUot8xbfpCuk1WIKIREWARD', 'EDITOR1eKAAURvtnHYFuUz6dzPqOwPt6SFWbacEucDnm8KroabolnzLZrdEDITOR', 'EDITOR38Gi67EFmLdh6nXuKqtRc79HKk34c6bQl08tbUeZlGcxBS2c350yEDITOR', 'EDITOR7mAKjd6XYprdtvbWqqUjEEfCqomx67aLSyG70eiFuvRVv2Eest27EDITOR', 'EDITORoNzv0DxKzLYY7YCYdIsRHdNz8DNNiuqI2I9mBM2blBpWZ39chumsEDITOR', 'EDITOR399V1FLGtsne5BMg5QfeeHdR63bxkV51Av0ET3F5y92q7EMhI8R3EDITOR', 'EDITORmUJbmoFVshllWIUb11kyXxQfyESa4t3SYcGRHSlWzLrzfwkHCIVUEDITOR',
+// Themes
+'YouAreTheCreatorOfBadlands', 'WowYouMadeADopeFishyTheme', 'ThanksForHelpingPlantAForest', 'MidnightIsSuperCoolNotYouTheTheme', 'DrinkBleachPlz', 'FrostyAndBeautifulJustLikeYourColdHeart'];
 
 // Get class definitions and index them
 const Class = (() => {
@@ -205,12 +88,12 @@ const Class = (() => {
 
 const ROOMSPEED = 1;
 // Define entities
-const makeEntity = (() => {
+const makeEntity = () => {
     // Pooled memory 
     const __a = {
         int: [],
         float: [],
-        str: [],
+        str: []
     };
     // Shared math functions
     const getLength = (x, y) => {
@@ -221,17 +104,20 @@ const makeEntity = (() => {
     };
     const DEGTORAD = Math.PI / 180;
     // The value loader
-    const load = (fallback, val) => { return (val == null) ? fallback : val; };   
+    const load = (fallback, val) => {
+        return val == null ? fallback : val;
+    };
     // A status container creator
     const newStatusBox = (() => {
         const attribute = (status, id, index, inital) => {
             status[index] += id * inital;
             return {
-                get: () => { return status[index] & id; },
-                set: bool => {
-                    if (bool) status[index] = status[index] | id;
-                    else status[index] = status[index] & ~id;
+                get: () => {
+                    return status[index] & id;
                 },
+                set: bool => {
+                    if (bool) status[index] = status[index] | id;else status[index] = status[index] & ~id;
+                }
             };
         };
         return () => {
@@ -239,7 +125,7 @@ const makeEntity = (() => {
             return {
                 ghost: attribute(status, 1, 0, false),
                 inGrid: attribute(status, 2, 0, false),
-                invuln: attribute(status, 4, 0, false),
+                invuln: attribute(status, 4, 0, false)
             };
         };
     })();
@@ -250,14 +136,15 @@ const makeEntity = (() => {
             get: data.slice,
             addSolo: () => data[0]++,
             addAssist: () => data[1]++,
-            addBoss: () => data[2]++,
+            addBoss: () => data[2]++
         };
     };
     // A health bar creator
     const healthTypes = (() => {
         // Static-type functions
         const regenerateStatic = (data, boost) => {
-            const amount = data[0], max = data[1];
+            const amount = data[0],
+                  max = data[1];
             data[0] += max / 10 / 60 / 2.5 + boost;
             data[0] = Math.min(data[0], max);
         };
@@ -266,20 +153,18 @@ const makeEntity = (() => {
         };
         // Dynamic-type functions
         const regenerateDynamic = (data, boost) => {
-            const amount = data[0], max = data[1], regen = data[2];
+            const amount = data[0],
+                  max = data[1],
+                  regen = data[2];
             const r = util.clamp(amount / max, 0, 1);
-            if (!r) data[0] = 0.0001;
-            else if (r === 1) data[0] = max;
-            else {
+            if (!r) data[0] = 0.0001;else if (r === 1) data[0] = max;else {
                 data[0] += regen * Math.exp(-50 * Math.pow(Math.sqrt(0.5 * r) - 0.4, 2)) / 3 + r * max / 10 / 15 + boost;
                 data[0] = Math.min(data[0], max);
             }
         };
         const getDynamicDamage = (data, amount, capped) => {
             const permeability = data[1] ? util.clamp(data[0] / data[1], 0, 1) : 0;
-            return (capped) ?
-                Math.min(amount * permeability, data[0]) :
-                amount * permeability;
+            return capped ? Math.min(amount * permeability, data[0]) : amount * permeability;
         };
         // Shared functions
         const getRatio = data => {
@@ -290,24 +175,40 @@ const makeEntity = (() => {
                 var data = [1.0, 0.0];
                 return {
                     dealDamage: amount => data[0] -= getStaticDamage(data, amount, 1),
-                    getAmount: () => { return data[0]; },
-                    getDisplay: () => { return data[0] / data[1]; },
-                    getRatio: () => { return getRatio(data); },
-                    getDamage: (amount, capped) => { return getStaticDamage(data, amount, capped); },
-                    regenerate: boost => regenerateStatic(data, boost),
+                    getAmount: () => {
+                        return data[0];
+                    },
+                    getDisplay: () => {
+                        return data[0] / data[1];
+                    },
+                    getRatio: () => {
+                        return getRatio(data);
+                    },
+                    getDamage: (amount, capped) => {
+                        return getStaticDamage(data, amount, capped);
+                    },
+                    regenerate: boost => regenerateStatic(data, boost)
                 };
             },
             newDynamic: () => {
                 var data = [0.0, 0.0, 0.0];
                 return {
                     dealDamage: amount => data[0] -= getDynamicDamage(data, amount, 1),
-                    getAmount: () => { return data[0]; },
-                    getDisplay: () => { return data[0] / data[1]; },
-                    getRatio: () => { return getRatio(data); },
-                    getDamage: (amount, capped) => { return getDynamicDamage(data, amount, capped); },
-                    regenerate: boost => regenerateDynamic(data, boost),
+                    getAmount: () => {
+                        return data[0];
+                    },
+                    getDisplay: () => {
+                        return data[0] / data[1];
+                    },
+                    getRatio: () => {
+                        return getRatio(data);
+                    },
+                    getDamage: (amount, capped) => {
+                        return getDynamicDamage(data, amount, capped);
+                    },
+                    regenerate: boost => regenerateDynamic(data, boost)
                 };
-            },
+            }
         };
     })();
     // The skills container creator
@@ -317,7 +218,7 @@ const makeEntity = (() => {
         pen: 1,
         str: 2,
         dam: 3,
-        spd: 4,        
+        spd: 4,
         shi: 5,
         atk: 6,
         hlt: 7,
@@ -326,23 +227,29 @@ const makeEntity = (() => {
         accel: 10,
         rst: 11,
         brst: 12,
-        ghost: 13,
+        ghost: 13
     };
     const newSkills = (() => {
         // The big update method
         const update = (() => {
             // Some math functions
-            const apply = (f, x) => { return (x<0) ? 1 / (1 - x * f) : f * x + 1; };
+            const apply = (f, x) => {
+                return x < 0 ? 1 / (1 - x * f) : f * x + 1;
+            };
             const curves = (() => {
-                const make = x => { return Math.log(4*x + 1) / Math.log(5); };
-                let length = c.MAX_SKILL*2;
+                const make = x => {
+                    return Math.log(4 * x + 1) / Math.log(5);
+                };
+                let length = c.MAX_SKILL * 2;
                 let storedValues = new Array(length);
-                for (let i=0; i<length; i++) { storedValues[i] = make(i / c.MAX_SKILL); }
+                for (let i = 0; i < length; i++) {
+                    storedValues[i] = make(i / c.MAX_SKILL);
+                }
                 return storedValues;
-            })(); 
+            })();
             return data => {
                 // Reset it if it's past the cap
-                for (let i=0; i<10; i++) {
+                for (let i = 0; i < 10; i++) {
                     if (data.raw[i] > data.caps[i]) {
                         data.points += data.raw[i] - data.caps[i];
                         data.raw[i] = data.caps[i];
@@ -354,59 +261,53 @@ const makeEntity = (() => {
                 data.real[skc.pen] = apply(2.5, curves[data.raw[skc.pen]]);
                 data.real[skc.str] = apply(2, curves[data.raw[skc.str]]);
                 data.real[skc.dam] = apply(3, curves[data.raw[skc.dam]]);
-                data.real[skc.spd] = 0.5 + apply(1.5, curves[data.raw[skc.spd]]);        
+                data.real[skc.spd] = 0.5 + apply(1.5, curves[data.raw[skc.spd]]);
                 // Misc bullet stats
-                data.real[skc.accel] = apply(0.5, curves[data.raw[skc.rld]]);                
+                data.real[skc.accel] = apply(0.5, curves[data.raw[skc.rld]]);
                 data.real[skc.rst] = 0.5 * curves[data.raw[skc.str]] + 2.5 * curves[data.raw[skc.pen]];
-                data.real[skc.ghost] = curves[data.raw[skc.pen]];                
+                data.real[skc.ghost] = curves[data.raw[skc.pen]];
                 // Body stats
                 data.real[skc.shi] = c.GLASS_HEALTH_FACTOR * apply(3 / c.GLASS_HEALTH_FACTOR - 1, curves[data.raw[skc.shi]]);
                 data.real[skc.atk] = apply(1, curves[data.raw[skc.atk]]);
                 data.real[skc.hlt] = c.GLASS_HEALTH_FACTOR * apply(2 / c.GLASS_HEALTH_FACTOR - 1, curves[data.raw[skc.hlt]]);
-                data.real[skc.mob] = apply(0.8, curves[data.raw[skc.mob]]); 
+                data.real[skc.mob] = apply(0.8, curves[data.raw[skc.mob]]);
                 data.real[skc.rgn] = apply(25, curves[data.raw[skc.rgn]]);
                 // Misc body stats
                 data.real[skc.brst] = 0.3 * (0.5 * curves[data.raw[skc.atk]] + 0.5 * curves[data.raw[skc.hlt]] + curves[data.raw[skc.rgn]]);
             };
         })();
         // Modification methods
-        const change = (data, index, levels) => { 
+        const change = (data, index, levels) => {
             if (data.points && data.raw[index] < data.caps[index]) {
                 data.raw[index] += levels;
                 update(data);
             }
         };
         const set = (data, values) => {
-            for (let i=0; i<10; i++) {
+            for (let i = 0; i < 10; i++) {
                 data.raw[i] = values[i];
-            } 
+            }
             update(data);
         };
         const setCaps = (data, values) => {
-            for (let i=0; i<10; i++) {
+            for (let i = 0; i < 10; i++) {
                 data.caps[i] = values[i];
-            } 
+            }
             update(data);
         };
         const maintain = (() => {
             const levelToPoint = (() => {
-                const templevelers = [
-                    1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
-                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-                    21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-                    31, 32, 33, 34, 35, 36, 38, 40, 42, 44,
-                ];
+                const templevelers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 40, 42, 44];
                 // Generate the real level array check thingy
                 const levelers = new Array(c.SKILL_CAP);
-                for (let i=0; i<c.SKILL_CAP; i++) levelers[i] = templevelers.indexOf(i) !== -1;
+                for (let i = 0; i < c.SKILL_CAP; i++) levelers[i] = templevelers.indexOf(i) !== -1;
                 return levelers;
             })();
             const levelToScore = (() => {
                 let tempArray = [];
-                for (let i=0; i<c.SKILL_CAP; i++) 
-                    tempArray[i] = Math.ceil(1.8 * Math.pow(i + 1, 1.8) - 2 * i + 1);
-                return tempArray;    
-            })(); 
+                for (let i = 0; i < c.SKILL_CAP; i++) tempArray[i] = Math.ceil(1.8 * Math.pow(i + 1, 1.8) - 2 * i + 1);
+                return tempArray;
+            })();
             return data => {
                 if (data.level < c.SKILL_CAP) {
                     let didStuff = false;
@@ -419,14 +320,14 @@ const makeEntity = (() => {
                     }
                     if (didStuff) {
                         update(data);
-                        return 1; 
+                        return 1;
                     }
                 }
                 return false;
             };
         })();
         const returnSkills = data => {
-            for (let i=0; i<10; i++) {
+            for (let i = 0; i < 10; i++) {
                 __a.int[i] = data.raw[i];
             }
             return __a.int;
@@ -434,14 +335,13 @@ const makeEntity = (() => {
         return () => {
             const data = {
                 raw: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                caps: [c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL,
-                    c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL],
+                caps: [c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL, c.MAX_SKILL],
                 real: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                 points: 0,
                 score: 0,
                 deduction: 0,
                 level: 0,
-                canUpgrade: false,
+                canUpgrade: false
             };
             return {
                 change: (index, levels) => change(data, index, levels),
@@ -449,27 +349,25 @@ const makeEntity = (() => {
                 set: values => set(data, values),
                 setCaps: values => setCaps(data, values),
                 maintain: () => maintain(data),
-                get: () => returnSkills(data),
+                get: () => returnSkills(data)
             };
         };
     })();
     // A gun
-    const newGun = (() => {
+    const newGun = () => {
         const live = (() => {
             const doRecoil = gun => {
-                let motion = gun.physics[0], position = gun.physics[1];
+                let motion = gun.physics[0],
+                    position = gun.physics[1];
                 if (motion || position) {
-                    position += motion;                
+                    position += motion;
                     motion -= 0.25 * position / ROOMSPEED;
                     if (motion > 0) motion *= 0.75;
                 }
                 if (gun.settings.canShoot.get() && gun.settings.hasNoRecoil.get()) {
-                    if (motion > 0) gun.body.accelerate(
-                        -position * gun.physics[2] /*trueRecoil*/ * 0.045 / ROOMSPEED, 
-                        gun.body.facing + gun.mechanics.angle
-                    );
+                    if (motion > 0) gun.body.accelerate(-position * gun.physics[2] /*trueRecoil*/ * 0.045 / ROOMSPEED, gun.body.facing + gun.mechanics.angle);
                 }
-                gun.physics[0] = motion; gun.physics[1] = position;
+                gun.physics[0] = motion;gun.physics[1] = position;
             };
             const doLive = (() => {
                 // The shooting function
@@ -485,7 +383,7 @@ const makeEntity = (() => {
                                 RANGE: 0.0,
                                 DENSITY: 0.0,
                                 PUSHABILITY: 0.0,
-                                HETERO: 0.0,
+                                HETERO: 0.0
                             };
                             return gun => {
                                 const shoot = gun.properties.settings;
@@ -495,39 +393,45 @@ const makeEntity = (() => {
                                 out.HEALTH = shoot.health * sk[skc.str];
                                 out.RESIST = shoot.resist + sk[skc.rst];
                                 out.DAMAGE = shoot.damage * sk[skc.dam];
-                                out.PENETRATION = Math.max(1, shoot.pen * sk[skc.pen]);        
+                                out.PENETRATION = Math.max(1, shoot.pen * sk[skc.pen]);
                                 out.RANGE = shoot.range / Math.sqrt(sk[skc.spd]);
                                 out.DENSITY = shoot.density * sk[skc.pen] * sk[skc.pen];
                                 out.PUSHABILITY = 1 / sk[skc.pen];
                                 out.HETERO = 3 - 2.8 * sk[skc.ghost];
                                 // Special cases
                                 switch (gun.properties.calculator) {
-                                case 0: break;
-                                case 5: // THRUSTER 
-                                    gun.physics[3] = shoot.recoil * Math.sqrt(sk[skc.rld] * sk[skc.spd]);
-                                    break;
-                                case 6: // SUSTAINED
-                                    out.RANGE = shoot.range;
-                                    break;
-                                case 3: // SWARM
-                                    out.PENETRATION = Math.max(1, shoot.pen * (0.5 * (sk[skc.pen] - 1) + 1));
-                                    out.HEALTH /= shoot.pen * sk[skc.pen];
-                                    break;
-                                case 8: // TRAP
-                                    out.PUSHABILITY = 1 / Math.pow(sk[skc.pen], 0.5);    
-                                    out.RANGE = shoot.range;
-                                    break;
-                                case 7: // NECRO
-                                case 2: // DRONE
-                                    out.PUSHABILITY = 1;
-                                    out.PENETRATION = Math.max(1, shoot.pen * (0.5 * (sk[skc.pen] - 1) + 1));
-                                    out.HEALTH = (shoot.health * sk[skc.str]) / Math.pow(sk[skc.pen], 0.8);
-                                    out.DAMAGE = shoot.damage * sk[skc.dam] * shoot.pen * sk[skc.pen];
-                                    out.RANGE = shoot.range;
-                                    break;
+                                    case 0:
+                                        break;
+                                    case 5:
+                                        // THRUSTER 
+                                        gun.physics[3] = shoot.recoil * Math.sqrt(sk[skc.rld] * sk[skc.spd]);
+                                        break;
+                                    case 6:
+                                        // SUSTAINED
+                                        out.RANGE = shoot.range;
+                                        break;
+                                    case 3:
+                                        // SWARM
+                                        out.PENETRATION = Math.max(1, shoot.pen * (0.5 * (sk[skc.pen] - 1) + 1));
+                                        out.HEALTH /= shoot.pen * sk[skc.pen];
+                                        break;
+                                    case 8:
+                                        // TRAP
+                                        out.PUSHABILITY = 1 / Math.pow(sk[skc.pen], 0.5);
+                                        out.RANGE = shoot.range;
+                                        break;
+                                    case 7: // NECRO
+                                    case 2:
+                                        // DRONE
+                                        out.PUSHABILITY = 1;
+                                        out.PENETRATION = Math.max(1, shoot.pen * (0.5 * (sk[skc.pen] - 1) + 1));
+                                        out.HEALTH = shoot.health * sk[skc.str] / Math.pow(sk[skc.pen], 0.8);
+                                        out.DAMAGE = shoot.damage * sk[skc.dam] * shoot.pen * sk[skc.pen];
+                                        out.RANGE = shoot.range;
+                                        break;
                                 }
                                 // Go through and make sure we respect its natural properties
-                                for (let property in out) { 
+                                for (let property in out) {
                                     if (gun.properties.bullet.stat[property] == null || !out.hasOwnProperty(property)) continue;
                                     out[property] *= gun.properties.bullet.stat[property];
                                 }
@@ -535,13 +439,10 @@ const makeEntity = (() => {
                             };
                         })();
                         const necroFunction = (gun, mancer, host) => {
-                            const body = gun.body, props = gun.properties;
+                            const body = gun.body,
+                                  props = gun.properties;
                             const reloadFactor = body.getSkills()[0];
-                            const permission = props.countsOwnKids ?
-                                props.countsOwnKids > gun.children.length * reloadFactor :
-                                body.getMaxChildren() ?
-                                    body.getMaxChildren() > body.getKids() * reloadFactor :
-                                    true;   
+                            const permission = props.countsOwnKids ? props.countsOwnKids > gun.children.length * reloadFactor : body.getMaxChildren() ? body.getMaxChildren() > body.getKids() * reloadFactor : true;
                             if (permission) {
                                 __a.float[0] = host.getFacing();
                                 __a.float[1] = host.getSize();
@@ -561,19 +462,20 @@ const makeEntity = (() => {
                             return false;
                         };
                         return (gun, o) => {
-                            const body = gun.body, props = gun.properties;                     
+                            const body = gun.body,
+                                  props = gun.properties;
                             // Define it by its natural properties
                             props.bullet.types.forEach(type => o.define(type));
                             // Pass the gun attributes
-                            o.define({ 
-                                BODY: interpret(gun), 
-                                SIZE: body.size * gun.mechanics.width * props.settings.size / 2 ,
-                                LABEL: this.master.label + (props.label === '' ? '' : ' ' + props.label) + ' ' + o.getLabel(),
+                            o.define({
+                                BODY: interpret(gun),
+                                SIZE: body.size * gun.mechanics.width * props.settings.size / 2,
+                                LABEL: _this.master.label + (props.label === '' ? '' : ' ' + props.label) + ' ' + o.getLabel()
                             });
                             o.setColor(body.getBulletColor());
                             // Prepare to pass gun skills
                             let skill = body.getSkills();
-                            skill[5] = skill[6] = skill[7] = skill[8] = skill[9] = 0;                                                        
+                            skill[5] = skill[6] = skill[7] = skill[8] = skill[9] = 0;
                             o.assignSkills(skill);
                             // Keep track of it and give it the function it needs to remove itself upon death
                             gun.children.push(o);
@@ -581,7 +483,7 @@ const makeEntity = (() => {
                             if (body.getMaxChildren()) {
                                 body.addChild(o);
                             }
-                            o.addDerefFunction((() => body.removeChild(o)));
+                            o.addDerefFunction(() => body.removeChild(o));
                             // Set the source
                             o.setSource(body);
                             // Necromancers' bullshit
@@ -592,12 +494,15 @@ const makeEntity = (() => {
                         };
                     })();
                     return (gun, x, y, ddd) => {
-                        const body = gun.body, props = gun.properties, physics = gun.physics, mech = gun.mechanics;
+                        const body = gun.body,
+                              props = gun.properties,
+                              physics = gun.physics,
+                              mech = gun.mechanics;
                         const sk = body.getSkills();
                         // Recoil
                         gun.lastShot[0] = util.time();
                         gun.lastShot[1] = 3 * Math.log(Math.sqrt(sk[skc.spd]) + physics[3] + 1) + 1;
-                        physics.motion += gun.lastShot[1];                 
+                        physics.motion += gun.lastShot[1];
                         // Find inaccuracy
                         let ss, sd;
                         do {
@@ -614,22 +519,19 @@ const makeEntity = (() => {
                         // Boost it if we should
                         let velocity = body.getVelocity();
                         let vlen = getLength(velocity[0], velocity[1]);
-                        if (vlen) { 
+                        if (vlen) {
                             let slen = getLength(sx, sy);
-                            let extraBoost = 
-                                Math.max(0, sx * velocity[0] + sy * velocity[1]);
+                            let extraBoost = Math.max(0, sx * velocity[0] + sy * velocity[1]);
                             if (extraBoost) {
                                 extraBoost /= slen * slen;
                                 sx += extraBoost * sx;
-                                sy += extraBoost * sy;   
+                                sy += extraBoost * sy;
                             }
                         }
                         // Create the bullet
-                        const position = body.getPosition(), size = body.getSize();
-                        const o = makeEntity(
-                            position[0] + size * x - sx,
-                            position[1] + size * y - sy
-                        );
+                        const position = body.getPosition(),
+                              size = body.getSize();
+                        const o = makeEntity(position[0] + size * x - sx, position[1] + size * y - sy);
                         o.shove(sx, sy);
                         o.forceSizeUpdate();
                         bulletInit(gun, o);
@@ -638,37 +540,29 @@ const makeEntity = (() => {
                 // The actual update function
                 return gun => {
                     // Live
-                    const body = gun.body, props = gun.properties, physics = gun.physics, mech = gun.mechanics;
+                    const body = gun.body,
+                          props = gun.properties,
+                          physics = gun.physics,
+                          mech = gun.mechanics;
                     const sk = body.getSkills();
                     // Decides what to do based on child-counting settings
-                    let permission = (props.countsOwnKids ? 
-                        props.countsOwnKids > gun.children.length * (props.calculator === 7 ? sk[0] : 1) :
-                        body.getMaxChildren() ? body.getKids().length  * (props.calculator === 7 ? sk[0] : 1) :
-                        true) && !body.isInvulnurable();
+                    let permission = (props.countsOwnKids ? props.countsOwnKids > gun.children.length * (props.calculator === 7 ? sk[0] : 1) : body.getMaxChildren() ? body.getKids().length * (props.calculator === 7 ? sk[0] : 1) : true) && !body.isInvulnurable();
                     // Cycle up if we should
-                    if (permission || !props.waitToCycle && physics.cycle < 1) 
-                        physics.cycle += 1 / props.settings.reload / ROOMSPEED / ((props.calculator === 7 || props.calculator === 4) ? 1 : sk[skc.rld]);
+                    if (permission || !props.waitToCycle && physics.cycle < 1) physics.cycle += 1 / props.settings.reload / ROOMSPEED / (props.calculator === 7 || props.calculator === 4 ? 1 : sk[skc.rld]);
                     // Firing routines
                     if (permission && physics.cycle >= 1 && (props.autofire || (props.altFire ? body.controls.alt.get() : body.controls.fire.get()))) {
                         // Find the end of the gun barrel
-                        const gx = 
-                            mech.offset * Math.cos(mech.direction + mech.angle + body.facing) +
-                            (1.5 * mech.length - mech.width * props.settings.size / 2) * Math.cos(mech.angle + body.facing);
-                        const gy = 
-                            mech.offset * Math.sin(mech.direction + mech.angle + body.facing) +
-                            (1.5 * mech.length - mech.width * props.settings.size / 2) * Math.sin(mech.angle + body.facing); 
+                        const gx = mech.offset * Math.cos(mech.direction + mech.angle + body.facing) + (1.5 * mech.length - mech.width * props.settings.size / 2) * Math.cos(mech.angle + body.facing);
+                        const gy = mech.offset * Math.sin(mech.direction + mech.angle + body.facing) + (1.5 * mech.length - mech.width * props.settings.size / 2) * Math.sin(mech.angle + body.facing);
                         // Shoot, multiple times in a tick if needed
                         while (permission && physics.cycle >= 1) {
-                            fire(gun, gx, gy, sk);   
+                            fire(gun, gx, gy, sk);
                             // Figure out if we may still shoot
-                            permission = props.countsOwnKids ? 
-                                props.countsOwnKids > gun.children.length * (props.calculator === 7 ? sk[0] : 1) :
-                                body.getMaxChildren() ? body.getKids().length  * (props.calculator === 7 ? sk[0] : 1) :
-                                true;
+                            permission = props.countsOwnKids ? props.countsOwnKids > gun.children.length * (props.calculator === 7 ? sk[0] : 1) : body.getMaxChildren() ? body.getKids().length * (props.calculator === 7 ? sk[0] : 1) : true;
                             // Cycle down
                             physics.cycle -= 1;
-                        }  // If we're not shooting, only cycle up to where we'll have the proper firing delay
-                    } else if (physics.cycle > !props.waitToCycle - mech.delay) physics.cycle = !props.waitToCycle - mech.delay;               
+                        } // If we're not shooting, only cycle up to where we'll have the proper firing delay
+                    } else if (physics.cycle > !props.waitToCycle - mech.delay) physics.cycle = !props.waitToCycle - mech.delay;
                 };
             })();
             // The life function
@@ -696,18 +590,20 @@ const makeEntity = (() => {
                 syncsSkills: load(false, info.PROPERTIES.SYNCS_SKILLS),
                 negRecoil: load(false, info.PROPERTIES.NEGATIVE_RECOIL),
                 bullet: (() => {
-                    let types = (Array.isArray(info.PROPERTIES.TYPE)) ? info.PROPERTIES.TYPE.splice() : [info.PROPERTIES.TYPE];
+                    let types = Array.isArray(info.PROPERTIES.TYPE) ? info.PROPERTIES.TYPE.splice() : [info.PROPERTIES.TYPE];
                     let stats = {};
                     types.forEach(function setStats(type) {
-                        if (type.PARENT != null) { // Make sure we load from the parents first
-                            for (let i=0; i<type.PARENT.length; i++) setStats(type.PARENT[i]);
+                        if (type.PARENT != null) {
+                            // Make sure we load from the parents first
+                            for (let i = 0; i < type.PARENT.length; i++) setStats(type.PARENT[i]);
                         }
-                        if (type.BODY != null) { // Get values if they exist
+                        if (type.BODY != null) {
+                            // Get values if they exist
                             for (let index in type.BODY) stats[index] = type.BODY[index];
                         }
                     });
-                    return { types: types, stats: stats, };
-                })(),
+                    return { types: types, stats: stats };
+                })()
             };
             const _position = info.POSITION;
             const gun = {
@@ -719,25 +615,23 @@ const makeEntity = (() => {
                     direction: getDirection(_position[3], _position[4]),
                     offset: getLength(_position[3], _position[4]) / 10,
                     angle: _position[5] * DEGTORAD,
-                    delay: _position[6],
+                    delay: _position[6]
                 },
                 properties: properties,
                 lastShot: [0, 0.0],
-                physics: isInert ? null : [
-                    0.0, // motion
-                    0.0, // position
-                    !properties.waitToCycle - _position[6], // cycle
-                    properties.settings.recoil, // trueRecoil
-                ],
-                children: [],
+                physics: isInert ? null : [0.0, // motion
+                0.0, // position
+                !properties.waitToCycle - _position[6], // cycle
+                properties.settings.recoil],
+                children: []
             };
             return {
                 getLastShot: gun.lastShot.slice,
                 getTracking: isInert ? () => {} : () => getTracking(gun),
-                live: isInert ? () => {} : () => live(gun),
+                live: isInert ? () => {} : () => live(gun)
             };
         };
-    });
+    };
     // The attributes object
     const Attributes = () => {
         return {
@@ -750,7 +644,7 @@ const makeEntity = (() => {
                 density: 0,
                 stealth: 0,
                 pushability: 0,
-                range: 0,
+                range: 0
             },
             settings: {
                 drawHealth: false,
@@ -777,8 +671,8 @@ const makeEntity = (() => {
                 reloadToAcceleration: false,
                 variesInSize: false,
                 isFood: false,
-                isIntangable: false,
-            },        
+                isIntangable: false
+            },
             body: {
                 acceleration: 0,
                 speed: 0,
@@ -793,7 +687,7 @@ const makeEntity = (() => {
                 density: 0,
                 stealth: 0,
                 pushability: 0,
-                heteroMultiplier: 0,
+                heteroMultiplier: 0
             },
             aiSettings: {
                 farm: false,
@@ -802,7 +696,7 @@ const makeEntity = (() => {
                 skynet: false,
                 view360: false,
                 reverseDirection: false,
-                shapefriend: false,
+                shapefriend: false
             },
             index: -1,
             mockup: {},
@@ -818,7 +712,7 @@ const makeEntity = (() => {
             squiggle: 1,
             upgrades: [],
             maxChildren: 0,
-            creationMessage: '',
+            creationMessage: ''
         };
     };
     // A definer
@@ -826,11 +720,11 @@ const makeEntity = (() => {
         const check = val => {
             return val != null;
         };
-        return (def) => {
+        return def => {
             const obj = Attributes();
             if (def.PARENT != null) {
-                for (let i=0; i<def.PARENT.length; i++) {
-                    this.define(def.PARENT[i]);
+                for (let i = 0; i < def.PARENT.length; i++) {
+                    _this.define(def.PARENT[i]);
                 }
             }
             if (check(def.index)) obj.index = def.index;
@@ -839,12 +733,12 @@ const makeEntity = (() => {
             if (check(def.TYPE)) obj.type = def.TYPE;
             if (check(def.SHAPE)) obj.shape = def.SHAPE;
             if (check(def.COLOR)) obj.color = def.COLOR;
-            if (def.CONTROLLERS != null) { 
+            if (def.CONTROLLERS != null) {
                 let toAdd = [];
-                def.CONTROLLERS.forEach((ioName) => {
+                def.CONTROLLERS.forEach(ioName => {
                     toAdd.push(eval('new io_' + ioName + '(this)'));
                 });
-                this.addController(toAdd);
+                _this.addController(toAdd);
             }
             if (check(def.MOTION_TYPE)) obj.motionType = def.MOTION_TYPE;
             if (check(def.FACING_TYPE)) obj.facingType = def.FACING_TYPE;
@@ -889,126 +783,125 @@ const makeEntity = (() => {
             }
             // Upgrades stuff
             if (def.RESET_UPGRADES) obj.upgrades = [];
-            if (check(def.UPGRADES_TIER_1)) 
-                def.UPGRADES_TIER_1.forEach(e => {
-                    obj.upgrades.push({ class: e, level: c.TIER_1, index: e.index,});
-                });
-            if (check(def.UPGRADES_TIER_2)) 
-                def.UPGRADES_TIER_2.forEach(e => {
-                    obj.upgrades.push({ class: e, level: c.TIER_2, index: e.index,});
-                });
-            if (check(def.UPGRADES_TIER_3)) 
-                def.UPGRADES_TIER_3.forEach(e => {
-                    obj.upgrades.push({ class: e, level: c.TIER_3, index: e.index,});
-                });
+            if (check(def.UPGRADES_TIER_1)) def.UPGRADES_TIER_1.forEach(e => {
+                obj.upgrades.push({ class: e, level: c.TIER_1, index: e.index });
+            });
+            if (check(def.UPGRADES_TIER_2)) def.UPGRADES_TIER_2.forEach(e => {
+                obj.upgrades.push({ class: e, level: c.TIER_2, index: e.index });
+            });
+            if (check(def.UPGRADES_TIER_3)) def.UPGRADES_TIER_3.forEach(e => {
+                obj.upgrades.push({ class: e, level: c.TIER_3, index: e.index });
+            });
             if (def.SIZE != null) {
-                this.SIZE = def.SIZE * this.squiggle;
-                if (this.coreSize == null) { this.coreSize = this.SIZE; }
-            }
-            if (def.SKILL != null && def.SKILL != []) { 
-                if (def.SKILL.length != 10) {
-                    throw('Inappropiate skill raws.');
+                _this.SIZE = def.SIZE * _this.squiggle;
+                if (_this.coreSize == null) {
+                    _this.coreSize = _this.SIZE;
                 }
-                this.skill.set(def.SKILL);
-            } 
+            }
+            if (def.SKILL != null && def.SKILL != []) {
+                if (def.SKILL.length != 10) {
+                    throw 'Inappropiate skill raws.';
+                }
+                _this.skill.set(def.SKILL);
+            }
             if (def.LEVEL != null) {
                 if (def.LEVEL === -1) {
-                    this.skill.reset();
+                    _this.skill.reset();
                 }
-                while (this.skill.level < c.SKILL_CHEAT_CAP && this.skill.level < def.LEVEL) {
-                    this.skill.score += this.skill.levelScore;
-                    this.skill.maintain();
+                while (_this.skill.level < c.SKILL_CHEAT_CAP && _this.skill.level < def.LEVEL) {
+                    _this.skill.score += _this.skill.levelScore;
+                    _this.skill.maintain();
                 }
-                this.refreshBodyAttributes();
+                _this.refreshBodyAttributes();
             }
-            if (def.SKILL_CAP != null && def.SKILL_CAP != []) { 
+            if (def.SKILL_CAP != null && def.SKILL_CAP != []) {
                 if (def.SKILL_CAP.length != 10) {
-                    throw('Inappropiate skill caps.');
+                    throw 'Inappropiate skill caps.';
                 }
-                this.skill.setCaps(def.SKILL_CAP);
-            } 
+                _this.skill.setCaps(def.SKILL_CAP);
+            }
             if (def.VALUE != null) {
-                this.skill.score = Math.max(this.skill.score, def.VALUE * this.squiggle);
+                _this.skill.score = Math.max(_this.skill.score, def.VALUE * _this.squiggle);
             }
-            if (def.ALT_ABILITIES != null) { 
-                this.abilities = def.ALT_ABILITIES; 
+            if (def.ALT_ABILITIES != null) {
+                _this.abilities = def.ALT_ABILITIES;
             }
-            if (def.GUNS != null) { 
+            if (def.GUNS != null) {
                 let newGuns = [];
-                def.GUNS.forEach((gundef) => {
-                    newGuns.push(new Gun(this, gundef));
+                def.GUNS.forEach(gundef => {
+                    newGuns.push(new Gun(_this, gundef));
                 });
-                this.guns = newGuns;
+                _this.guns = newGuns;
             }
-            if (def.MAX_CHILDREN != null) { 
-                this.maxChildren = def.MAX_CHILDREN; 
+            if (def.MAX_CHILDREN != null) {
+                _this.maxChildren = def.MAX_CHILDREN;
             }
             if (def.FOOD != null) {
-                if (def.FOOD.LEVEL != null) { 
-                    this.foodLevel = def.FOOD.LEVEL; 
-                    this.foodCountup = 0;
+                if (def.FOOD.LEVEL != null) {
+                    _this.foodLevel = def.FOOD.LEVEL;
+                    _this.foodCountup = 0;
                 }
             }
             if (def.BODY != null) {
-                if (def.BODY.ACCELERATION != null) { 
-                    this.ACCELERATION = def.BODY.ACCELERATION; 
+                if (def.BODY.ACCELERATION != null) {
+                    _this.ACCELERATION = def.BODY.ACCELERATION;
                 }
-                if (def.BODY.SPEED != null) { 
-                    this.SPEED = def.BODY.SPEED; 
+                if (def.BODY.SPEED != null) {
+                    _this.SPEED = def.BODY.SPEED;
                 }
-                if (def.BODY.HEALTH != null) { 
-                    this.HEALTH = def.BODY.HEALTH; 
+                if (def.BODY.HEALTH != null) {
+                    _this.HEALTH = def.BODY.HEALTH;
                 }
-                if (def.BODY.RESIST != null) { 
-                    this.RESIST = def.BODY.RESIST;
+                if (def.BODY.RESIST != null) {
+                    _this.RESIST = def.BODY.RESIST;
                 }
-                if (def.BODY.SHIELD != null) { 
-                    this.SHIELD = def.BODY.SHIELD; 
+                if (def.BODY.SHIELD != null) {
+                    _this.SHIELD = def.BODY.SHIELD;
                 }
-                if (def.BODY.REGEN != null) { 
-                    this.REGEN = def.BODY.REGEN; 
+                if (def.BODY.REGEN != null) {
+                    _this.REGEN = def.BODY.REGEN;
                 }
-                if (def.BODY.DAMAGE != null) { 
-                    this.DAMAGE = def.BODY.DAMAGE; 
+                if (def.BODY.DAMAGE != null) {
+                    _this.DAMAGE = def.BODY.DAMAGE;
                 }
-                if (def.BODY.PENETRATION != null) { 
-                    this.PENETRATION = def.BODY.PENETRATION; 
+                if (def.BODY.PENETRATION != null) {
+                    _this.PENETRATION = def.BODY.PENETRATION;
                 }
-                if (def.BODY.FOV != null) { 
-                    this.FOV = def.BODY.FOV; 
+                if (def.BODY.FOV != null) {
+                    _this.FOV = def.BODY.FOV;
                 }
-                if (def.BODY.RANGE != null) { 
-                    this.RANGE = def.BODY.RANGE; 
+                if (def.BODY.RANGE != null) {
+                    _this.RANGE = def.BODY.RANGE;
                 }
-                if (def.BODY.SHOCK_ABSORB != null) { 
-                    this.SHOCK_ABSORB = def.BODY.SHOCK_ABSORB; 
+                if (def.BODY.SHOCK_ABSORB != null) {
+                    _this.SHOCK_ABSORB = def.BODY.SHOCK_ABSORB;
                 }
-                if (def.BODY.DENSITY != null) { 
-                    this.DENSITY = def.BODY.DENSITY; 
+                if (def.BODY.DENSITY != null) {
+                    _this.DENSITY = def.BODY.DENSITY;
                 }
-                if (def.BODY.STEALTH != null) { 
-                    this.STEALTH = def.BODY.STEALTH; 
+                if (def.BODY.STEALTH != null) {
+                    _this.STEALTH = def.BODY.STEALTH;
                 }
-                if (def.BODY.PUSHABILITY != null) { 
-                    this.PUSHABILITY = def.BODY.PUSHABILITY; 
+                if (def.BODY.PUSHABILITY != null) {
+                    _this.PUSHABILITY = def.BODY.PUSHABILITY;
                 }
-                if (def.BODY.HETERO != null) { 
-                    this.heteroMultiplier = def.BODY.HETERO; 
+                if (def.BODY.HETERO != null) {
+                    _this.heteroMultiplier = def.BODY.HETERO;
                 }
-                this.refreshBodyAttributes();
+                _this.refreshBodyAttributes();
             }
             if (def.TURRETS != null) {
                 let o;
-                this.turrets.forEach(o => o.destroy());
-                this.turrets = [];
+                _this.turrets.forEach(o => o.destroy());
+                _this.turrets = [];
                 def.TURRETS.forEach(def => {
-                    o = new Entity(this, this.master);
-                        ((Array.isArray(def.TYPE)) ? def.TYPE : [def.TYPE]).forEach(type => o.define(type));
-                        o.bindToMaster(def.POSITION, this);
+                    o = new Entity(_this, _this.master);
+                    (Array.isArray(def.TYPE) ? def.TYPE : [def.TYPE]).forEach(type => o.define(type));
+                    o.bindToMaster(def.POSITION, _this);
                 });
             }
             if (def.mockup != null) {
-                this.mockup = def.mockup;
+                _this.mockup = def.mockup;
             }
         };
     })();
@@ -1022,7 +915,7 @@ const makeEntity = (() => {
         let family = {
             master: null,
             source: null,
-            parent: null,
+            parent: null
         };
         // Health
         const health = healthTypes.newStatic();
@@ -1030,7 +923,9 @@ const makeEntity = (() => {
         // Return the new entity
         return {
             life: () => {},
-            getSkills: () => { return skills.get(); },
+            getSkills: () => {
+                return skills.get();
+            },
             refreshBodyAttributes: () => {},
             define: type => {},
             setTeam: team => {},
@@ -1048,15 +943,19 @@ const makeEntity = (() => {
             removeChild: deadkid => {},
             addDerefFunction: func => {},
             isInvulnurable: () => {},
-            getVelocity: () => { return [0, 0]; },
-            getPosition: () => { return [0, 0]; },
+            getVelocity: () => {
+                return [0, 0];
+            },
+            getPosition: () => {
+                return [0, 0];
+            },
             accelerate: (amount, direction) => {},
             shove: (x, y) => {},
             forceSizeUpdate: () => {},
             getBulletColor: () => {},
             assignSkills: assignment => skills.set(assignment),
             necro: () => {},
-            fullHeal: () => {},
+            fullHeal: () => {}
         };
     };
-});
+};

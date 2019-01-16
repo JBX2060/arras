@@ -143,7 +143,7 @@ const g = { // Gun info here
     halfrange:          [1,     1,     1,      1,      1,      1,      1,      1,      1,      0.5,    1,      1,      1], 
     fake:               [1,     1,     1,   0.00001, 0.0001,   1,      1,   0.00001,   2,      0,      1,      1,      1], 
     /***************** RELOAD RECOIL SHUDDER  SIZE   HEALTH  DAMAGE   PEN    SPEED    MAX    RANGE  DENSITY  SPRAY   RESIST  */
-    op:                 [0.5,   1.3,   1,      1,      4,      4,      4,      3,      2,      1,      5,      2,      1],       
+    op:                 [0.5,   1.3,   1,      1,      4,      4,      4,      3,      2,      1,      5,      2,      10],       
     protectorswarm:     [5,  0.000001, 1,      1,      100,    1,      1,      1,      1,     0.5,     5,      1,      10], 
 };
 
@@ -258,6 +258,57 @@ exports.food = {
 
 const basePolygonDamage = 1;
 const basePolygonHealth = 2;
+exports.deadlyPentagon = {
+    PARENT: [exports.food],
+    FOOD: {
+        LEVEL: 6,
+    },
+    LABEL: 'Deadly Pentagon',
+    VALUE: 32500,
+    SHAPE: -5,
+    SIZE: 10,
+    COLOR: 14,
+    CONTROLLERS: ['nearestDifferentMaster', 'minion', 'canRepel'],
+    AI: { NO_LEAD: true, },
+    FACING_TYPE: 'autospin',
+    HITS_OWN_TYPE: 'hard',
+    BROADCAST_MESSAGE: 'A visitor has left!',
+    BODY: {
+        DAMAGE: 4 * basePolygonDamage,
+        DENSITY: 140,
+        HEALTH: 800 * basePolygonHealth,
+        RESIST: Math.pow(1.25, 4),
+        SHIELD: 60 * basePolygonHealth,
+        REGEN: 0.5,
+    },
+    DRAW_HEALTH: true,
+    GIVE_KILL_MESSAGE: true,
+};
+exports.megaPentagon = {
+    PARENT: [exports.food],
+    FOOD: {
+        LEVEL: 6,
+    },
+    LABEL: 'Gamma Pentagon',
+    VALUE: 32500,
+    SHAPE: -5,
+    SIZE: 74,
+    COLOR: 14,
+    //CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    //AI: { NO_LEAD: true, },
+    FACING_TYPE: 'autospin',
+    HITS_OWN_TYPE: 'hard',
+    BODY: {
+        DAMAGE: 4 * basePolygonDamage,
+        DENSITY: 140,
+        HEALTH: 800 * basePolygonHealth,
+        RESIST: Math.pow(1.25, 4),
+        SHIELD: 60 * basePolygonHealth,
+        REGEN: 0.5,
+    },
+    DRAW_HEALTH: true,
+    GIVE_KILL_MESSAGE: true,
+};
 exports.hugePentagon = {
     PARENT: [exports.food],
     FOOD: {
@@ -268,12 +319,15 @@ exports.hugePentagon = {
     SHAPE: -5,
     SIZE: 58,
     COLOR: 14,
+    //CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    //AI: { NO_LEAD: true, },
+    FACING_TYPE: 'autospin',
+    HITS_OWN_TYPE: 'hard',
     BODY: {
         DAMAGE: 2 * basePolygonDamage,
         DENSITY: 80,
         HEALTH: 300 * basePolygonHealth,
         RESIST: Math.pow(1.25, 3),
-        SHIELD: 40 * basePolygonHealth,
         REGEN: 0.6,
     },
     DRAW_HEALTH: true,
@@ -289,6 +343,10 @@ exports.bigPentagon = {
     SHAPE: 5,
     SIZE: 30,
     COLOR: 14,
+    //CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    //AI: { NO_LEAD: true, },
+    FACING_TYPE: 'autospin',
+    HITS_OWN_TYPE: 'hard',
     BODY: {
         DAMAGE: 2 * basePolygonDamage,
         DENSITY: 30,
@@ -307,9 +365,13 @@ exports.pentagon = {
     },
     LABEL: 'Pentagon',
     VALUE: 400,
-    SHAPE: 5,
+    SHAPE: 5, //SHAPE: 5,
     SIZE: 16,
     COLOR: 14,
+    //CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    //AI: { NO_LEAD: true, },
+    //FACING_TYPE: 'autospin',
+    HITS_OWN_TYPE: 'hard',
     BODY: {
         DAMAGE: 1.5 * basePolygonDamage,
         DENSITY: 8,
@@ -318,6 +380,7 @@ exports.pentagon = {
         PENETRATION: 1.1,
     },
     DRAW_HEALTH: true,
+    GIVE_KILL_MESSAGE: true,
 };
 exports.triangle = {
     PARENT: [exports.food],
@@ -384,6 +447,8 @@ exports.greenpentagon = {
     SHAPE: 5,
     SIZE: 16,
     COLOR: 1,
+    CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    AI: { NO_LEAD: true, },
     BODY: {
         DAMAGE: 3,
         DENSITY: 8,
@@ -400,6 +465,8 @@ exports.greentriangle = {
     SHAPE: 3,
     SIZE: 9,
     COLOR: 1,
+    CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    AI: { NO_LEAD: true, },
     BODY: {
         DAMAGE: 1,
         DENSITY: 6,
@@ -416,6 +483,8 @@ exports.greensquare = {
     SHAPE: 4,
     SIZE: 10,
     COLOR: 1,
+    CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    AI: { NO_LEAD: true, },
     BODY: {
         DAMAGE: 0.5,
         DENSITY: 4,
@@ -433,6 +502,8 @@ exports.gem = {
     SHAPE: 6,
     SIZE: 5,
     COLOR: 0,
+    CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+    AI: { NO_LEAD: true, },
     BODY: {
         DAMAGE: basePolygonDamage/4,
         DENSITY: 4,
@@ -3863,7 +3934,6 @@ exports.basic = {
 // UPGRADE PATHS
 exports.testbed.UPGRADES_TIER_1 = [
     exports.autocruiser, 
-    exports.master, 
     exports.dual, 
     exports.hiveshooter, 
     exports.brutalizer,
@@ -3936,6 +4006,87 @@ exports.basic.UPGRADES_TIER_1 = [exports.twin, exports.sniper, exports.machine, 
         exports.flanktrap.UPGRADES_TIER_3 = [exports.guntrap, exports.fortress, exports.bomber];*/
 
 // NPCS:
+ exports.arenacloser = {
+            PARENT: [exports.genericTank],
+            LABEL: 'ARENA CLOSER',
+            SKILL: [9, 9, 9, 9, 9, 9, 9, 9, 9, 9,],
+            LEVEL: 100,
+            SIZE: 50,
+            BODY: { // def
+                SHIELD: 1000,
+                REGEN: 10,
+                HEALTH: 100,
+                DAMAGE: 10,
+                DENSITY: 20,
+                FOV: 2,
+            },
+            TURRETS: [],
+            GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      0,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, 
+            ],
+        };
+ exports.bigboi = {
+            PARENT: [exports.genericTank],
+            LABEL: 'BIG BOI',
+            SKILL: [9, 9, 9, 9, 9, 9, 9, 9, 9, 9,],
+            LEVEL: 400,
+            SIZE: 100,
+            BODY: { // def
+                SHIELD: 100000,
+                REGEN: 1000,
+                HEALTH: 10000,
+                DAMAGE: 1000,
+                DENSITY: 2000,
+                FOV: 2,
+            },
+            TURRETS: [],
+            GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      0,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,     45,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      90,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      135,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      180,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      225,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      270,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+                POSITION: [  14,    10,    1,     0,      0,      315,      0,   ], 
+                PROPERTIES: {
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    TYPE: [exports.bullet, { SHAPE: 5, }],
+                }, }, 
+            ],
+        };
 exports.crasher = {
     TYPE: 'crasher',
     LABEL: 'Crasher',
@@ -4079,6 +4230,30 @@ exports.miniboss = {
                 }, },
         ],
     };
+    exports.dodecagon = {
+      PARENT: [exports.genericTank],
+      LABEL: 'Dodecagon',
+      VALUE: 1000000,
+      SHAPE: -12,
+      SIZE: 146,
+      COLOR: 17,
+      //CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
+      //AI: { NO_LEAD: true, },
+      FACING_TYPE: 'autospin',
+      HITS_OWN_TYPE: 'hard',
+      BODY: {
+        SPEED: 1,
+        ACCEL: 0.01,
+        HEALTH: 0.5,
+        DAMAGE: 10,
+        PENETRATION: 2,
+        PUSHABILITY: 0,
+        DENSITY: 10,
+        RESIST: 0,
+      },
+      DRAW_HEALTH: true,
+      GIVE_KILL_MESSAGE: true,
+    };
     exports.elite = {
         PARENT: [exports.miniboss],
         LABEL: 'Elite Crasher',
@@ -4161,7 +4336,7 @@ exports.miniboss = {
         };
         exports.elite_sprayer = { 
             PARENT: [exports.elite],
-            AI: { NO_LEAD: false, },
+            //AI: { NO_LEAD: false, },
             TURRETS: [{ /*  SIZE     X       Y     ANGLE    ARC */
                 POSITION: [  14,     6,      0,     180,     190, 0], 
                     TYPE: [exports.spray, { COLOR: 5, }],
@@ -4259,4 +4434,5 @@ exports.bot = {
     AI: { STRAFE: true, },
 };
 
-exports.testbed.UPGRADES_TIER_1.push(exports.elite_sprayer);
+exports.testbed.UPGRADES_TIER_1.push(exports.palisade);
+exports.testbed.UPGRADES_TIER_1.push(exports.arenacloser);
