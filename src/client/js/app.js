@@ -1290,12 +1290,9 @@ const socketInit = (() => {
         return (arr, verbose = false) => {
             let output = arr.splice(0, 1)[0];
             if (typeof output !== 'string') throw new Error('No identification code!');
-            for (var value of arr) {
+            arr.forEach((value) => {
                 output += typeEncoder(findType(value), value);
-            }
-            //arr.forEach((value) => {
-            //    output += typeEncoder(findType(value), value);
-            //});
+            });
             let len = output.length;
             let buffer = new ArrayBuffer(len);
             let integerView = new Uint8Array(buffer);
@@ -1648,9 +1645,9 @@ const socketInit = (() => {
                             if (z.turrets.length !== turnumb) {
                                 throw new Error('Mismatch between data turret number and remembered turret number!');
                             }
-                            for (var tur of z.turrets) {
+                            z.turrets.forEach(tur => {
                                 tur = process(tur);
-                            }
+                            });
                         }
                         // Return our monsterous creation
                         return z;
@@ -1665,7 +1662,7 @@ const socketInit = (() => {
                         output.push(process());
                     }
                     // Handle the dead/leftover entities
-                    for (var e{
+                    entities.forEach(e => {
                         // Kill them
                         e.render.status.set((e.health === 1) ? 'dying' : 'killed');
                         // And only push them if they're not entirely dead and still visible
