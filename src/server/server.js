@@ -53,7 +53,7 @@ var timestep = 1;
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 120,
+    cycleSpeed: 1000 / roomSpeed / 60,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -4595,16 +4595,17 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         var curTime = now();
-        timestep = 0.025 * (curTime - lastTime);
+        timestep = 0.01 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.025;
+            timestep = 0.01;
         }
+        var len;
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-        for (var e of entities) {
-            entitiesactivationloop(e)
-        }
+        for (var e = 0; len = entities.length, e < len; e++) {
+            entitiesactivationloop(entities[e]);
+        }    
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
@@ -4612,23 +4613,24 @@ var gameloop = (() => {
             // Load the grid
             grid.update();
             // Run collisions in each grid
-            for (var collision of grid.queryForCollisionPairs()) {
-               collide(collision); 
+            var query = grid.queryForCollisionPairs();
+            for (var collision = 0; len = query.length, collision < len; collision++) {
+               collide(query[collision]); 
             }
             //grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
         logs.entities.set();
-        for (var e of entities) {
-            entitiesliveloop(e);
-        }
+        for (var e = 0; len = entities.length, e < len; e++) {
+            entitiesliveloop(entities[e]);
+        }    
         //entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
         purgeEntities();  
-        lastTime = time;
+        lastTime = curTime;
         room.lastCycle = util.time();
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
