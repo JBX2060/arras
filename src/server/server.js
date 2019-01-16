@@ -4605,7 +4605,14 @@ var gameloop = (() => {
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-        entities.forEach(e => entitiesactivationloop(e));
+        if (entities.length > 0) {
+          var i = entities.length;
+          while (i--) {
+            var e = entities[i];
+            entitiesactivationloop(e);
+          }
+        }
+        //entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
@@ -4613,12 +4620,25 @@ var gameloop = (() => {
             // Load the grid
             grid.update();
             // Run collisions in each grid
-            grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            var colliding = grid.queryForCollisionPairs();
+            var e = colliding.length;
+            while (e--) {
+              var collision = colliding[e];
+              collide(collision);
+            }
+            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
         logs.entities.set();
-        entities.forEach(e => entitiesliveloop(e));
+           if (entities.length > 0) {
+          var i = entities.length;
+          while (i--) {
+            var e = entities[i];
+            entitiesliveloop(e);
+          }
+        }
+        //entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
