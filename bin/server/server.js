@@ -45,7 +45,7 @@ var timestep = 1;
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 60,
+    cycleSpeed: 1000 / roomSpeed / 75,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -2302,11 +2302,11 @@ class Entity {
         var motion = this.velocity.length,
             excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-            var k = this.damp * roomSpeed,
+            var k = this.damp * timestep,
                 drag = excess / (k + 1),
                 finalVelocity = this.maxSpeed + drag;
-            this.velocity.x = finalVelocity * this.velocity.x / motion * 1;
-            this.velocity.y = finalVelocity * this.velocity.y / motion * 1;
+            this.velocity.x = finalVelocity * this.velocity.x / motion * 0.97;
+            this.velocity.y = finalVelocity * this.velocity.y / motion * 0.97;
         }
     }
 
@@ -4679,14 +4679,17 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         var curTime = now();
-        timestep = 0.015 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.015;
+        timestep = 0.005 * (curTime - lastTime);
+        if (timestep <= 0 || timestep > 1.25) {
+            timestep = 0.005;
         }
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-        entities.forEach(e => entitiesactivationloop(e));
+        for (var e of entities) {
+            entitiesactivationloop(e);
+        }
+        //entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
@@ -4694,20 +4697,23 @@ var gameloop = (() => {
             // Load the grid
             grid.update();
             // Run collisions in each grid
-            /*
+
             var query = grid.queryForCollisionPairs();
             const collisionsLength = query.length;
-            let collision = 0;     
+            let collision = 0;
             for (; collision < collisionsLength; collision++) {
                 collide(query[collision]);
             }
-            */
-            grid.queryForCollisionPairs().forEach(collision => collide(collision));
+
+            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
         logs.entities.set();
-        entities.forEach(e => entitiesliveloop(e));
+        for (var e of entities) {
+            entitiesliveloop(e);
+        }
+        //entities.forEach(e => entitiesliveloop(e));
         /*
         if (entities.length > 0) {
           let j = 0;   
@@ -5295,7 +5301,7 @@ function interval(func, wait, times) {
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-setInterval(maintainloop, 200);
+//setInterval(maintainloop, 200);
 setInterval(gameloop, room.cycleSpeed);
 setInterval(speedcheckloop, 1000);
 
