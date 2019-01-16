@@ -4595,9 +4595,9 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         var curTime = now();
-        timestep = 0.005 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.25) {
-            timestep = 0.005;
+        timestep = 0.0025 * (curTime - lastTime);
+        if (timestep <= 0 || timestep > 1.0) {
+            timestep = 0.0025;
         }
         logs.loops.tally();
         logs.master.set();
@@ -4630,14 +4630,6 @@ var gameloop = (() => {
            entitiesliveloop(e);
         }
         //entities.forEach(e => entitiesliveloop(e));
-        /*
-        if (entities.length > 0) {
-          let j = 0;   
-          for (; j < loopMax; j++) {
-            entitiesactivationloop(entities[j]);
-          }  
-        }
-        */
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
@@ -5165,9 +5157,9 @@ function interval(func, wait, times){
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-setInterval(maintainloop, 200);
-interval(gameloop, room.cycleSpeed, );
-setInterval(speedcheckloop, 1000);
+interval(maintainloop, 200, Number.POSITIVE_INFINITY);
+interval(gameloop, room.cycleSpeed, Number.POSITIVE_INFINITY);
+interval(speedcheckloop, 1000, Number.POSITIVE_INFINITY);
 
 // Graceful shutdown
 let shutdownWarning = false;
