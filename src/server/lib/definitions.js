@@ -54,6 +54,7 @@ const skillSet = (() => {
 })();
 
 const g = { // Gun info here 
+    stresstest:         [6,     0,     1,      0.1,    1,      1,      1,      3,      1,      3,      1,      0.01,   1],
     trap:               [36,    1,     0.25,   0.6,    1,      0.75,   1,      5,      1,      1,      1,      15,     3], 
     swarm:              [18,    0.25,  0.05,   0.4,    1,      0.75,   1,      4,      1,      1,      1,      5,      1],  
     drone:              [50,    0.25,  0.1,    0.6,    1,      1,      1,      2,      1,      1,      1,      0.1,    1], 
@@ -4475,7 +4476,7 @@ exports.stresstester = {
 
                             SHOOT_SETTINGS: combineStats([g.stresstest, g.battle]),
 
-                            TYPE: [exports.swarm],
+                            TYPE: exports.swarm,
 
                             STAT_CALCULATOR: gunCalcNames.swarm,        
 
@@ -4487,9 +4488,9 @@ exports.stresstester = {
 
                         PROPERTIES: {
 
-                            SHOOT_SETTINGS: combineStats([g.swarm2, g.battle]),
+                            SHOOT_SETTINGS: combineStats([g.stresstest, g.battle]),
 
-                            TYPE: [exports.swarm],
+                            TYPE: exports.swarm,
 
                             STAT_CALCULATOR: gunCalcNames.swarm,        
 
@@ -4501,7 +4502,7 @@ exports.stresstester = {
 
                         PROPERTIES: {
 
-                            SHOOT_SETTINGS: combineStats([g.swarm2, g.battle]),
+                            SHOOT_SETTINGS: combineStats([g.stresstest, g.battle]),
 
                             TYPE: exports.swarm,
 

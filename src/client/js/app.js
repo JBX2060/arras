@@ -404,7 +404,10 @@ function getEntityImageFromMockup(index, color = mockups[index].color) {
             length: mockup.guns.length,
             getPositions: () => {
                 let a = [];
-                mockup.guns.forEach(() => a.push(0));
+                //mockup.guns.forEach(() => a.push(0));
+                for (var gun of mockup.guns) {
+                    a.push(gun);
+                }
                 return a;
             },
             update: () => {},
@@ -470,7 +473,9 @@ global.clickables = (() => {
                     data[index].set(...a);
                 },
                 hide: () => {
-                    data.forEach(r => r.hide());
+                    for (var r of data) { 
+                        r.hide();
+                    }
                 },
                 check: x => {
                     return data.findIndex(r => {
@@ -1290,9 +1295,9 @@ const socketInit = (() => {
         return (arr, verbose = false) => {
             let output = arr.splice(0, 1)[0];
             if (typeof output !== 'string') throw new Error('No identification code!');
-            arr.forEach((value) => {
+            for (var value of arr) {
                 output += typeEncoder(findType(value), value);
-            });
+            };
             let len = output.length;
             let buffer = new ArrayBuffer(len);
             let integerView = new Uint8Array(buffer);
@@ -1645,9 +1650,9 @@ const socketInit = (() => {
                             if (z.turrets.length !== turnumb) {
                                 throw new Error('Mismatch between data turret number and remembered turret number!');
                             }
-                            z.turrets.forEach(tur => {
+                            for (var tur of z.turrets) {
                                 tur = process(tur);
-                            });
+                            };
                         }
                         // Return our monsterous creation
                         return z;
@@ -1662,7 +1667,7 @@ const socketInit = (() => {
                         output.push(process());
                     }
                     // Handle the dead/leftover entities
-                    entities.forEach(e => {
+                    for (var e of entities) {
                         // Kill them
                         e.render.status.set((e.health === 1) ? 'dying' : 'killed');
                         // And only push them if they're not entirely dead and still visible
@@ -1671,7 +1676,7 @@ const socketInit = (() => {
                         } else {
                             if (e.render.textobjs != null) e.render.textobjs.forEach(o => o.remove());
                         }
-                    });
+                    };
                     // Save the new entities list
                     entities = output;
                     entities.sort((a, b) => {
@@ -1968,16 +1973,16 @@ const socketInit = (() => {
                             let sd = 0,
                                 sum = 0,
                                 valid = 0;
-                            sync.forEach(e => {
+                            for (var e of sync) {
                                 sd += Math.pow(e.latency - median, 2);
-                            });
+                            };
                             sd = Math.sqrt(sd / sync.length);
-                            sync.forEach(e => {
+                            for (var e of sync) {
                                 if (Math.abs(e.latency - median) < sd) {
                                     sum += e.delta;
                                     valid++;
                                 }
-                            });
+                            };
                             clockDiff = Math.round(sum / valid);
                             // Start the game
                             console.log(sync);
@@ -2655,13 +2660,13 @@ const gameDraw = (() => {
             // Draw points
             ctx.beginPath();
             let i = -1;
-            data.forEach((p) => {
+            for (var p of data) {
                 if (!++i) {
                     ctx.moveTo(x, y + h * (max - p) / range);
                 } else {
                     ctx.lineTo(x + i, y + h * (max - p) / range);
                 }
-            });
+            };
             ctx.lineWidth = 1;
             ctx.strokeStyle = col;
             ctx.stroke();
@@ -2857,9 +2862,9 @@ const gameDraw = (() => {
             let W = roomSetup[0].length,
                 H = roomSetup.length,
                 i = 0;
-            roomSetup.forEach((row) => {
+            for (var row of roomSetup) {
                 let j = 0;
-                row.forEach((cell) => {
+                for (var cell of row) {
                     let left = Math.max(0, ratio * j * global.gameWidth / W - px + global.screenWidth / 2),
                         top = Math.max(0, ratio * i * global.gameHeight / H - py + global.screenHeight / 2),
                         right = Math.min(global.screenWidth, (ratio * (j + 1) * global.gameWidth / W - px) + global.screenWidth / 2),
@@ -2871,9 +2876,9 @@ const gameDraw = (() => {
                     ctx.fillStyle = (config.graphical.screenshotMode) ? color.guiwhite : getZoneColor(cell, true);
                     ctx.fillRect(left, top, right - left, bottom - top);
                     j++;
-                });
+                };
                 i++;
-            });
+            };
             ctx.lineWidth = 1;
             ctx.strokeStyle = (config.graphical.screenshotMode) ? color.guiwhite : color.guiblack;
             ctx.globalAlpha = 0.04;
@@ -3150,17 +3155,17 @@ const gameDraw = (() => {
             let W = roomSetup[0].length,
                 H = roomSetup.length,
                 i = 0;
-            roomSetup.forEach((row) => {
+            for (var row of roomSetup) {
                 let j = 0;
-                row.forEach((cell) => {
+                for (var cell of row) {
                     ctx.fillStyle = getZoneColor(cell, false);
                     drawGuiRect(x + (j++) * len / W, y + i * height / H, len / W, height / H);
-                });
+                };
                 i++;
-            });
+            };
             ctx.fillStyle = color.grey;
             drawGuiRect(x, y, len, height);
-            minimap.forEach(o => {
+            for (var o of minimap) {
                 if (o[2] === 17) {
                     ctx.fillStyle = mixColors(getColor(o[2]), color.black, 0.5);
                     ctx.globalAlpha = 0.8;
@@ -3238,7 +3243,7 @@ const gameDraw = (() => {
                 height + 4, color.guiwhite, 'center'
             );
             let i = 0;
-            lb.data.forEach(entry => {
+            for (var entry of lb.data) {
                 drawBar(x, x + len, y + height / 2, height - 3 + config.graphical.barChunk, color.black);
                 drawBar(x, x + len, y + height / 2, height - 3, color.grey);
                 let shift = Math.min(1, entry.score / max);
