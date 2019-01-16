@@ -4595,17 +4595,14 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         var curTime = now();
-        timestep = 0.01 * (curTime - lastTime);
+        timestep = 0.015 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.01;
+            timestep = 0.015;
         }
-        var len;
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-        for (var e = 0; len = entities.length, e < len; e++) {
-            entitiesactivationloop(entities[e]);
-        }    
+        entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
@@ -4613,19 +4610,28 @@ var gameloop = (() => {
             // Load the grid
             grid.update();
             // Run collisions in each grid
+            /*
             var query = grid.queryForCollisionPairs();
-            for (var collision = 0; len = query.length, collision < len; collision++) {
-               collide(query[collision]); 
+            const collisionsLength = query.length;
+            let collision = 0;     
+            for (; collision < collisionsLength; collision++) {
+                collide(query[collision]);
             }
-            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            */
+            grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
-        logs.entities.set();
-        for (var e = 0; len = entities.length, e < len; e++) {
-            entitiesliveloop(entities[e]);
-        }    
-        //entities.forEach(e => entitiesliveloop(e));
+        logs.entities.set();   
+        entities.forEach(e => entitiesliveloop(e));
+        /*
+        if (entities.length > 0) {
+          let j = 0;   
+          for (; j < loopMax; j++) {
+            entitiesactivationloop(entities[j]);
+          }  
+        }
+        */
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
