@@ -53,7 +53,7 @@ var timestep = 1;
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / global.fps,
+    cycleSpeed: 1000 / roomSpeed / 120,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -2168,16 +2168,12 @@ class Entity {
                 x: 0,
                 y: 0,
             },
-            a = this.acceleration * 1;
+            a = this.acceleration / roomSpeed;
         switch (this.motionType) {
         case 'glide':
             this.maxSpeed = this.topSpeed;
             this.damp = 0.05;
             break;
-                    case 'accel':
-            this.maxSpeed = this.topSpeed;
-            this.damp = -0.03;
-                        break;
         case 'motor':
             this.maxSpeed = 0;            
             if (this.topSpeed) {
@@ -2230,11 +2226,10 @@ class Entity {
             }
             break;
         case 'drift':
-            this.topSpeed = 0;
             this.maxSpeed = 0;
             engine = {
-                x: 0, //g.x * a,
-                y: 0, //g.y * a,
+                x: g.x * a,
+                y: g.y * a,
             };
             break;
         case 'bound':
@@ -2322,29 +2317,32 @@ class Entity {
     }
 
     physics() {
-         //if (this.accel.x == null || this.velocity.x == null) {
-         //   util.error('Void Error!');
-         //   util.error(this.collisionArray);
-         //   util.error(this.label);
-         //   util.error(this);
-         //   nullVector(this.accel); nullVector(this.velocity);
-         //}
+        if (this.accel.x == null || this.velocity.x == null) {
+            util.error('Void Error!');
+            util.error(this.collisionArray);
+            util.error(this.label);
+            util.error(this);
+            nullVector(this.accel); nullVector(this.velocity);
+        }
         // Apply acceleration
-        this.velocity.x += (this.accel.x * roomSpeed) * timestep;
-        this.velocity.y += (this.accel.y * roomSpeed) * timestep;
+        //this.velocity.x += (this.accel.x * roomSpeed) * timestep;
+        //this.velocity.y += (this.accel.y * roomSpeed) * timestep;
+        this.velocity.x += this.accel.x * timestep;
+        this.velocity.y += this.accel.y * timestep;
         // Reset acceleration
         nullVector(this.accel);
         // Apply motion
-        this.x += this.velocity.x / roomSpeed;
-        this.y += this.velocity.y / roomSpeed;  
+        this.stepRemaining = 1;
+        this.x += this.stepRemaining * this.velocity.x / roomSpeed;
+        this.y += this.stepRemaining * this.velocity.y / roomSpeed;  
     }
 
     friction() {        
         var motion = this.velocity.length, excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-          var k = (this.damp) * timestep, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
-          this.velocity.x = (finalVelocity * this.velocity.x / motion) * 0.97;
-          this.velocity.y = (finalVelocity * this.velocity.y / motion) * 0.97;
+          var k = (this.damp) * roomSpeed, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
+          this.velocity.x = (finalVelocity * this.velocity.x / motion) * 1;
+          this.velocity.y = (finalVelocity * this.velocity.y / motion) * 1;
         }
     }
 
@@ -4596,10 +4594,10 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        var time = now();
-        timestep = 0.001 * (time - lastTime);
+        var curTime = now();
+        timestep = 0.025 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.001;
+            timestep = 0.025;
         }
         logs.loops.tally();
         logs.master.set();
@@ -5152,7 +5150,7 @@ function interval(func, wait, times){
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-//setInterval(maintainloop, 200);
+setInterval(maintainloop, 200);
 setInterval(gameloop, room.cycleSpeed);
 setInterval(speedcheckloop, 1000);
 
