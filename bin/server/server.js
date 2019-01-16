@@ -2193,8 +2193,8 @@ class Entity {
                 this.topSpeed = 0;
                 this.maxSpeed = 0;
                 engine = {
-                    x: g.x * a,
-                    y: g.y * a
+                    x: 0, //g.x * a,
+                    y: 0 //g.y * a,
                 };
                 break;
             case 'bound':
@@ -2283,22 +2283,21 @@ class Entity {
     }
 
     physics() {
-        if (this.accel.x == null || this.velocity.x == null) {
-            util.error('Void Error!');
-            util.error(this.collisionArray);
-            util.error(this.label);
-            util.error(this);
-            nullVector(this.accel);nullVector(this.velocity);
-        }
+        //if (this.accel.x == null || this.velocity.x == null) {
+        //   util.error('Void Error!');
+        //   util.error(this.collisionArray);
+        //   util.error(this.label);
+        //   util.error(this);
+        //   nullVector(this.accel); nullVector(this.velocity);
+        //}
         // Apply acceleration
         this.velocity.x += this.accel.x * roomSpeed * timestep;
         this.velocity.y += this.accel.y * roomSpeed * timestep;
         // Reset acceleration
         nullVector(this.accel);
         // Apply motion
-        this.stepRemaining = 1;
-        this.x += this.stepRemaining * this.velocity.x / roomSpeed;
-        this.y += this.stepRemaining * this.velocity.y / roomSpeed;
+        this.x += this.velocity.x / roomSpeed;
+        this.y += this.velocity.y / roomSpeed;
     }
 
     friction() {
@@ -4689,7 +4688,9 @@ var gameloop = (() => {
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-        entities.forEach(e => entitiesactivationloop(e));
+        for (var e of entities) {
+            entitiesactivationloop(e);
+        }
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
@@ -4712,7 +4713,7 @@ var gameloop = (() => {
         purgeEntities();
         lastTime = time;
         room.lastCycle = util.time();
-        room.cycleSpeed = 1000 / roomSpeed / global.fps; //global.fps
+        //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
     //let alphaFactor = (delta > expected) ? expected / delta : 1;
@@ -5267,7 +5268,7 @@ var websockets = (() => {
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
 setInterval(gameloop, room.cycleSpeed);
-setInterval(maintainloop, 200);
+//setInterval(maintainloop, 200);
 setInterval(speedcheckloop, 1000);
 
 // Graceful shutdown
