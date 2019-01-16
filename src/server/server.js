@@ -5123,6 +5123,7 @@ var speedcheckloop = (() => {
     };
 })();
 
+
 /** BUILD THE SERVERS **/  
 // Turn the server on
 var server = http.createServer(app);
@@ -5164,8 +5165,8 @@ function interval(func, wait, times){
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-//setInterval(maintainloop, 200);
-setInterval(gameloop, room.cycleSpeed);
+setInterval(maintainloop, 200);
+interval(gameloop, room.cycleSpeed, );
 setInterval(speedcheckloop, 1000);
 
 // Graceful shutdown
