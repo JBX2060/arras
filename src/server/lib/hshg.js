@@ -50,7 +50,13 @@
     
     // not implemented yet :)
     function update_REMOVEALL(){
-        
+        var i, obj, grid, meta;
+        for (i = 0; i < this._globalObjects.length; i++) {
+            meta = obj.HSHG;
+            grid = meta.grid;
+            obj = this._globalObjects[i];
+            grid.removeObject(obj);
+        }
     }
     
     function testAABBOverlap(objA, objB){

@@ -53,7 +53,7 @@ var timestep = 1;
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 120,
+    cycleSpeed: 1000 / roomSpeed / 60,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -3659,7 +3659,7 @@ const sockets = (() => {
                             let player = socket.player,
                                 camera = socket.camera;
                             // If nothing has changed since the last update, wait (approximately) until then to update
-                            let rightNow = lastTime;      
+                            let rightNow = room.lastCycle;      
                             if (rightNow === camera.lastUpdate) {
                                 socket.update(5 + room.cycleSpeed - util.time() + rightNow);
                                 return 1;
@@ -4597,8 +4597,8 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        var curTime = now();
-        timestep = 0.01 * (curTime - lastTime);
+        var time = now();
+        timestep = 0.01 * (time - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
             timestep = 0.01;
         }
@@ -4624,7 +4624,8 @@ var gameloop = (() => {
         // Remove dead entities
         purgeEntities();  
         lastTime = time;
-        room.cycleSpeed = 1000 / roomSpeed / 120; //global.fps
+        room.lastCycle = util.time();
+        room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
     //let alphaFactor = (delta > expected) ? expected / delta : 1;
