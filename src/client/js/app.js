@@ -1594,8 +1594,8 @@ const socketInit = (() => {
                                     lastRender: player.time,
                                     x: z.x,
                                     y: z.y,
-                                    lastx: z.x - metrics.rendergap * config.roomSpeed * (1000 / 30) * z.vx,
-                                    lasty: z.y - metrics.rendergap * config.roomSpeed * (1000 / 30) * z.vy,
+                                    lastx: z.x - metrics.rendergap * config.roomSpeed * (1000 / 60) * z.vx,
+                                    lasty: z.y - metrics.rendergap * config.roomSpeed * (1000 / 60) * z.vy,
                                     lastvx: z.vx,
                                     lastvy: z.vy,
                                     lastf: z.facing,
@@ -2178,7 +2178,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 30);
+    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 60);
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;

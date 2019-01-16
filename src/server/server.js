@@ -2342,7 +2342,7 @@ class Entity {
     friction() {        
         var motion = this.velocity.length, excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-          var k = (this.damp) * util.clamp(timestep, 0, roomSpeed), drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
+          var k = (this.damp) * timestep, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
           this.velocity.x = (finalVelocity * this.velocity.x / motion) * 0.97;
           this.velocity.y = (finalVelocity * this.velocity.y / motion) * 0.97;
         }
@@ -4597,9 +4597,9 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         var time = now();
-        timestep = 0.01 * (time - lastTime);
+        timestep = 0.001 * (time - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.01;
+            timestep = 0.001;
         }
         logs.loops.tally();
         logs.master.set();
@@ -4614,7 +4614,10 @@ var gameloop = (() => {
             // Load the grid
             grid.update();
             // Run collisions in each grid
-            grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            for (var collision of grid.queryForCollisionPairs()) {
+               collide(collision); 
+            }
+            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
@@ -5126,11 +5129,31 @@ var websockets = (() => {
     return new WebSocket.Server(config);
 })().on('connection', sockets.connect); 
 
+//Better interval thing
+function interval(func, wait, times){
+    var interv = function(w, t){
+        return function(){
+            if(typeof t === "undefined" || t-- > 0){
+                setTimeout(interv, w);
+                try{
+                    func.call(null);
+                }
+                catch(e){
+                    t = 0;
+                    throw e.toString();
+                }
+            }
+        };
+    }(wait, times);
+
+    setTimeout(interv, wait);
+};
+
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-setInterval(gameloop, room.cycleSpeed);
 //setInterval(maintainloop, 200);
+setInterval(gameloop, room.cycleSpeed);
 setInterval(speedcheckloop, 1000);
 
 // Graceful shutdown
