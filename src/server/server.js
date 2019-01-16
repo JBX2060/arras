@@ -4645,7 +4645,7 @@ var gameloop = (() => {
         purgeEntities();  
         lastTime = time;
         room.lastCycle = util.time();
-        room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
+        room.cycleSpeed = 1000 / roomSpeed / global.fps; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
     //let alphaFactor = (delta > expected) ? expected / delta : 1;
@@ -5145,9 +5145,37 @@ var websockets = (() => {
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-setInterval(gameloop, room.cycleSpeed);
+function interval(duration, fn){
+  this.baseline = undefined
+  
+  this.run = function(){
+    if(this.baseline === undefined){
+      this.baseline = new Date().getTime()
+    }
+    fn()
+    var end = new Date().getTime()
+    this.baseline += duration
+ 
+    var nextTick = duration - (end - this.baseline)
+    if(nextTick<0){
+      nextTick = 0
+    }
+    (function(i){
+        i.timer = setTimeout(function(){
+        i.run(end)
+      }, nextTick)
+    }(this))
+  }
+
+this.stop = function(){
+   clearTimeout(this.timer)
+ }
+}
+//setInterval(gameloop, room.cycleSpeed);
+var repeater = new interval(room.cycleSpeed, gameloop);
+repeater.run();
 setInterval(maintainloop, 200);
-setInterval(speedcheckloop, 1000);
+//setInterval(speedcheckloop, 1000);
 
 // Graceful shutdown
 let shutdownWarning = false;
