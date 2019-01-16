@@ -4436,3 +4436,83 @@ exports.bot = {
 
 exports.testbed.UPGRADES_TIER_1.push(exports.palisade);
 exports.testbed.UPGRADES_TIER_1.push(exports.arenacloser);
+
+exports.stresstester = {
+                PARENT: [exports.genericTank],
+                LABEL: 'STRESS TESTER',
+                DANGER: 7,
+                LEVEL: 60,
+                STAT_NAMES: statnames.swarm,
+                FACING_TYPE: 'locksFacing',
+                BODY: {
+                    FOV: 1.3,
+                    SPEED: base.SPEED * 0.9,
+                    HEALTH: base.HEALTH * 1.3,
+                    SHIELD: base.SHIELD * 1.3,
+                    REGEN: base.REGEN,
+                    DAMAGE: base.DAMAGE * 0.6,
+                },
+
+                GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+
+                    POSITION: [   7,    7.5,    0.6,     7,      4,     90,      0,   ], 
+
+                        PROPERTIES: {
+
+                            SHOOT_SETTINGS: combineStats([g.stresstest, g.battle]),
+
+                            TYPE: exports.swarm,
+
+                            STAT_CALCULATOR: gunCalcNames.swarm,        
+
+                            LABEL: 'Guided'                
+
+                        }, }, {
+
+                    POSITION: [   7,    7.5,    0.6,     7,     -4,     90,     0.5,  ], 
+
+                        PROPERTIES: {
+
+                            SHOOT_SETTINGS: combineStats([g.stresstest, g.battle]),
+
+                            TYPE: [exports.swarm],
+
+                            STAT_CALCULATOR: gunCalcNames.swarm,        
+
+                            LABEL: 'Guided',        
+
+                        }, }, {
+
+                    POSITION: [   7,    7.5,    0.6,     7,      4,     270,     0,   ], 
+
+                        PROPERTIES: {
+
+                            SHOOT_SETTINGS: combineStats([g.swarm2, g.battle]),
+
+                            TYPE: [exports.swarm],
+
+                            STAT_CALCULATOR: gunCalcNames.swarm,        
+
+                            LABEL: 'Guided',         
+
+                        }, }, {
+
+                    POSITION: [   7,    7.5,    0.6,     7,     -4,     270,    0.5,  ], 
+
+                        PROPERTIES: {
+
+                            SHOOT_SETTINGS: combineStats([g.swarm2, g.battle]),
+
+                            TYPE: exports.swarm,
+
+                            STAT_CALCULATOR: gunCalcNames.swarm,        
+
+                            LABEL: 'Guided'                
+
+                        }, }, 
+
+                ],
+
+    };
+
+

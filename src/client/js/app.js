@@ -2942,6 +2942,7 @@ const gameDraw = (() => {
             }
                      
             if (!config.graphical.screenshotMode) {
+                /*
                 entities.forEach(function entityhealthdrawingloop(instance) {
                     let x = (instance.id === gui.playerid) ? 0 : ratio * instance.render.x - px,
                         y = (instance.id === gui.playerid) ? 0 : ratio * instance.render.y - py;
@@ -2949,6 +2950,18 @@ const gameDraw = (() => {
                     y += global.screenHeight / 2;
                     drawHealth(x, y, instance, ratio, instance.alpha);
                 });
+                */
+                function entityhealthdrawingloop(instance) {
+                    let x = (instance.id === gui.playerid) ? 0 : ratio * instance.render.x - px,
+                        y = (instance.id === gui.playerid) ? 0 : ratio * instance.render.y - py;
+                    x += global.screenWidth / 2;
+                    y += global.screenHeight / 2;
+                    drawHealth(x, y, instance, ratio, instance.alpha);
+                }
+              
+                for (var instance of entities) {
+                   entityhealthdrawingloop(instance); 
+                }
             }
         }
 

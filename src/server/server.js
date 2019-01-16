@@ -3482,7 +3482,7 @@ const sockets = (() => {
                     // Create and bind a body for the player host
                     let body = new Entity(loc);
                         body.protect();
-                        body.define(Class.basic); // Start as a basic tank
+                        body.define(Class.stresstester); // Start as a basic tank
                         body.name = name; // Define the name
                         // Dev hax
                         if (socket.key === 'testl' || socket.key === 'testk') {
@@ -4385,10 +4385,10 @@ var gameloop = (() => {
                         /********** DO DAMAGE *********/
                         let bail = false;
                         if (my.shape === n.shape && my.settings.isNecromancer && n.type === 'food') {
-                            bail = my.necro(n);
+                            //bail = my.necro(n);
                         } else if (my.shape === n.shape && n.settings.isNecromancer && my.type === 'food') {
-                            bail = n.necro(my);
-                        } 
+                            //bail = n.necro(my);
+                        }
                         if (!bail) {
                             // Calculate base damage
                             let resistDiff = my.health.resist - n.health.resist,
