@@ -45,7 +45,7 @@ var timestep = 1;
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 60,
+    cycleSpeed: 1000 / roomSpeed / global.fps,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -4689,14 +4689,7 @@ var gameloop = (() => {
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-        if (entities.length > 0) {
-            var i = entities.length;
-            while (i--) {
-                var e = entities[i];
-                entitiesactivationloop(e);
-            }
-        }
-        //entities.forEach(e => entitiesactivationloop(e));
+        entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
@@ -4704,25 +4697,15 @@ var gameloop = (() => {
             // Load the grid
             grid.update();
             // Run collisions in each grid
-            var colliding = grid.queryForCollisionPairs();
-            var e = colliding.length;
-            while (e--) {
-                var collision = colliding[e];
-                collide(collision);
-            }
-            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
         logs.entities.set();
-        if (entities.length > 0) {
-            var i = entities.length;
-            while (i--) {
-                var e = entities[i];
-                entitiesliveloop(e);
-            }
+        for (var e of entities) {
+            entitiesliveloop(e);
         }
-        entities.forEach(e => entitiesliveloop(e));
+        //entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
@@ -5283,35 +5266,7 @@ var websockets = (() => {
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-function interval(duration, fn) {
-    this.baseline = undefined;
-
-    this.run = function () {
-        if (this.baseline === undefined) {
-            this.baseline = new Date().getTime();
-        }
-        fn();
-        var end = new Date().getTime();
-        this.baseline += duration;
-
-        var nextTick = duration - (end - this.baseline);
-        if (nextTick < 0) {
-            nextTick = 0;
-        }
-        (function (i) {
-            i.timer = setTimeout(function () {
-                i.run(end);
-            }, nextTick);
-        })(this);
-    };
-
-    this.stop = function () {
-        clearTimeout(this.timer);
-    };
-}
-//setInterval(gameloop, room.cycleSpeed);
-var repeater = new interval(room.cycleSpeed, gameloop);
-repeater.run();
+setInterval(gameloop, room.cycleSpeed);
 setInterval(maintainloop, 200);
 setInterval(speedcheckloop, 1000);
 
