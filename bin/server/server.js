@@ -4722,7 +4722,7 @@ var gameloop = (() => {
                 entitiesliveloop(e);
             }
         }
-        //entities.forEach(e => entitiesliveloop(e));
+        entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
@@ -5313,7 +5313,7 @@ function interval(duration, fn) {
 var repeater = new interval(room.cycleSpeed, gameloop);
 repeater.run();
 setInterval(maintainloop, 200);
-//setInterval(speedcheckloop, 1000);
+setInterval(speedcheckloop, 1000);
 
 // Graceful shutdown
 let shutdownWarning = false;

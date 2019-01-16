@@ -4631,14 +4631,14 @@ var gameloop = (() => {
         logs.collide.mark();
         // Do entities life
         logs.entities.set();
-           if (entities.length > 0) {
+        if (entities.length > 0) {
           var i = entities.length;
           while (i--) {
             var e = entities[i];
             entitiesliveloop(e);
           }
         }
-        //entities.forEach(e => entitiesliveloop(e));
+        entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
@@ -5175,7 +5175,7 @@ this.stop = function(){
 var repeater = new interval(room.cycleSpeed, gameloop);
 repeater.run();
 setInterval(maintainloop, 200);
-//setInterval(speedcheckloop, 1000);
+setInterval(speedcheckloop, 1000);
 
 // Graceful shutdown
 let shutdownWarning = false;
