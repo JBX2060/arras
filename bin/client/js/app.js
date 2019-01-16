@@ -2863,7 +2863,30 @@ var app =
 
 			{
 				// Draw things 
-				entities.forEach(function entitydrawingloop(instance) {
+				/*
+    entities.forEach(function entitydrawingloop(instance) {
+        if (!instance.render.draws) {
+            return 1;
+        }
+        let motion = compensation();
+        if (instance.render.status.getFade() === 1) {
+            motion.set();
+        } else {
+            motion.set(instance.render.lastRender, instance.render.interval);
+        }
+        instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
+        instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
+        instance.render.f = (instance.id === gui.playerid && !instance.twiggle) ?
+            Math.atan2(target.y, target.x) :
+            motion.predictFacing(instance.render.lastf, instance.facing);
+        let x = (instance.id === gui.playerid) ? 0 : ratio * instance.render.x - px,
+            y = (instance.id === gui.playerid) ? 0 : ratio * instance.render.y - py;
+        x += global.screenWidth / 2;
+        y += global.screenHeight / 2;
+        drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);
+    });
+    */
+				var entitydrawingloop = function entitydrawingloop(instance) {
 					if (!instance.render.draws) {
 						return 1;
 					}
@@ -2881,7 +2904,34 @@ var app =
 					x += global.screenWidth / 2;
 					y += global.screenHeight / 2;
 					drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);
-				});
+				};
+
+				var _iteratorNormalCompletion = true;
+				var _didIteratorError = false;
+				var _iteratorError = undefined;
+
+				try {
+
+					for (var _iterator = entities[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+						var instance = _step.value;
+
+						entitydrawingloop(instance);
+					}
+				} catch (err) {
+					_didIteratorError = true;
+					_iteratorError = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion && _iterator.return) {
+							_iterator.return();
+						}
+					} finally {
+						if (_didIteratorError) {
+							throw _iteratorError;
+						}
+					}
+				}
+
 				if (!config.graphical.screenshotMode) {
 					entities.forEach(function entityhealthdrawingloop(instance) {
 						var x = instance.id === _gui.playerid ? 0 : ratio * instance.render.x - px,
