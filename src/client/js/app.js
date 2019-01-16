@@ -404,10 +404,7 @@ function getEntityImageFromMockup(index, color = mockups[index].color) {
             length: mockup.guns.length,
             getPositions: () => {
                 let a = [];
-                //mockup.guns.forEach(() => a.push(0));
-                for (var gun of mockup.guns) {
-                    a.push(gun);
-                }
+                mockup.guns.forEach(() => a.push(0));
                 return a;
             },
             update: () => {},
@@ -1650,9 +1647,7 @@ const socketInit = (() => {
                             if (z.turrets.length !== turnumb) {
                                 throw new Error('Mismatch between data turret number and remembered turret number!');
                             }
-                            for (var tur of z.turrets) {
-                                tur = process(tur);
-                            };
+                            z.turrets.forEach(tur => { tur = process(tur); });
                         }
                         // Return our monsterous creation
                         return z;
@@ -3181,7 +3176,7 @@ const gameDraw = (() => {
                     );
                     ctx.lineWidth = 3;
                 }
-            });
+            };
             ctx.globalAlpha = 1;
             ctx.lineWidth = 1;
             ctx.strokeStyle = color.black;
@@ -3261,7 +3256,7 @@ const gameDraw = (() => {
                 drawEntity(xx, yy, entry.image, 1 / scale, 1, scale * scale / entry.image.size, -Math.PI / 4, true);
                 // Move down
                 y += vspacing + height;
-            });
+            };
         }
 
         { // Draw upgrade menu
