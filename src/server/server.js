@@ -54,7 +54,7 @@ var previousTick = now();
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 60,
+    cycleSpeed: 1000 / roomSpeed / 20,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -4219,9 +4219,6 @@ const sockets = (() => {
 /**** GAME SETUP ****/
 // Define how the game lives
 // The most important loop. Fast looping.
-var tickLengthMs = 1000 / 20;
-var previousTick = Date.now();
-var actualTicks = 0;
 
 var gameloop = (() => {
     // Collision stuff
@@ -4599,16 +4596,12 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-      var now = Date.now();
-      
-      actualTicks++;
-      if (previousTick + (1000 / 60) < now()) {
-        previousTick = now();
-        var curTime = now();
-        timestep = 0.00925 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.00925;
-        }
+        //previousTick = now();
+        //var curTime = now();
+        //timestep = 0.00925 * (curTime - lastTime);
+        //if (timestep <= 0 || timestep > 1.0) {
+        //    timestep = 0.00925;
+        //}
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
@@ -4643,14 +4636,8 @@ var gameloop = (() => {
           logs.master.mark();
           // Remove dead entities
           purgeEntities();  
-          lastTime = curTime;
-          room.lastCycle = util.time();
-      }
-      if (now() - previousTick < (1000 / 60) - 16) {
-          setTimeout(gameloop);
-      } else {
-          setImmediate(gameloop);
-      }
+          //lastTime = curTime;
+          room.lastCycle = util.time();    
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5149,6 +5136,31 @@ var websockets = (() => {
     return new WebSocket.Server(config);
 })().on('connection', sockets.connect); 
 
+var tickLengthMs = room.cycleSpeed;
+var previousTick = Date.now();
+var actualTicks = 0;  
+var gameexecution = function () {
+  var current = Date.now;
+
+  actualTicks++;
+  if (previousTick + tickLengthMs <= current) {
+    var delta = (now - previousTick) / 1000;
+    previousTick = current;
+    
+    timestep = delta;
+
+    gameloop();
+
+    actualTicks = 0;
+  }
+
+  if (Date.now() - previousTick < tickLengthMs - 16) {
+    setTimeout(gameexecution);
+  } else {
+    setImmediate(gameexecution);
+  }
+}
+
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
@@ -5157,7 +5169,7 @@ var websockets = (() => {
 //timer.setInterval(speedcheckloop, '', '1000m');
 //var cycleMs = room.cycleSpeed + 'm';
 //var timer = new nanotimer();
-setInterval(gameloop, room.cycleSpeed);
+gameexecution();
 setInterval(maintainloop, 200);
 setInterval(speedcheckloop, 1000);
 //setInterval(speedcheckloop, 1000);
