@@ -4595,6 +4595,7 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
+        sync.parallel([ function(callback) {
         var curTime = now();
         timestep = 0.00925 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
@@ -4637,6 +4638,7 @@ var gameloop = (() => {
         purgeEntities();  
         lastTime = curTime;
         room.lastCycle = util.time();
+        }]);
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5139,21 +5141,13 @@ async function setLoop(method, interval) {
     setInterval(method, interval);
 }
 
-function parallelLoops() {
-    sync.parallel([ function(callback) {
-        setInterval(maintainloop, 200);
-        setInterval(gameloop, room.cycleSpeed);
-        setInterval(speedcheckloop, 1000);
-    }]);
-}  
-
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-//setInterval(maintainloop, 200);
-//setInterval(gameloop, room.cycleSpeed);
-//setInterval(speedcheckloop, 1000);
-parallelLoops();
+setInterval(maintainloop, 200);
+setInterval(gameloop, room.cycleSpeed);
+setInterval(speedcheckloop, 1000);
+//parallelLoops();
 
 // Graceful shutdown
 let shutdownWarning = false;

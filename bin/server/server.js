@@ -4679,48 +4679,50 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        var curTime = now();
-        timestep = 0.00925 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.00925;
-        }
-        logs.loops.tally();
-        logs.master.set();
-        logs.activation.set();
-        for (var e of entities) {
-            entitiesactivationloop(e);
-        }
-        //entities.forEach(e => entitiesactivationloop(e));
-        logs.activation.mark();
-        // Do collisions
-        logs.collide.set();
-        if (entities.length > 1) {
-            // Load the grid
-            grid.update();
-            // Run collisions in each grid
-
-            var query = grid.queryForCollisionPairs();
-            const collisionsLength = query.length;
-            let collision = 0;
-            for (; collision < collisionsLength; collision++) {
-                collide(query[collision]);
+        sync.parallel([function (callback) {
+            var curTime = now();
+            timestep = 0.00925 * (curTime - lastTime);
+            if (timestep <= 0 || timestep > 1.0) {
+                timestep = 0.00925;
             }
+            logs.loops.tally();
+            logs.master.set();
+            logs.activation.set();
+            for (var e of entities) {
+                entitiesactivationloop(e);
+            }
+            //entities.forEach(e => entitiesactivationloop(e));
+            logs.activation.mark();
+            // Do collisions
+            logs.collide.set();
+            if (entities.length > 1) {
+                // Load the grid
+                grid.update();
+                // Run collisions in each grid
 
-            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
-        }
-        logs.collide.mark();
-        // Do entities life
-        logs.entities.set();
-        for (var e of entities) {
-            entitiesliveloop(e);
-        }
-        //entities.forEach(e => entitiesliveloop(e));
-        logs.entities.mark();
-        logs.master.mark();
-        // Remove dead entities
-        purgeEntities();
-        lastTime = curTime;
-        room.lastCycle = util.time();
+                var query = grid.queryForCollisionPairs();
+                const collisionsLength = query.length;
+                let collision = 0;
+                for (; collision < collisionsLength; collision++) {
+                    collide(query[collision]);
+                }
+
+                //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            }
+            logs.collide.mark();
+            // Do entities life
+            logs.entities.set();
+            for (var e of entities) {
+                entitiesliveloop(e);
+            }
+            //entities.forEach(e => entitiesliveloop(e));
+            logs.entities.mark();
+            logs.master.mark();
+            // Remove dead entities
+            purgeEntities();
+            lastTime = curTime;
+            room.lastCycle = util.time();
+        }]);
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5276,21 +5278,13 @@ async function setLoop(method, interval) {
     setInterval(method, interval);
 }
 
-function parallelLoops() {
-    sync.parallel([function (callback) {
-        setInterval(maintainloop, 200);
-        setInterval(gameloop, room.cycleSpeed);
-        setInterval(speedcheckloop, 1000);
-    }]);
-}
-
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-//setInterval(maintainloop, 200);
-//setInterval(gameloop, room.cycleSpeed);
-//setInterval(speedcheckloop, 1000);
-parallelLoops();
+setInterval(maintainloop, 200);
+setInterval(gameloop, room.cycleSpeed);
+setInterval(speedcheckloop, 1000);
+//parallelLoops();
 
 // Graceful shutdown
 let shutdownWarning = false;
