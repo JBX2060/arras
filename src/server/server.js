@@ -963,7 +963,7 @@ class Skill {
         this.pen = apply(2.5, attrib[skcnv.pen]);
         this.str = apply(2, attrib[skcnv.str]);
         this.dam = apply(3, attrib[skcnv.dam]);
-        this.spd = (0.5 + apply(1.5, attrib[skcnv.spd])) / 4;
+        this.spd = (0.5 + apply(1.5, attrib[skcnv.spd])) / 3;
 
         this.acl = apply(0.5, attrib[skcnv.rld]);
         
@@ -2013,7 +2013,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = (c.runSpeed * (this.SPEED * 1.5) * this.skill.mob / speedReduce) / 2;
+        this.topSpeed = (c.runSpeed * (this.SPEED * 1.5) * this.skill.mob / speedReduce) / 2.25;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         
         this.health.set(
