@@ -21,7 +21,7 @@
      *
      * @return  void   desc
      */
-    function update_RECOMPUTE(){
+    async function update_RECOMPUTE(){
             
         var i
             ,obj
@@ -49,7 +49,7 @@
     }
     
     // not implemented yet :)
-    function update_REMOVEALL(){
+    async function update_REMOVEALL(){
         var i, obj, grid, meta;
         for (i = 0; i < this._globalObjects.length; i++) {
             meta = obj.HSHG;
@@ -59,7 +59,7 @@
         }
     }
     
-    function testAABBOverlap(objA, objB){
+    async function testAABBOverlap(objA, objB){
         var  a = objA.getAABB()
             ,b = objB.getAABB();
     
@@ -75,7 +75,7 @@
         }
     }
     
-    function getLongestAABBEdge(min, max){
+    async function getLongestAABBEdge(min, max){
         return Math.max(
              Math.abs(max[0] - min[0])
             ,Math.abs(max[1] - min[1])
@@ -87,7 +87,7 @@
     // ENTITIES
     //---------------------------------------------------------------------
     
-    function HSHG(){
+    async function HSHG(){
         
         this.MAX_OBJECT_CELL_DENSITY = 1/8 // objects / cells
         this.INITIAL_GRID_LENGTH = 256 // 16x16
@@ -318,7 +318,7 @@
      * @param	HSHG parentHierarchy	the HSHG to which this grid belongs
      * @return  void
      */
-    function Grid(cellSize, cellCount, parentHierarchy){
+    async function Grid(cellSize, cellCount, parentHierarchy){
         this.cellSize = cellSize;
         this.inverseCellSize = 1/cellSize;
         this.rowColumnCount = ~~Math.sqrt(cellCount);

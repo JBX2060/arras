@@ -20,11 +20,6 @@ const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
 
-const napa = require('napajs');
-const NUMBER_OF_WORKERS = 4;
-
-const zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS });
-
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
     if (index === _this.length - 1) {
@@ -4325,7 +4320,7 @@ const sockets = (() => {
 var gameloop = (() => {
     // Collision stuff
     let collide = (() => {
-        function simplecollide(my, n) {
+        async function simplecollide(my, n) {
             let diff = (1 + util.getDistance(my, n) / 2) * roomSpeed;
             let a = my.intangibility ? 1 : my.pushability,
                 b = n.intangibility ? 1 : n.pushability,
@@ -4336,7 +4331,7 @@ var gameloop = (() => {
             n.accel.x -= b / (a + 0.3) * c;
             n.accel.y -= b / (a + 0.3) * d;
         }
-        function firmcollide(my, n, buffer = 0) {
+        async function firmcollide(my, n, buffer = 0) {
             let item1 = { x: my.x + my.m_x, y: my.y + my.m_y };
             let item2 = { x: n.x + n.m_x, y: n.y + n.m_y };
             let dist = util.getDistance(item1, item2);
@@ -4369,7 +4364,7 @@ var gameloop = (() => {
                 dist = util.getDistance(item1, item2);
             }
         }
-        function reflectcollide(wall, bounce) {
+        async function reflectcollide(wall, bounce) {
             let delt = new Vector(wall.x - bounce.x, wall.y - bounce.y);
             let dist = delt.length;
             let diff = wall.size + bounce.size - dist;
@@ -4380,7 +4375,7 @@ var gameloop = (() => {
             }
             return 0;
         }
-        function advancedcollide(my, n, doDamage, doInelastic, nIsFirmCollide = false) {
+        async function advancedcollide(my, n, doDamage, doInelastic, nIsFirmCollide = false) {
             // Prepare to check
             let tock = Math.min(my.stepRemaining, n.stepRemaining),
                 combinedRadius = n.size + my.size,
@@ -4647,14 +4642,14 @@ var gameloop = (() => {
         };
     })();
     // Living stuff
-    function entitiesactivationloop(my) {
+    async function entitiesactivationloop(my) {
         // Update collisions.
         my.collisionArray = [];
         // Activation
         my.activation.update();
         my.updateAABB(my.activation.check());
     }
-    function entitiesliveloop(my) {
+    async function entitiesliveloop(my) {
         // Consider death.  
         if (my.contemplationOfMortality()) my.destroy();else {
             if (my.bond == null) {
