@@ -4340,22 +4340,7 @@ exports.stresstester = {
     },
 
     GUNS: [{ /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-
-        POSITION: [7, 7.5, 0.6, 7, 4, 90, 0],
-
-        PROPERTIES: {
-
-            SHOOT_SETTINGS: combineStats([g.stresstest, g.battle]),
-
-            TYPE: exports.swarm,
-
-            STAT_CALCULATOR: gunCalcNames.swarm,
-
-            LABEL: 'Guided'
-
-        } }, {
-
-        POSITION: [7, 7.5, 0.6, 7, -4, 90, 0.5],
+        POSITION: [7, 7.5, 0.6, 7, 0, 90, 0],
 
         PROPERTIES: {
 
@@ -4369,21 +4354,7 @@ exports.stresstester = {
 
         } }, {
 
-        POSITION: [7, 7.5, 0.6, 7, 4, 270, 0],
-
-        PROPERTIES: {
-
-            SHOOT_SETTINGS: combineStats([g.stresstest, g.battle]),
-
-            TYPE: exports.swarm,
-
-            STAT_CALCULATOR: gunCalcNames.swarm,
-
-            LABEL: 'Guided'
-
-        } }, {
-
-        POSITION: [7, 7.5, 0.6, 7, -4, 270, 0.5],
+        POSITION: [7, 7.5, 0.6, 7, 0, 270, 0.5],
 
         PROPERTIES: {
 
