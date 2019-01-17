@@ -963,7 +963,7 @@ class Skill {
         this.pen = apply(2.5, attrib[skcnv.pen]);
         this.str = apply(2, attrib[skcnv.str]);
         this.dam = apply(3, attrib[skcnv.dam]);
-        this.spd = 0.5 + apply(1.5, attrib[skcnv.spd]);
+        this.spd = (0.5 + apply(1.5, attrib[skcnv.spd])) / 4;
 
         this.acl = apply(0.5, attrib[skcnv.rld]);
         
@@ -1187,7 +1187,7 @@ class Gun {
         this.motion = 0;
         if (this.canShoot) {
             this.cycle = !this.waitToCycle - this.delay;
-            this.trueRecoil = this.settings.recoil;
+            this.trueRecoil = this.settings.recoil * 2;
         }
     }
     
