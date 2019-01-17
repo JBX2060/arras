@@ -19,6 +19,7 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
+const nanotimer = require('nanotimer');
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -40,12 +41,12 @@ var keys = ['ttoken1', 'ttoken2', 'ttoken3', 'ttoken4', 'ttoken5', 'syncinussecr
 global.fps = "Unknown";
 var roomSpeed = c.gameSpeed;
 
-var lastTime = now();
-var timestep = 1;
+let lastTime = now();
+let timestep = 1;
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 75,
+    cycleSpeed: 1000 / roomSpeed / 60,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -5275,9 +5276,12 @@ var websockets = (() => {
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-setInterval(maintainloop, 200);
-setInterval(gameloop, room.cycleSpeed);
-setInterval(speedcheckloop, 1000);
+//setInterval(maintainloop, 200);
+var cycleMs = room.cycleSpeed + 'm';
+var timer = new nanotimer();
+timer.setInterval(gameloop, '', cycleMs);
+//setInterval(gameloop, room.cycleSpeed);
+//setInterval(speedcheckloop, 1000);
 //parallelLoops();
 
 // Graceful shutdown
