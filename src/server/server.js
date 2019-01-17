@@ -16,6 +16,8 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
+const nanotimer = require('nanotimer');
+var timer = new nanotimer();
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -4080,7 +4082,7 @@ const sockets = (() => {
                     });
                 } 
                 // Start it
-                setInterval(slowloop, 1000);
+                setInterval(slowloop 1000);
                 // Give the broadcast method
                 return socket => {
                     // Make sure it's spawned first
@@ -5065,14 +5067,14 @@ var maintainloop = (() => {
         makenpcs();      
         makefood(); 
         // Regen health and update the grid
-        entities.forEach(instance => {
+        for (var instance of entities) {
             if (instance.shield.max) {
                 instance.shield.regenerate();
             }
             if (instance.health.amount) {
                 instance.health.regenerate(instance.shield.max && instance.shield.max === instance.shield.amount);
             }
-        });
+        };
     };
 })();
 
@@ -5137,9 +5139,9 @@ var websockets = (() => {
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-setInterval(gameloop, room.cycleSpeed);
-setInterval(maintainloop, 200);
-setInterval(speedcheckloop, 1000);
+timer.setInterval(gameloop, '', room.cycleSpeed + 'm');
+timer.setInterval(maintainloop, '', '200m');
+timer.setInterval(speedcheckloop, '', '1000m');
 //var cycleMs = room.cycleSpeed + 'm';
 //var timer = new nanotimer();
 //timer.setInterval(gameloop, '', cycleMs);
@@ -5208,12 +5210,15 @@ bot.on('messageCreate', (msg) => {
       if (process.env.ISONGLITCH == undefined) {
       let sendError = true
       let lookfor = msg.content.split("k!select ").pop()
-      entities.forEach(function(element) {
+      function thing(element) {
         if (typeof element.sendMessage == "function" && element.name == lookfor) {
           sendError = false
           bot.createMessage(msg.channel.id, String(element.name + '\nTank: ' + element.label + '\nId: ' + element.id + '\nAlpha: ' + element.alpha + '\nColor: ' + element.blend.color + '\nMax Health: '  + element.health.max + '\nCurrent Health: '  + element.health.amount + '\nIs Invulnerable: ' + element.invuln + '\nScore: ' + element.photo.score + '\nLevel: ' + element.skill.level));
         }
-      })
+      }
+      for (var element of entities) {
+          thing(element);
+      }
       if (sendError) {
         bot.createMessage(msg.channel.id, "Was unable to find an entity by that name");
       }
