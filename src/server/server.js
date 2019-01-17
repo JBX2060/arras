@@ -16,7 +16,7 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
-const async = require('async');
+const sync = require('async');
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -5140,14 +5140,11 @@ async function setLoop(method, interval) {
 }
 
 function parallelLoops() {
-    async.parallel([
-      setLoop(maintainloop, 200),
-      setLoop(gameloop, room.cycleSpeed),
-      setLoop(speedcheckloop, 1000),
-    ], function(err, results) {
-        // results now equals to: results.one: 'abc\n', results.two: 'xyz\n'
-        console.log("Loops are set!");
-    });
+    sync.parallel([ function(callback) {
+        setInterval(maintainloop, 200);
+        setInterval(gameloop, room.cycleSpeed);
+        setInterval(speedcheckloop, 1000);
+    }]);
 }  
 
 // Bring it to life

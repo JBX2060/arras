@@ -1,4 +1,5 @@
 dependencies:
+  async: 2.6.1
   babel-core: 6.26.3
   babel-loader: 6.4.1
   babel-preset-es2015: 6.24.1
@@ -366,6 +367,12 @@ packages:
     dev: false
     resolution:
       integrity: sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
+  /async/2.6.1:
+    dependencies:
+      lodash: 4.17.11
+    dev: false
+    resolution:
+      integrity: sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==
   /atob/2.1.2:
     dev: false
     engines:
@@ -6104,6 +6111,7 @@ registry: 'https://registry.npmjs.org/'
 shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
+  async: ^2.6.1
   babel-core: ^6.24.1
   babel-loader: ^6.4.1
   babel-preset-es2015: ^6.24.1
