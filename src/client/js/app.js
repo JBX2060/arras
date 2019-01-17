@@ -7,6 +7,10 @@
 //var global = require('./lib/global');
 //var util = require('./lib/util');
 
+var now = require('performance-now');
+let deltaTime = 1;
+let lastFrameTimeStamp = now();
+
 //imported manualy cause stuffs going wrong
 var global = {
     // Keys and other mathematical constants and some other shit
@@ -2924,8 +2928,8 @@ const gameDraw = (() => {
                 } else {
                     motion.set(instance.render.lastRender, instance.render.interval);
                 }
-                instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
-                instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
+                instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx) * deltaTime;
+                instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy) * deltaTime;
                 instance.render.f = (instance.id === gui.playerid && !instance.twiggle) ?
                     Math.atan2(target.y, target.x) :
                     motion.predictFacing(instance.render.lastf, instance.facing);
@@ -3471,6 +3475,8 @@ const gameDrawDisconnected = (() => {
 // The main function
 var fps;
 function animloop() {
+    var timeScinceLastFrame = now() - lastFrameTimeStamp;
+    deltaTime = timeScinceLastFrame;
     global.animLoopHandle = window.requestAnimFrame(animloop);
     player.renderv += (player.view - player.renderv) / 120;
     var ratio = (config.graphical.screenshotMode) ? 2 : getRatio();
@@ -3504,5 +3510,6 @@ function animloop() {
     }
     if (global.disconnected) {
         gameDrawDisconnected();
-    }    
+    }   
+    lastFrameTimeStamp = now();
 }
