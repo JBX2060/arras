@@ -8,7 +8,6 @@
 //var util = require('./lib/util');
 
 //imported manualy cause stuffs going wrong
-
 var global = {
     // Keys and other mathematical constants and some other shit
     KEY_ESC: 27,
