@@ -4700,10 +4700,8 @@ var gameloop = (() => {
             // Run collisions in each grid
 
             var query = grid.queryForCollisionPairs();
-            const collisionsLength = query.length;
-            let collision = 0;
-            for (; collision < collisionsLength; collision++) {
-                collide(query[collision]);
+            for (var collision of query) {
+                collide(collision);
             }
 
             //grid.queryForCollisionPairs().forEach(collision => collide(collision));
