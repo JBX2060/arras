@@ -2340,9 +2340,9 @@ class Entity {
     friction() {        
         var motion = this.velocity.length, excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-          var k = this.damp * roomSpeed, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
-          this.velocity.x = (finalVelocity * this.velocity.x / motion) * timestep * room.cycleSpeed * 4;
-          this.velocity.y = (finalVelocity * this.velocity.y / motion) * timestep * room.cycleSpeed * 4;
+          var k = this.damp * timestep * 0.97, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
+          this.velocity.x = ((finalVelocity * this.velocity.x / motion));
+          this.velocity.y = ((finalVelocity * this.velocity.y / motion));
         }
     }
 
