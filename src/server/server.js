@@ -16,6 +16,7 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
+const async = require('async');
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -5134,16 +5135,28 @@ var websockets = (() => {
     return new WebSocket.Server(config);
 })().on('connection', sockets.connect); 
 
+async function setLoop(method, interval) {
+    setInterval(method, interval);
+}
+
 function parallelLoops() {
-    
+    async.parallel([
+      setLoop(maintainloop, 200),
+      setLoop(gameloop, room.cycleSpeed),
+      setLoop(speedcheckloop, 1000),
+    ], function(err, results) {
+        // results now equals to: results.one: 'abc\n', results.two: 'xyz\n'
+        console.log("Loops are set!");
+    });
 }  
 
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
 //setInterval(updatedelta, global.fps);
-setInterval(maintainloop, 200, Number.POSITIVE_INFINITY);
-setInterval(gameloop, room.cycleSpeed, Number.POSITIVE_INFINITY);
-setInterval(speedcheckloop, 1000, Number.POSITIVE_INFINITY);
+//setInterval(maintainloop, 200);
+//setInterval(gameloop, room.cycleSpeed);
+//setInterval(speedcheckloop, 1000);
+parallelLoops();
 
 // Graceful shutdown
 let shutdownWarning = false;
