@@ -54,7 +54,7 @@ var previousTick = now();
 
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 20,
+    cycleSpeed: 1000 / roomSpeed / 60,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -2014,7 +2014,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = (c.runSpeed * (this.SPEED * 1.5) * this.skill.mob / speedReduce) / 2.25;
+        this.topSpeed = (c.runSpeed * (this.SPEED * 2) * this.skill.mob / speedReduce);
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         
         this.health.set(
@@ -5136,16 +5136,16 @@ var websockets = (() => {
     return new WebSocket.Server(config);
 })().on('connection', sockets.connect); 
 
-var tickLengthMs = room.cycleSpeed;
+var tickLengthMs = 1000 / 60;
 var previousTick = Date.now();
 var actualTicks = 0;  
 var gameexecution = function () {
-  var current = Date.now;
+  var now = Date.now();
 
   actualTicks++;
-  if (previousTick + tickLengthMs <= current) {
+  if (previousTick + tickLengthMs <= now) {
     var delta = (now - previousTick) / 1000;
-    previousTick = current;
+    previousTick = now;
     
     timestep = delta;
 
