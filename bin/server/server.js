@@ -43,6 +43,8 @@ var roomSpeed = c.gameSpeed;
 let lastTime = now();
 let timestep = 1;
 
+var previousTick = now();
+
 const room = {
     lastCycle: undefined,
     cycleSpeed: 1000 / roomSpeed / 60,
@@ -4317,6 +4319,10 @@ const sockets = (() => {
 /**** GAME SETUP ****/
 // Define how the game lives
 // The most important loop. Fast looping.
+var tickLengthMs = 1000 / 20;
+var previousTick = Date.now();
+var actualTicks = 0;
+
 var gameloop = (() => {
     // Collision stuff
     let collide = (() => {
@@ -4678,47 +4684,58 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        var curTime = now();
-        timestep = 0.00925 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.00925;
-        }
-        logs.loops.tally();
-        logs.master.set();
-        logs.activation.set();
-        for (var e of entities) {
-            entitiesactivationloop(e);
-        }
-        //entities.forEach(e => entitiesactivationloop(e));
-        logs.activation.mark();
-        // Do collisions
-        logs.collide.set();
+        var now = Date.now();
 
-        if (entities.length > 1) {
-            // Load the grid
-            grid.update();
-            // Run collisions in each grid
-
-            var query = grid.queryForCollisionPairs();
-            for (var collision of query) {
-                collide(collision);
+        actualTicks++;
+        if (previousTick + 1000 / 60 < now()) {
+            previousTick = now();
+            var curTime = now();
+            timestep = 0.00925 * (curTime - lastTime);
+            if (timestep <= 0 || timestep > 1.0) {
+                timestep = 0.00925;
             }
+            logs.loops.tally();
+            logs.master.set();
+            logs.activation.set();
+            for (var e of entities) {
+                entitiesactivationloop(e);
+            }
+            //entities.forEach(e => entitiesactivationloop(e));
+            logs.activation.mark();
+            // Do collisions
+            logs.collide.set();
 
-            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            if (entities.length > 1) {
+                // Load the grid
+                grid.update();
+                // Run collisions in each grid
+
+                var query = grid.queryForCollisionPairs();
+                for (var collision of query) {
+                    collide(collision);
+                }
+
+                //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            }
+            logs.collide.mark();
+            // Do entities life
+            logs.entities.set();
+            for (var e of entities) {
+                entitiesliveloop(e);
+            }
+            //entities.forEach(e => entitiesliveloop(e));
+            logs.entities.mark();
+            logs.master.mark();
+            // Remove dead entities
+            purgeEntities();
+            lastTime = curTime;
+            room.lastCycle = util.time();
         }
-        logs.collide.mark();
-        // Do entities life
-        logs.entities.set();
-        for (var e of entities) {
-            entitiesliveloop(e);
+        if (now() - previousTick < 1000 / 60 - 16) {
+            setTimeout(gameloop);
+        } else {
+            setImmediate(gameloop);
         }
-        //entities.forEach(e => entitiesliveloop(e));
-        logs.entities.mark();
-        logs.master.mark();
-        // Remove dead entities
-        purgeEntities();
-        lastTime = curTime;
-        room.lastCycle = util.time();
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;

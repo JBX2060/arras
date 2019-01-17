@@ -50,6 +50,8 @@ var roomSpeed = c.gameSpeed;
 let lastTime = now();
 let timestep = 1;
 
+var previousTick = now();
+
 const room = {
     lastCycle: undefined,
     cycleSpeed: 1000 / roomSpeed / 60,
@@ -4217,6 +4219,10 @@ const sockets = (() => {
 /**** GAME SETUP ****/
 // Define how the game lives
 // The most important loop. Fast looping.
+var tickLengthMs = 1000 / 20;
+var previousTick = Date.now();
+var actualTicks = 0;
+
 var gameloop = (() => {
     // Collision stuff
     let collide = (() => {
@@ -4593,6 +4599,11 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
+      var now = Date.now();
+      
+      actualTicks++;
+      if (previousTick + (1000 / 60) < now()) {
+        previousTick = now();
         var curTime = now();
         timestep = 0.00925 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
@@ -4627,13 +4638,19 @@ var gameloop = (() => {
         for (var e of entities) {
            entitiesliveloop(e);
         }
-        //entities.forEach(e => entitiesliveloop(e));
-        logs.entities.mark();
-        logs.master.mark();
-        // Remove dead entities
-        purgeEntities();  
-        lastTime = curTime;
-        room.lastCycle = util.time();
+          //entities.forEach(e => entitiesliveloop(e));
+          logs.entities.mark();
+          logs.master.mark();
+          // Remove dead entities
+          purgeEntities();  
+          lastTime = curTime;
+          room.lastCycle = util.time();
+      }
+      if (now() - previousTick < (1000 / 60) - 16) {
+          setTimeout(gameloop);
+      } else {
+          setImmediate(gameloop);
+      }
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
