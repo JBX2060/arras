@@ -62,13 +62,6 @@ var app =
 	//var global = require('./lib/global');
 	//var util = require('./lib/util');
 
-	var lastFrameTimeMs = 0;
-	var timestep = 1000 / 60;
-	var framesThisSecond = 0;
-	var lastFpsUpdate = 0;
-	var delta = 0;
-	var maxFps = 60;
-
 	//imported manualy cause stuffs going wrong
 
 	var global = {
@@ -2070,10 +2063,10 @@ var app =
 							var clientTime = m[0],
 							    serverTime = m[1],
 							    laten = (getNow() - clientTime) / 2,
-							    _delta = getNow() - laten - serverTime;
+							    delta = getNow() - laten - serverTime;
 							// Add the datapoint to the syncing data
 							sync.push({
-								delta: _delta,
+								delta: delta,
 								latency: laten
 							});
 							// Do it again a couple times
@@ -2359,7 +2352,7 @@ var app =
 		minimap = [];
 		setInterval(function () {
 			return moveCompensation.iterate(global.socket.cmd.getMotion());
-		}, 1000 / 60);
+		}, 1000 / 120);
 		document.getElementById('gameCanvas').focus();
 		window.onbeforeunload = function () {
 			return true;
@@ -3663,43 +3656,44 @@ var app =
 	}();
 
 	// The main function
-	function animloop() {}
-	/*
- global.animLoopHandle = window.requestAnimFrame(animloop);
- player.renderv += (player.view - player.renderv) / 30;
- var ratio = (config.graphical.screenshotMode) ? 2 : getRatio();
- // Set the drawing style
- ctx.lineCap = 'round';
- ctx.lineJoin = 'round';
- ctx.filter = 'none';
- // Draw the game
- if (global.gameStart && !global.disconnected) {
-     global.time = getNow();
-     if (global.time - lastPing > 1000) { // Latency
-         // Do ping.
-         global.socket.ping(global.time);
-         lastPing = global.time;
-         // Do rendering speed.
-         metrics.rendertime = renderTimes;
-         renderTimes = 0;
-         // Do update rate.
-         metrics.updatetime = updateTimes;
-         updateTimes = 0;
-     }
-     metrics.lag = global.time - player.time;
- }
- if (global.gameStart) {
-     gameDraw(ratio);
- } else if (!global.disconnected) {
-     gameDrawBeforeStart();
- }
- if (global.died) {
-     gameDrawDead();
- }
- if (global.disconnected) {
-     gameDrawDisconnected();
- }
- */
+	var fps;
+	function animloop() {
+		global.animLoopHandle = window.requestAnimFrame(animloop);
+		player.renderv += (player.view - player.renderv) / 120;
+		var ratio = config.graphical.screenshotMode ? 2 : getRatio();
+		// Set the drawing style
+		ctx.lineCap = 'round';
+		ctx.lineJoin = 'round';
+		ctx.filter = 'none';
+		// Draw the game
+		if (global.gameStart && !global.disconnected) {
+			global.time = getNow();
+			if (global.time - lastPing > 1000) {
+				// Latency
+				// Do ping.
+				global.socket.ping(global.time);
+				lastPing = global.time;
+				// Do rendering speed.
+				metrics.rendertime = renderTimes;
+				renderTimes = 0;
+				// Do update rate.
+				metrics.updatetime = updateTimes;
+				updateTimes = 0;
+			}
+			metrics.lag = global.time - player.time;
+		}
+		if (global.gameStart) {
+			gameDraw(ratio);
+		} else if (!global.disconnected) {
+			gameDrawBeforeStart();
+		}
+		if (global.died) {
+			gameDrawDead();
+		}
+		if (global.disconnected) {
+			gameDrawDisconnected();
+		}
+	}
 
 	/***/
 }]
