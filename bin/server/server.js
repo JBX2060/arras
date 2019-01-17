@@ -1982,7 +1982,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = c.runSpeed * (this.SPEED * 1.35) * this.skill.mob / speedReduce;
+        this.topSpeed = c.runSpeed * (this.SPEED * 1.275) * this.skill.mob / speedReduce / 2.35;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
 
         this.health.set(((this.settings.healthWithLevel ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt);
