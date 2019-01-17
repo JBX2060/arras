@@ -4221,7 +4221,7 @@ const sockets = (() => {
 var gameloop = (() => {
     // Collision stuff
     let collide = (() => {
-        async function simplecollide(my, n) {
+        function simplecollide(my, n) {
             let diff = (1 + util.getDistance(my, n) / 2) * roomSpeed;
             let a = (my.intangibility) ? 1 : my.pushability,
                 b = (n.intangibility) ? 1 : n.pushability,
@@ -4232,7 +4232,7 @@ var gameloop = (() => {
             n.accel.x -= b / (a + 0.3) * c;
             n.accel.y -= b / (a + 0.3) * d;
         }
-        async function firmcollide(my, n, buffer = 0) {
+        function firmcollide(my, n, buffer = 0) {
             let item1 = { x: my.x + my.m_x, y: my.y + my.m_y, };
             let item2 = { x: n.x + n.m_x, y: n.y + n.m_y, };
             let dist = util.getDistance(item1, item2);
@@ -4261,7 +4261,7 @@ var gameloop = (() => {
                 dist = util.getDistance(item1, item2); 
             }
         }
-        async function reflectcollide(wall, bounce) {
+        function reflectcollide(wall, bounce) {
             let delt = new Vector(wall.x - bounce.x, wall.y - bounce.y);
             let dist = delt.length;
             let diff = wall.size + bounce.size - dist;
@@ -4272,7 +4272,7 @@ var gameloop = (() => {
             }
             return 0;
         }
-        async function advancedcollide(my, n, doDamage, doInelastic, nIsFirmCollide = false) {
+        function advancedcollide(my, n, doDamage, doInelastic, nIsFirmCollide = false) {
             // Prepare to check
             let tock = Math.min(my.stepRemaining, n.stepRemaining),
                 combinedRadius = n.size + my.size,
@@ -4557,14 +4557,14 @@ var gameloop = (() => {
         };
     })();
     // Living stuff
-    async function entitiesactivationloop(my) {
+    function entitiesactivationloop(my) {
         // Update collisions.
         my.collisionArray = []; 
         // Activation
         my.activation.update();
         my.updateAABB(my.activation.check()); 
     }
-    async function entitiesliveloop (my) {
+    function entitiesliveloop (my) {
         // Consider death.  
         if (my.contemplationOfMortality()) my.destroy();
         else {
@@ -4609,6 +4609,7 @@ var gameloop = (() => {
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
+        
         if (entities.length > 1) {
             // Load the grid
             grid.update();
