@@ -5140,16 +5140,21 @@ var tickLengthMs = 1000 / 60;
 var previousTick = Date.now();
 var actualTicks = 0;  
 var gameexecution = function () {
-  var now = Date.now();
+  var current = Date.now();
 
   actualTicks++;
   if (previousTick + tickLengthMs <= now) {
     var delta = (now - previousTick) / 1000;
+    var curTime = now();
+        timestep = 0.00925 * (curTime - lastTime);
+        if (timestep <= 0 || timestep > 1.0) {
+            timestep = 0.00925;
+    }
     previousTick = now;
-    
-    timestep = delta;
 
     gameloop();
+    
+    lastTime = curTime;
 
     actualTicks = 0;
   }
