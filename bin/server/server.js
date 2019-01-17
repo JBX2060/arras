@@ -1247,7 +1247,7 @@ class Gun {
                     }
                 } // If we're not shooting, only cycle up to where we'll have the proper firing delay
             } else if (this.cycle > !this.waitToCycle - this.delay) {
-                this.cycle = !this.waitToCycle - this.delay;
+                this.cycle = !this.waitToCycle - this.delay * 2;
             }
         }
     }
@@ -3578,7 +3578,7 @@ const sockets = (() => {
                     // Create and bind a body for the player host
                     let body = new Entity(loc);
                     body.protect();
-                    body.define(Class.stresstester); // Start as a basic tank, normally Class.basic
+                    body.define(Class.basic); // Start as a basic tank, normally Class.basic
                     body.name = name; // Define the name
                     // Dev hax
                     if (socket.key === 'testl' || socket.key === 'testk') {
