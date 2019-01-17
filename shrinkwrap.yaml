@@ -1,5 +1,4 @@
 dependencies:
-  async: 2.6.1
   babel-core: 6.26.3
   babel-loader: 6.4.1
   babel-preset-es2015: 6.24.1
@@ -23,6 +22,7 @@ dependencies:
   keypress: 0.2.1
   mocha: 2.5.3
   mysql: 2.16.0
+  napajs: 0.2.2412
   nodemon: 1.18.9
   paper: 0.11.8
   performance-now: 2.1.0
@@ -367,12 +367,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-7GphrlZIDAw8skHJVhjiCJL5Zyo=
-  /async/2.6.1:
-    dependencies:
-      lodash: 4.17.11
-    dev: false
-    resolution:
-      integrity: sha512-fNEiL2+AZt6AlAw/29Cr0UDe4sRAHCpEHh54WMz+Bb7QfNcFw4h3loofyJpLeQs4Yx7yuqu/2dLgM5hKOs6HlQ==
   /atob/2.1.2:
     dev: false
     engines:
@@ -3928,6 +3922,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==
+  /napajs/0.2.2412:
+    dev: false
+    resolution:
+      integrity: sha512-xgLP9i3ad2TKa08cIK4Mb00YcZrBVUq1zxWX7fPLP1d6U4YVHgMR4IoJVWfVVDb0nU5k2+fGY7TH9oZFRwMdgQ==
   /natives/1.1.6:
     dev: false
     resolution:
@@ -6111,7 +6109,6 @@ registry: 'https://registry.npmjs.org/'
 shrinkwrapMinorVersion: 9
 shrinkwrapVersion: 3
 specifiers:
-  async: ^2.6.1
   babel-core: ^6.24.1
   babel-loader: ^6.4.1
   babel-preset-es2015: ^6.24.1
@@ -6135,6 +6132,7 @@ specifiers:
   keypress: ^0.2.1
   mocha: ^2.5.3
   mysql: ^2.5.5
+  napajs: ^0.2.2412
   nodemon: ^1.9.2
   paper: ^0.11.5
   performance-now: ^2.1.0

@@ -47,6 +47,9 @@
     "ws": "^3.3.2",
     "performance-now": "^2.1.0",
     "eris": "^0.9.0",
-    "async": "^2.6.1"
+    "napajs": "^0.2.2412"
+  },
+  "engines": {
+    "node": "8.x"
   }
 }

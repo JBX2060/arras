@@ -16,7 +16,12 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
-const sync = require('async');
+
+
+const napa = require('napajs');
+const NUMBER_OF_WORKERS = 4;
+
+const zone = napa.zone.create('zone', { workers: NUMBER_OF_WORKERS} );
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -4595,7 +4600,6 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        sync.parallel([ function(callback) {
         var curTime = now();
         timestep = 0.00925 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
@@ -4638,7 +4642,6 @@ var gameloop = (() => {
         purgeEntities();  
         lastTime = curTime;
         room.lastCycle = util.time();
-        }]);
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5136,10 +5139,6 @@ var websockets = (() => {
     // Build it
     return new WebSocket.Server(config);
 })().on('connection', sockets.connect); 
-
-async function setLoop(method, interval) {
-    setInterval(method, interval);
-}
 
 // Bring it to life
 //setInterval(funloop, room.cycleSpeed * 5) 
