@@ -2305,8 +2305,8 @@ class Entity {
             var k = this.damp * roomSpeed,
                 drag = excess / (k + 1),
                 finalVelocity = this.maxSpeed + drag;
-            this.velocity.x = finalVelocity * this.velocity.x / motion * timestep * room.cycleSpeed * 10;
-            this.velocity.y = finalVelocity * this.velocity.y / motion * timestep * room.cycleSpeed * 10;
+            this.velocity.x = finalVelocity * this.velocity.x / motion * timestep * room.cycleSpeed * 4;
+            this.velocity.y = finalVelocity * this.velocity.y / motion * timestep * room.cycleSpeed * 4;
         }
     }
 
