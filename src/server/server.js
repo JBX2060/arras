@@ -1252,7 +1252,7 @@ class Gun {
             // Cycle up if we should
             if (shootPermission || !this.waitToCycle) {
                 if (this.cycle < 1) {
-                    this.cycle += 1 / this.settings.reload / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
+                    this.cycle += 1 / (this.settings.reload * 2) / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
                 } 
             } 
             // Firing routines
@@ -1278,8 +1278,8 @@ class Gun {
                         this.cycle -= 1;
                     }
                 }  // If we're not shooting, only cycle up to where we'll have the proper firing delay
-            } else if (this.cycle > !this.waitToCycle - this.delay * 2) {
-                this.cycle = !this.waitToCycle - this.delay * 2;
+            } else if (this.cycle > !this.waitToCycle - this.delay) {
+                this.cycle = !this.waitToCycle - this.delay;
             } 
         }
     }
@@ -2013,7 +2013,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = c.runSpeed * (this.SPEED * 1.75) * this.skill.mob / speedReduce;
+        this.topSpeed = c.runSpeed * (this.SPEED * 1.35) * this.skill.mob / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         
         this.health.set(
