@@ -1982,7 +1982,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = c.runSpeed * (this.SPEED * 1.5) * this.skill.mob / speedReduce;
+        this.topSpeed = c.runSpeed * (this.SPEED * 1.75) * this.skill.mob / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
 
         this.health.set(((this.settings.healthWithLevel ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt);
@@ -2302,7 +2302,7 @@ class Entity {
         var motion = this.velocity.length,
             excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-            var k = this.damp * roomSpeed * 0.97,
+            var k = this.damp * timestep * 0.97,
                 drag = excess / (k + 1),
                 finalVelocity = this.maxSpeed + drag;
             this.velocity.x = finalVelocity * this.velocity.x / motion * 0.97;
@@ -4679,9 +4679,9 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         var curTime = now();
-        timestep = 0.0075 * (curTime - lastTime);
+        timestep = 0.01 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.0075;
+            timestep = 0.01;
         }
         logs.loops.tally();
         logs.master.set();
