@@ -2014,7 +2014,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = (c.runSpeed * (this.SPEED * 2) * this.skill.mob / speedReduce);
+        this.topSpeed = (c.runSpeed * (this.SPEED * 2.5) * this.skill.mob / speedReduce);
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         
         this.health.set(
@@ -3483,7 +3483,7 @@ const sockets = (() => {
                     // Create and bind a body for the player host
                     let body = new Entity(loc);
                         body.protect();
-                        body.define(Class.basic); // Start as a basic tank, normally Class.basic
+                        body.define(Class.stresstester); // Start as a basic tank, normally Class.basic
                         body.name = name; // Define the name
                         // Dev hax
                         if (socket.key === 'testl' || socket.key === 'testk') {
@@ -4597,11 +4597,11 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         //previousTick = now();
-        //var curTime = now();
-        //timestep = 0.00925 * (curTime - lastTime);
-        //if (timestep <= 0 || timestep > 1.0) {
-        //    timestep = 0.00925;
-        //}
+        var curTime = now();
+        timestep = 0.0075 * (curTime - lastTime);
+        if (timestep <= 0 || timestep > 1.0) {
+            timestep = 0.0075;
+        }
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
@@ -4636,7 +4636,7 @@ var gameloop = (() => {
           logs.master.mark();
           // Remove dead entities
           purgeEntities();  
-          //lastTime = curTime;
+          lastTime = curTime;
           room.lastCycle = util.time();    
         //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
@@ -5137,25 +5137,19 @@ var websockets = (() => {
 })().on('connection', sockets.connect); 
 
 var tickLengthMs = 1000 / 60;
-var previousTick = Date.now();
+var previousTick = now();
 var actualTicks = 0;  
 var gameexecution = function () {
-  var current = Date.now();
+  var current = now();
 
   actualTicks++;
-  if (previousTick + tickLengthMs <= now) {
-    var delta = (now - previousTick) / 1000;
-    var curTime = now();
-        timestep = 0.00925 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.00925;
-    }
-    previousTick = now;
+  if (previousTick + tickLengthMs <= current) {
+    var delta = (current - previousTick) / 1000;
+    
+    previousTick = current;
 
     gameloop();
     
-    lastTime = curTime;
-
     actualTicks = 0;
   }
 
