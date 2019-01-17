@@ -7,6 +7,13 @@
 //var global = require('./lib/global');
 //var util = require('./lib/util');
 
+var lastFrameTimeMs = 0;
+var timestep = 1000 / 60;
+var framesThisSecond = 0;
+var lastFpsUpdate = 0;
+var delta = 0;
+var maxFps = 60;
+
 //imported manualy cause stuffs going wrong
 
 var global = {
@@ -2178,7 +2185,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 120);
+    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 60);
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
@@ -3471,6 +3478,7 @@ const gameDrawDisconnected = (() => {
 
 // The main function
 function animloop() {
+    /*
     global.animLoopHandle = window.requestAnimFrame(animloop);
     player.renderv += (player.view - player.renderv) / 30;
     var ratio = (config.graphical.screenshotMode) ? 2 : getRatio();
@@ -3505,4 +3513,6 @@ function animloop() {
     if (global.disconnected) {
         gameDrawDisconnected();
     }
+    */
+    
 }
