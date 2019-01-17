@@ -2013,7 +2013,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = (c.runSpeed * (this.SPEED * 1.275) * this.skill.mob / speedReduce) / 2.35;
+        this.topSpeed = (c.runSpeed * (this.SPEED * 1.5) * this.skill.mob / speedReduce) / 2;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         
         this.health.set(
@@ -4595,9 +4595,9 @@ var gameloop = (() => {
     // Return the loop function
     return () => {
         var curTime = now();
-        timestep = 0.01 * (curTime - lastTime);
+        timestep = 0.00925 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.01;
+            timestep = 0.00925;
         }
         logs.loops.tally();
         logs.master.set();

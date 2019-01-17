@@ -4050,42 +4050,7 @@ exports.basic.UPGRADES_TIER_1 = [exports.twin, exports.sniper, exports.machine, 
                 PROPERTIES: {
                     SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
                     TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-                POSITION: [  14,    10,    1,     0,      0,     45,      0,   ], 
-                PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
-                    TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-                POSITION: [  14,    10,    1,     0,      0,      90,      0,   ], 
-                PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
-                    TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-                POSITION: [  14,    10,    1,     0,      0,      135,      0,   ], 
-                PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
-                    TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-                POSITION: [  14,    10,    1,     0,      0,      180,      0,   ], 
-                PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
-                    TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-                POSITION: [  14,    10,    1,     0,      0,      225,      0,   ], 
-                PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
-                    TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-                POSITION: [  14,    10,    1,     0,      0,      270,      0,   ], 
-                PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
-                    TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-                POSITION: [  14,    10,    1,     0,      0,      315,      0,   ], 
-                PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
-                    TYPE: [exports.bullet, { SHAPE: 5, }],
-                }, }, 
+                }, }, /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
             ],
         };
 exports.crasher = {
