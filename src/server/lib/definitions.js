@@ -1,23 +1,25 @@
 // GUN DEFINITIONS
 const combineStats = function(arr) {
-    // Build a blank array of the appropiate length
-    let data = arr.reduce((a, b) => a.map((r, i) => r * b[i]));
-    
-    return {
-        reload:     data[0],
-        recoil:     data[1],
-        shudder:    data[2], 
-        size:       data[3],
-        health:     data[4],
-        damage:     data[5],
-        pen:        data[6],
-        speed:      data[7],
-        maxSpeed:   data[8],
-        range:      data[9],
-        density:    data[10],
-        spray:      data[11],
-        resist:     data[12],
-    };
+    if (!arr.some(undefined)) {
+     let data = arr.reduce((a, b) => a.map((r, i) => r * b[i]));
+     return {
+          reload:     data[0],
+          recoil:     data[1],
+          shudder:    data[2], 
+          size:       data[3],
+          health:     data[4],
+          damage:     data[5],
+          pen:        data[6],
+          speed:      data[7],
+          maxSpeed:   data[8],
+          range:      data[9],
+          density:    data[10],
+          spray:      data[11],
+          resist:     data[12],
+      };
+    } else {
+        console.error(new Error(arr.map(r => r && r.length)))
+    }
 };
 const skillSet = (() => {
     let config = require('../../../config.json');
