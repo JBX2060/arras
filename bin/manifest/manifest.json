@@ -1,6 +1,6 @@
 {
   "api/hi.html": "api/hi-d1a35718bd.html",
-  "changelog.html": "changelog-056885ad72.html",
+  "changelog.html": "changelog-2546c3d05c.html",
   "css/main.css": "css/main-a252d832ef.css",
   "favicons/android-icon-144x144.png": "favicons/android-icon-144x144-51873498fe.png",
   "favicons/android-icon-192x192.png": "favicons/android-icon-192x192-64241a1f66.png",
@@ -35,5 +35,5 @@
   "js/lib/global.js": "js/lib/global-73ba2e79ec.js",
   "js/lib/util.js": "js/lib/util-729612556f.js",
   "json/color.json": "json/color-12e8182fd1.json",
-  "json/mockups.json": "json/mockups-44e7d53ed0.json"
+  "json/mockups.json": "json/mockups-b26bf7ff53.json"
 }

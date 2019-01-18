@@ -16,8 +16,18 @@
 </style>
 
 <body id="patchNotes">
-<b>Beta 1.0</b><ul>
-    <li>Started an independent server</li>
+<b>READ THIS PLEASE PEOPLE WHO USED THE SMOOTH CODE</b><ul>
+    <li>I noticed that there was an odd thing with phasing when you went
+    super fast using the booster, so to fix that you
+    have to change the this.topSpeed line in server to         
+    this.topSpeed = (c.runSpeed * (this.SPEED * 3) * this.skill.mob / speedReduce) / 2.35; and you
+    have to set the accel lines in advancedcollide to 
+    my.accel.x += modifiers._me * force.x * 2;
+    my.accel.y += modifiers._me * force.y * 2;
+    n.accel.x -= modifiers._n * force.x * 2;
+    n.accel.y -= modifiers._n * force.y * 2; 
+    that should fix all of it, enjoy!
+</li>
 </ul>
 </body>
 </html>
