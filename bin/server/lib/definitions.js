@@ -1,32 +1,23 @@
 // GUN DEFINITIONS
 const combineStats = function (arr) {
-    try {
-        // Build a blank array of the appropiate length
-        let data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-        for (var component of arr) {
-            for (let i = 0; i < data.length; i++) {
-                data[i] = data[i] * component[i];
-            }
-        }
-        return {
-            reload: data[0],
-            recoil: data[1],
-            shudder: data[2],
-            size: data[3],
-            health: data[4],
-            damage: data[5],
-            pen: data[6],
-            speed: data[7],
-            maxSpeed: data[8],
-            range: data[9],
-            density: data[10],
-            spray: data[11],
-            resist: data[12]
-        };
-    } catch (err) {
-        console.log(err);
-        console.log(JSON.stringify(arr));
-    }
+    // Build a blank array of the appropiate length
+    let data = arr.reduce((a, b) => a.map((r, i) => r * b[i]));
+
+    return {
+        reload: data[0],
+        recoil: data[1],
+        shudder: data[2],
+        size: data[3],
+        health: data[4],
+        damage: data[5],
+        pen: data[6],
+        speed: data[7],
+        maxSpeed: data[8],
+        range: data[9],
+        density: data[10],
+        spray: data[11],
+        resist: data[12]
+    };
 };
 const skillSet = (() => {
     let config = require('../../../config.json');
@@ -3947,7 +3938,7 @@ exports.bigboi = {
     GUNS: [{ /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
         POSITION: [14, 10, 1, 0, 0, 0, 0],
         PROPERTIES: {
-            SHOOT_SETTINGS: x => g.op,
+            SHOOT_SETTINGS: combineStats([g.basic, g.op]),
             TYPE: [exports.bullet, { SHAPE: 5 }]
         } }]
 };

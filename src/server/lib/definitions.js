@@ -1,13 +1,8 @@
 // GUN DEFINITIONS
 const combineStats = function(arr) {
-    try {
     // Build a blank array of the appropiate length
-    let data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    for (var component of arr) {
-        for (let i=0; i<data.length; i++) {
-            data[i] = data[i] * component[i];
-        }
-    }
+    let data = arr.reduce((a, b) => a.map((r, i) => r * b[i]));
+    
     return {
         reload:     data[0],
         recoil:     data[1],
@@ -23,10 +18,6 @@ const combineStats = function(arr) {
         spray:      data[11],
         resist:     data[12],
     };
-    } catch(err) {
-        console.log(err);
-        console.log(JSON.stringify(arr));
-    }
 };
 const skillSet = (() => {
     let config = require('../../../config.json');
@@ -4050,7 +4041,7 @@ exports.basic.UPGRADES_TIER_1 = [exports.twin, exports.sniper, exports.machine, 
             GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
                 POSITION: [  14,    10,    1,     0,      0,      0,      0,   ], 
                 PROPERTIES: {
-                    SHOOT_SETTINGS: (x => g.op),
+                    SHOOT_SETTINGS: combineStats([g.basic, g.op]),
                     TYPE: [exports.bullet, { SHAPE: 5, }],
                 }, }, /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
             ],
