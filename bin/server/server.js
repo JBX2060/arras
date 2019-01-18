@@ -1984,7 +1984,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
 
-        this.topSpeed = c.runSpeed * (this.SPEED * 4) * this.skill.mob / speedReduce / 2.25;
+        this.topSpeed = c.runSpeed * (this.SPEED * 6) * this.skill.mob / speedReduce / 2.25;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
 
         this.health.set(((this.settings.healthWithLevel ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt);
@@ -4703,12 +4703,12 @@ var gameloop = (() => {
             grid.update();
             // Run collisions in each grid
 
-            var query = grid.queryForCollisionPairs();
-            for (var collision of query) {
-                collide(collision);
-            }
+            //var query = grid.queryForCollisionPairs(); 
+            //for (var collision of query) {
+            //    collide(collision);
+            //}
 
-            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
