@@ -4273,6 +4273,21 @@ exports.palisade = (() => {
     };
 })();
 
+exports.deci = {
+    PARENT: [exports.genericTank],
+    BODY: {
+        ACCELERATION: base.ACCEL * 0.75
+    },
+    LABEL: 'DECIMATOR',
+    DANGER: 7,
+    GUNS: [{ /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+        POSITION: [20.5, 19.5, 1.2, 0, 0, 0, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.pound, g.destroy, g.anni, g.anni, g.anni]),
+            TYPE: exports.bullet
+        } }]
+};
+
 exports.bot = {
     AUTO_UPGRADE: 'random',
     FACING_TYPE: 'looseToTarget',
@@ -4285,8 +4300,8 @@ exports.bot = {
     AI: { STRAFE: true }
 };
 
-exports.testbed.UPGRADES_TIER_1.push(exports.palisade);
 exports.testbed.UPGRADES_TIER_1.push(exports.arenacloser);
+exports.testbed.UPGRADES_TIER_1.push(exports.deci);
 
 exports.stresstester = {
     PARENT: [exports.genericTank],
