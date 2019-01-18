@@ -3,11 +3,11 @@ const combineStats = function(arr) {
     try {
     // Build a blank array of the appropiate length
     let data = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    arr.forEach(function(component) {
+    for (var component of arr) {
         for (let i=0; i<data.length; i++) {
             data[i] = data[i] * component[i];
         }
-    });
+    }
     return {
         reload:     data[0],
         recoil:     data[1],
@@ -4050,7 +4050,7 @@ exports.basic.UPGRADES_TIER_1 = [exports.twin, exports.sniper, exports.machine, 
             GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
                 POSITION: [  14,    10,    1,     0,      0,      0,      0,   ], 
                 PROPERTIES: {
-                    SHOOT_SETTINGS: combineStats([g.basic, g.op, g.op, g.op]),
+                    SHOOT_SETTINGS: (x => g.op),
                     TYPE: [exports.bullet, { SHAPE: 5, }],
                 }, }, /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
             ],
