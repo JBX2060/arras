@@ -4681,7 +4681,6 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        //previousTick = now();
         var curTime = now();
         timestep = 0.00525 * (curTime - lastTime);
         if (timestep <= 0 || timestep > 1.0) {
@@ -4701,13 +4700,6 @@ var gameloop = (() => {
         if (entities.length > 1) {
             // Load the grid
             grid.update();
-            // Run collisions in each grid
-
-            //var query = grid.queryForCollisionPairs(); 
-            //for (var collision of query) {
-            //    collide(collision);
-            //}
-
             grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
@@ -4716,14 +4708,12 @@ var gameloop = (() => {
         for (var e of entities) {
             entitiesliveloop(e);
         }
-        //entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
         // Remove dead entities
         purgeEntities();
         lastTime = curTime;
         room.lastCycle = util.time();
-        //room.cycleSpeed = 1000 / roomSpeed / 60; //global.fps
     };
     //let expected = 1000 / c.gameSpeed / 30;
     //let alphaFactor = (delta > expected) ? expected / delta : 1;
