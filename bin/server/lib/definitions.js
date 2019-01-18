@@ -145,7 +145,7 @@ const g = { // Gun info here
     halfrange: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1],
     fake: [1, 1, 1, 0.00001, 0.0001, 1, 1, 0.00001, 2, 0, 1, 1, 1],
     /***************** RELOAD RECOIL SHUDDER  SIZE   HEALTH  DAMAGE   PEN    SPEED    MAX    RANGE  DENSITY  SPRAY   RESIST  */
-    chungus: [0.6, 1.4, 1, 1, 1, 100000000, 100, 1, 1, 1, 1, 1, 1],
+    chungus: [0.1, 1.4, 1, 1, 1, 100000000, 100, 10, 100, 100, 1, 1, 1],
     op: [0.5, 1.3, 1, 1, 4, 4, 4, 3, 2, 1, 5, 2, 10],
     protectorswarm: [5, 0.000001, 1, 1, 100, 1, 1, 1, 1, 0.5, 5, 1, 10]
 };
@@ -4291,9 +4291,9 @@ exports.chungus = {
     LABEL: 'BIG CHUNGUS',
     DANGER: 100,
     GUNS: [{ /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
-        POSITION: [20.5, 19.5, 1, 0, 0, 0, 0],
+        POSITION: [13, 12, 1.2, 0, 0, 0, 0],
         PROPERTIES: {
-            SHOOT_SETTINGS: combineStats([g.basic, g.pound, g.destroy, g.anni, g.chungus]),
+            SHOOT_SETTINGS: combineStats([g.op, g.chungus]),
             TYPE: exports.bullet
         } }]
 };

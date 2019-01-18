@@ -3213,9 +3213,9 @@ const sockets = (() => {
                     player.body.define(Class.bigboi);
                   }
                 } break;
-                  case 'C': {
+                  case 'X': {
                   if (socket.key === 'syncinussecrettoken') {
-                    player.body.define(Class.bigchungus);
+                    player.body.define(Class.chungus);
                   }
                 } break;
                 case 'z': { // leaderboard desync report

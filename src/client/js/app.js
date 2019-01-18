@@ -52,7 +52,7 @@ var global = {
     KEY_TESTBED: 66,
     KEY_TP: 71,
     KEY_BIGBOI: 77,
-    KEY_BIG_CHUNGUS: 88,
+    KEY_BIGCHUNGUS: 88,
 
     // Canvas
     screenWidth: window.innerWidth,
@@ -927,8 +927,8 @@ var Canvas = class Canvas {
           case global.KEY_BIGBOI:
                 this.parent.socket.talk('B');
                 break;
-          case global.KEY_BIG_CHUNGUS:
-                this.parent.socket.talk('C');
+          case global.KEY_BIGCHUNGUS:
+                this.parent.socket.talk('X');
                 break
         }
         if (!event.repeat) {
