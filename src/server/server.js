@@ -2014,7 +2014,7 @@ class Entity {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
         
-        this.topSpeed = (c.runSpeed * (this.SPEED * 3) * this.skill.mob / speedReduce) / 2.45;
+        this.topSpeed = (c.runSpeed * (this.SPEED * 2) * this.skill.mob / speedReduce) / 2.45;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         
         this.health.set(
@@ -4487,10 +4487,10 @@ var gameloop = (() => {
                                 _n: c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
                             };
                         // Apply impulse as force
-                        my.accel.x += modifiers._me * force.x;
-                        my.accel.y += modifiers._me * force.y;
-                        n.accel.x -= modifiers._n * force.x;
-                        n.accel.y -= modifiers._n * force.y;
+                        my.accel.x += (modifiers._me * force.x);
+                        my.accel.y += (modifiers._me * force.y);
+                        n.accel.x -= (modifiers._n * force.x);
+                        n.accel.y -= (modifiers._n * force.y);
                     }
                 }
             }
