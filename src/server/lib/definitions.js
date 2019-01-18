@@ -4390,19 +4390,19 @@ exports.miniboss = {
 
   exports.chungus = {
                 PARENT: [exports.genericTank],
-                LEVEL: 10000,
+                LEVEL: 999999999,
                 SKILL: [11, 11, 11, 11, 11, 11, 11, 11, 11, 11,],
-                SIZE: 666,
+                SIZE: 10000,
                 BODY: {
                     SHIELD: 999999999999,
                     REGEN: 999999999999,
                     HEALTH: 99999999999,
                     DAMAGE: 999999999999,
                     DENSITY: 999999999999,
-                    FOV: 8,
+                    FOV: 50,
                 },
                 LABEL: 'BIG CHUNGUS',
-                DANGER: 100,
+                DANGER: 1000,
                 GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
                     POSITION: [ 13,     12,     1.2,     0,      0,      0,      0,   ],
                     PROPERTIES: {
