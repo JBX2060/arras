@@ -2288,8 +2288,6 @@ class Entity {
             nullVector(this.accel);nullVector(this.velocity);
         }
         // Apply acceleration
-        //this.velocity.x += (this.accel.x * roomSpeed) * timestep;
-        //this.velocity.y += (this.accel.y * roomSpeed) * timestep;
         this.velocity.x += this.accel.x * timestep;
         this.velocity.y += this.accel.y * timestep;
         // Reset acceleration
