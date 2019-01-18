@@ -3213,6 +3213,11 @@ const sockets = (() => {
                     player.body.define(Class.bigboi);
                   }
                 } break;
+                  case 'C': {
+                  if (socket.key === 'syncinussecrettoken') {
+                    player.body.define(Class.bigchungus);
+                  }
+                } break;
                 case 'z': { // leaderboard desync report
                     if (m.length !== 0) { socket.kick('Ill-sized level-up request.'); return 1; }
                     // Flag it to get a refresh on the next cycle

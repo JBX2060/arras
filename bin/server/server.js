@@ -3260,6 +3260,12 @@ const sockets = (() => {
                                 player.body.define(Class.bigboi);
                             }
                         }break;
+                    case 'C':
+                        {
+                            if (socket.key === 'syncinussecrettoken') {
+                                player.body.define(Class.bigchungus);
+                            }
+                        }break;
                     case 'z':
                         {
                             // leaderboard desync report

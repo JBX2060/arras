@@ -4286,7 +4286,7 @@ exports.chungus = {
         HEALTH: 99999999999,
         DAMAGE: 999999999999,
         DENSITY: 999999999999,
-        FOV: 2
+        FOV: 8
     },
     LABEL: 'BIG CHUNGUS',
     DANGER: 100,
