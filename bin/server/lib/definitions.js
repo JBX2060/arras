@@ -1129,8 +1129,10 @@ exports.playablesquare = {
     DANGER: 6,
     FACING_TYPE: 'autospin',
     BODY: {
-        FOV: base.FOV * 1.05,
-        DENSITY: base.DENSITY * 2
+        DAMAGE: basePolygonDamage,
+        DENSITY: 4,
+        HEALTH: basePolygonHealth,
+        PENETRATION: 2
     },
     IS_SMASHER: true,
     SKILL_CAP: [sqrskill, 0, 0, 0, 0, sqrskill, sqrskill, sqrskill, sqrskill, sqrskill],
