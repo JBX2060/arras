@@ -1206,7 +1206,7 @@ exports.playablepentagon = {
     LABEL: 'Pentagon',
     SHAPE: 5,
     SIZE: 16,
-    COLOR: 1,
+    COLOR: 14,
     FACING_TYPE: 'autospin',
     BODY: {
         DAMAGE: 1.5 * basePolygonDamage,
@@ -1217,25 +1217,6 @@ exports.playablepentagon = {
     },
     IS_SMASHER: true,
     SKILL_CAP: [8, 0, 0, 0, 0, 8, 8, 8, 8, 8],
-    STAT_NAMES: statnames.smasher,
-};
-
-exports.playablegreensquare = {
-    PARENT: [exports.genericTank],
-    LABEL: 'Triangle',
-    SHAPE: 3,
-    SIZE: 10,
-    COLOR: 2,
-    DANGER: 7,
-    FACING_TYPE: 'autospin',
-    BODY: {
-        DAMAGE: basePolygonDamage,
-        DENSITY: 4,
-        HEALTH: basePolygonHealth,
-        PENETRATION: 2,
-    },
-    IS_SMASHER: true,
-    SKILL_CAP: [7, 0, 0, 0, 0, 7, 7, 7, 7, 7],
     STAT_NAMES: statnames.smasher,
 };
     exports.baseSwarmTurret = {
