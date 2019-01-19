@@ -4480,10 +4480,10 @@ var gameloop = (() => {
                                 _n:  c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
                             };
                         // Apply impulse as force
-                        my.accel.x += modifiers._me * force.x * 2;
-                        my.accel.y += modifiers._me * force.y * 2;
-                        n.accel.x -= modifiers._n * force.x * 2;
-                        n.accel.y -= modifiers._n * force.y * 2;
+                        my.accel.x += modifiers._me * force.x * 3;
+                        my.accel.y += modifiers._me * force.y * 3;
+                        n.accel.x -= modifiers._n * force.x * 3;
+                        n.accel.y -= modifiers._n * force.y * 3;
                     }
                 }
             }
