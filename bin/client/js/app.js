@@ -51,7 +51,7 @@ var app =
 /************************************************************************/
 /******/[
 /* 0 */
-/***/function (module, exports) {
+/***/function (module, exports, __webpack_require__) {
 
 	/*global require, console*/
 	/*jshint -W097*/
@@ -62,8 +62,9 @@ var app =
 	//var global = require('./lib/global');
 	//var util = require('./lib/util');
 
-	//imported manualy cause stuffs going wrong
+	var dynamic = __webpack_require__(1);
 
+	//imported manualy cause stuffs going wrong
 	var global = {
 		// Keys and other mathematical constants and some other shit
 		KEY_ESC: 27,
@@ -533,7 +534,7 @@ var app =
 					place: function place(index) {
 						var _data$index;
 
-						for (var _len = arguments.length, a = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+						for (var _len3 = arguments.length, a = Array(_len3 > 1 ? _len3 - 1 : 0), _key = 1; _key < _len3; _key++) {
 							a[_key - 1] = arguments[_key];
 						}
 
@@ -1398,25 +1399,25 @@ var app =
 						}
 						return arrUint16[0];
 					case 'Uint32':
-						for (var _i = 0; _i < 4; _i++) {
-							charUint32[_i] = str.charCodeAt(offset++);
+						for (var _i2 = 0; _i2 < 4; _i2++) {
+							charUint32[_i2] = str.charCodeAt(offset++);
 						}
 						return arrUint32[0];
 					case 'Sint8':
 						return -1 - str.charCodeAt(offset++);
 					case 'Sint16':
-						for (var _i2 = 0; _i2 < 2; _i2++) {
-							charUint16[_i2] = str.charCodeAt(offset++);
+						for (var _i3 = 0; _i3 < 2; _i3++) {
+							charUint16[_i3] = str.charCodeAt(offset++);
 						}
 						return -1 - arrUint16[0];
 					case 'Sint32':
-						for (var _i3 = 0; _i3 < 4; _i3++) {
-							charUint32[_i3] = str.charCodeAt(offset++);
+						for (var _i4 = 0; _i4 < 4; _i4++) {
+							charUint32[_i4] = str.charCodeAt(offset++);
 						}
 						return -1 - arrUint32[0];
 					case 'Float32':
-						for (var _i4 = 0; _i4 < 4; _i4++) {
-							charFloat32[_i4] = str.charCodeAt(offset++);
+						for (var _i5 = 0; _i5 < 4; _i5++) {
+							charFloat32[_i5] = str.charCodeAt(offset++);
 						}
 						return arrFloat32[0];
 					default:
@@ -1466,22 +1467,22 @@ var app =
 							case '7':
 								{
 									// String8
-									var _len2 = typeDecoder(str, 'Uint16', offset);offset += 2;
-									output.push(str.slice(offset, offset + _len2));
-									offset += _len2;
+									var _len4 = typeDecoder(str, 'Uint16', offset);offset += 2;
+									output.push(str.slice(offset, offset + _len4));
+									offset += _len4;
 								}
 								break;
 							case '8':
 								{
 									// String16
-									var _len3 = typeDecoder(str, 'Uint16', offset);offset += 2;
-									var arr = str.slice(offset, offset + _len3);
-									var buf = new Uint16Array(_len3 / 2);
-									for (var _i5 = 0; _i5 < _len3; _i5 += 2) {
-										buf[_i5 / 2] = typeDecoder(arr, 'Uint16', _i5);
+									var _len5 = typeDecoder(str, 'Uint16', offset);offset += 2;
+									var arr = str.slice(offset, offset + _len5);
+									var buf = new Uint16Array(_len5 / 2);
+									for (var _i6 = 0; _i6 < _len5; _i6 += 2) {
+										buf[_i6 / 2] = typeDecoder(arr, 'Uint16', _i6);
 									}
 									output.push(String.fromCharCode.apply(null, buf));
-									offset += _len3;
+									offset += _len5;
 								}
 								break;
 							default:
@@ -1723,7 +1724,7 @@ var app =
 							}
 							if (isNew) {
 								z.turrets = [];
-								for (var _i6 = 0; _i6 < turnumb; _i6++) {
+								for (var _i7 = 0; _i7 < turnumb; _i7++) {
 									z.turrets.push(process());
 								}
 							} else {
@@ -1831,10 +1832,10 @@ var app =
 						}
 					}
 					if (indices.statsdata) {
-						for (var _i7 = 9; _i7 >= 0; _i7--) {
-							_gui.skills[_i7].name = get.next();
-							_gui.skills[_i7].cap = get.next();
-							_gui.skills[_i7].softcap = get.next();
+						for (var _i8 = 9; _i8 >= 0; _i8--) {
+							_gui.skills[_i8].name = get.next();
+							_gui.skills[_i8].cap = get.next();
+							_gui.skills[_i8].softcap = get.next();
 						}
 					}
 					if (indices.skills) {
@@ -1920,7 +1921,7 @@ var app =
 						}
 					}
 					// Then do the next things
-					for (var _i8 = 0, _len4 = get.next(); _i8 < _len4; _i8++) {
+					for (var _i9 = 0, _len6 = get.next(); _i9 < _len6; _i9++) {
 						var next = get.next();
 						if (next < 0) {
 							// It's an add index!
@@ -1995,7 +1996,7 @@ var app =
 			}();
 			// Learn how to talk
 			socket.talk = function () {
-				for (var _len5 = arguments.length, message = Array(_len5), _key2 = 0; _key2 < _len5; _key2++) {
+				for (var _len7 = arguments.length, message = Array(_len7), _key2 = 0; _key2 < _len7; _key2++) {
 					message[_key2] = arguments[_key2];
 				}
 
@@ -2605,9 +2606,9 @@ var app =
 				var _dip = 1;
 				sides = 1769;
 				context.moveTo(centerX + radius * Math.cos(angle), centerY + radius * Math.sin(angle));
-				for (var _i9 = 0; _i9 < 4; _i9++) {
-					var theta = (_i9 + 1) / 3 * 2 * Math.PI;
-					var htheta = (_i9 + 0.5) / 4 * 2 * Math.PI;
+				for (var _i10 = 0; _i10 < 4; _i10++) {
+					var theta = (_i10 + 1) / 3 * 2 * Math.PI;
+					var htheta = (_i10 + 0.5) / 4 * 2 * Math.PI;
 					var c = {
 						x: centerX + radius * _dip * Math.cos(htheta + angle),
 						y: centerY + radius * _dip * Math.sin(htheta + angle)
@@ -2620,8 +2621,8 @@ var app =
 				}
 			} else if (sides > 0) {
 				// Polygon
-				for (var _i10 = 0; _i10 < sides; _i10++) {
-					var _theta = _i10 / sides * 2 * Math.PI;
+				for (var _i11 = 0; _i11 < sides; _i11++) {
+					var _theta = _i11 / sides * 2 * Math.PI;
 					var x = centerX + radius * Math.cos(_theta + angle);
 					var y = centerY + radius * Math.sin(_theta + angle);
 					context.lineTo(x, y);
@@ -2696,9 +2697,9 @@ var app =
 			setColor(context, mixColors(color.grey, render.status.getColor(), render.status.getBlend()));
 			if (source.guns.length === m.guns.length) {
 				var positions = source.guns.getPositions();
-				for (var _i11 = 0; _i11 < m.guns.length; _i11++) {
-					var g = m.guns[_i11],
-					    position = positions[_i11] / (g.aspect === 1 ? 2 : 1),
+				for (var _i12 = 0; _i12 < m.guns.length; _i12++) {
+					var g = m.guns[_i12],
+					    position = positions[_i12] / (g.aspect === 1 ? 2 : 1),
 					    gx = g.offset * Math.cos(g.direction + g.angle + rot) + (g.length / 2 - position) * Math.cos(g.angle + rot),
 					    gy = g.offset * Math.sin(g.direction + g.angle + rot) + (g.length / 2 - position) * Math.sin(g.angle + rot);
 					drawTrapezoid(context, xx + drawSize * gx, yy + drawSize * gy, drawSize * (g.length / 2 - (g.aspect === 1 ? position * 2 : 0)), drawSize * g.width / 2, g.aspect, g.angle + rot);
@@ -2712,12 +2713,12 @@ var app =
 			drawPoly(context, xx, yy, drawSize / m.size * m.realSize, m.shape, rot);
 			// Draw turrets above us
 			if (source.turrets.length === m.turrets.length) {
-				for (var _i12 = 0; _i12 < m.turrets.length; _i12++) {
-					var _t = m.turrets[_i12];
+				for (var _i13 = 0; _i13 < m.turrets.length; _i13++) {
+					var _t = m.turrets[_i13];
 					if (_t.layer === 1) {
 						var _ang = _t.direction + _t.angle + rot,
-						    _len6 = _t.offset * drawSize;
-						drawEntity(xx + _len6 * Math.cos(_ang), yy + _len6 * Math.sin(_ang), _t, ratio, 1, drawSize / ratio / _t.size * _t.sizeFactor, source.turrets[_i12].facing + turretsObeyRot * rot, turretsObeyRot, context, source.turrets[_i12], render);
+						    _len8 = _t.offset * drawSize;
+						drawEntity(xx + _len8 * Math.cos(_ang), yy + _len8 * Math.sin(_ang), _t, ratio, 1, drawSize / ratio / _t.size * _t.sizeFactor, source.turrets[_i13].facing + turretsObeyRot * rot, turretsObeyRot, context, source.turrets[_i13], render);
 					}
 				}
 			} else {
@@ -3076,20 +3077,24 @@ var app =
 					if (!instance.render.draws) {
 						return 1;
 					}
-					var motion = compensation();
-					if (instance.render.status.getFade() === 1) {
-						motion.set();
-					} else {
-						motion.set(instance.render.lastRender, instance.render.interval);
-					}
-					instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
-					instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
-					instance.render.f = instance.id === _gui.playerid && !instance.twiggle ? Math.atan2(target.y, target.x) : motion.predictFacing(instance.render.lastf, instance.facing);
-					var x = instance.id === _gui.playerid ? 0 : ratio * instance.render.x - px,
-					    y = instance.id === _gui.playerid ? 0 : ratio * instance.render.y - py;
-					x += global.screenWidth / 2;
-					y += global.screenHeight / 2;
-					drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);
+					/*
+     let motion = compensation();
+     if (instance.render.status.getFade() === 1) {
+         motion.set();
+     } else {
+         motion.set(instance.render.lastRender, instance.render.interval);
+     }
+     instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
+     instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
+     instance.render.f = (instance.id === gui.playerid && !instance.twiggle) ?
+         Math.atan2(target.y, target.x) :
+         motion.predictFacing(instance.render.lastf, instance.facing);
+     let x = (instance.id === gui.playerid) ? 0 : ratio * instance.render.x - px,
+         y = (instance.id === gui.playerid) ? 0 : ratio * instance.render.y - py;
+     x += global.screenWidth / 2;
+     y += global.screenHeight / 2;
+     drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);
+     */
 				};
 
 				var _iteratorNormalCompletion9 = true;
@@ -3179,8 +3184,8 @@ var app =
 				var _x28 = global.screenWidth / 2;
 				var _y = spacing;
 				// Draw each message
-				for (var _i13 = messages.length - 1; _i13 >= 0; _i13--) {
-					var msg = messages[_i13],
+				for (var _i14 = messages.length - 1; _i14 >= 0; _i14--) {
+					var msg = messages[_i14],
 					    txt = msg.text,
 					    _text = txt; //txt[0].toUpperCase() + txt.substring(1);  
 					// Give it a textobj if it doesn't have one
@@ -3200,7 +3205,7 @@ var app =
 					if (msg.status > 1) {
 						msg.status -= 0.05;
 						msg.alpha += 0.05;
-					} else if (_i13 === 0 && (messages.length > 5 || Date.now() - msg.time > 10000)) {
+					} else if (_i14 === 0 && (messages.length > 5 || Date.now() - msg.time > 10000)) {
 						msg.status -= 0.05;
 						msg.alpha -= 0.05;
 						// Remove
@@ -3222,9 +3227,9 @@ var app =
 				var _vspacing = 4;
 				var _height = 15;
 				var gap = 35;
-				var _len7 = alcoveSize * global.screenWidth; // The 30 is for the value modifiers
-				var save = _len7;
-				var _x29 = -spacing - 2 * _len7 + statMenu.get() * (2 * spacing + 2 * _len7);
+				var _len9 = alcoveSize * global.screenWidth; // The 30 is for the value modifiers
+				var save = _len9;
+				var _x29 = -spacing - 2 * _len9 + statMenu.get() * (2 * spacing + 2 * _len9);
 				var _y2 = global.screenHeight - spacing - _height;
 				var ticker = 11;
 				var namedata = _gui.getStatNames(mockups[_gui.type].statnames || -1);
@@ -3237,95 +3242,95 @@ var app =
 					    cap = skill.softcap,
 					    maxLevel = skill.cap;
 					if (cap) {
-						_len7 = save;
+						_len9 = save;
 						var _max = config.gui.expectedMaxSkillLevel,
 						    extension = cap > _max,
 						    blocking = cap < maxLevel;
 						if (extension) {
 							_max = cap;
 						}
-						drawBar(_x29 + _height / 2, _x29 - _height / 2 + _len7 * ska(cap), _y2 + _height / 2, _height - 3 + config.graphical.barChunk, color.black);
-						drawBar(_x29 + _height / 2, _x29 + _height / 2 + (_len7 - gap) * ska(cap), _y2 + _height / 2, _height - 3, color.grey);
-						drawBar(_x29 + _height / 2, _x29 + _height / 2 + (_len7 - gap) * ska(level), _y2 + _height / 2, _height - 3.5, col);
+						drawBar(_x29 + _height / 2, _x29 - _height / 2 + _len9 * ska(cap), _y2 + _height / 2, _height - 3 + config.graphical.barChunk, color.black);
+						drawBar(_x29 + _height / 2, _x29 + _height / 2 + (_len9 - gap) * ska(cap), _y2 + _height / 2, _height - 3, color.grey);
+						drawBar(_x29 + _height / 2, _x29 + _height / 2 + (_len9 - gap) * ska(level), _y2 + _height / 2, _height - 3.5, col);
 						// Blocked-off area
 						if (blocking) {
 							ctx.lineWidth = 1;
 							ctx.strokeStyle = color.grey;
-							for (var _j = cap + 1; _j < _max; _j++) {
-								drawGuiLine(_x29 + (_len7 - gap) * ska(_j), _y2 + 1.5, _x29 + (_len7 - gap) * ska(_j), _y2 - 3 + _height);
+							for (var _j2 = cap + 1; _j2 < _max; _j2++) {
+								drawGuiLine(_x29 + (_len9 - gap) * ska(_j2), _y2 + 1.5, _x29 + (_len9 - gap) * ska(_j2), _y2 - 3 + _height);
 							}
 						}
 						// Vertical dividers
 						ctx.strokeStyle = color.black;
 						ctx.lineWidth = 1;
-						for (var _j2 = 1; _j2 < level + 1; _j2++) {
-							drawGuiLine(_x29 + (_len7 - gap) * ska(_j2), _y2 + 1.5, _x29 + (_len7 - gap) * ska(_j2), _y2 - 3 + _height);
+						for (var _j3 = 1; _j3 < level + 1; _j3++) {
+							drawGuiLine(_x29 + (_len9 - gap) * ska(_j3), _y2 + 1.5, _x29 + (_len9 - gap) * ska(_j3), _y2 - 3 + _height);
 						}
 						// Skill name
-						_len7 = save * ska(_max);
+						_len9 = save * ska(_max);
 						var textcolor = level == maxLevel ? col : !_gui.points || cap !== maxLevel && level == cap ? color.grey : color.guiwhite;
-						text.skillNames[ticker - 1].draw(name, Math.round(_x29 + _len7 / 2) + 0.5, _y2 + _height / 2, _height - 5, textcolor, 'center', true);
+						text.skillNames[ticker - 1].draw(name, Math.round(_x29 + _len9 / 2) + 0.5, _y2 + _height / 2, _height - 5, textcolor, 'center', true);
 						// Skill key
-						text.skillKeys[ticker - 1].draw('[' + ticker % 10 + ']', Math.round(_x29 + _len7 - _height * 0.25) - 1.5, _y2 + _height / 2, _height - 5, textcolor, 'right', true);
+						text.skillKeys[ticker - 1].draw('[' + ticker % 10 + ']', Math.round(_x29 + _len9 - _height * 0.25) - 1.5, _y2 + _height / 2, _height - 5, textcolor, 'right', true);
 						if (textcolor === color.guiwhite) {
 							// If it's active
-							global.clickables.stat.place(ticker - 1, _x29, _y2, _len7, _height);
+							global.clickables.stat.place(ticker - 1, _x29, _y2, _len9, _height);
 						}
 						// Skill value
 						if (level) {
-							text.skillValues[ticker - 1].draw(textcolor === col ? 'MAX' : '+' + level, Math.round(_x29 + _len7 + 4) + 0.5, _y2 + _height / 2, _height - 5, col, 'left', true);
+							text.skillValues[ticker - 1].draw(textcolor === col ? 'MAX' : '+' + level, Math.round(_x29 + _len9 + 4) + 0.5, _y2 + _height / 2, _height - 5, col, 'left', true);
 						}
 						// Move on 
 						_y2 -= _height + _vspacing;
 					}
 				});
-				global.clickables.hover.place(0, 0, _y2, 0.8 * _len7, 0.8 * (global.screenHeight - _y2));
+				global.clickables.hover.place(0, 0, _y2, 0.8 * _len9, 0.8 * (global.screenHeight - _y2));
 				if (_gui.points !== 0) {
 					// Draw skillpoints to spend
-					text.skillPoints.draw('x' + _gui.points, Math.round(_x29 + _len7 - 2) + 0.5, Math.round(_y2 + _height - 4) + 0.5, 20, color.guiwhite, 'right');
+					text.skillPoints.draw('x' + _gui.points, Math.round(_x29 + _len9 - 2) + 0.5, Math.round(_y2 + _height - 4) + 0.5, 20, color.guiwhite, 'right');
 				}
 			}
 
 			{
 				// Draw name, exp and score bar
 				var _vspacing2 = 4;
-				var _len8 = 1.65 * alcoveSize * global.screenWidth;
+				var _len10 = 1.65 * alcoveSize * global.screenWidth;
 				var _height2 = 25;
-				var _x30 = (global.screenWidth - _len8) / 2;
+				var _x30 = (global.screenWidth - _len10) / 2;
 				var _y3 = global.screenHeight - spacing - _height2;
 
 				ctx.lineWidth = 1;
 				// Handle exp
 				// Draw the exp bar
-				drawBar(_x30, _x30 + _len8, _y3 + _height2 / 2, _height2 - 3 + config.graphical.barChunk, color.black);
-				drawBar(_x30, _x30 + _len8, _y3 + _height2 / 2, _height2 - 3, color.grey);
-				drawBar(_x30, _x30 + _len8 * _gui.__s.getProgress(), _y3 + _height2 / 2, _height2 - 3.5, color.gold);
+				drawBar(_x30, _x30 + _len10, _y3 + _height2 / 2, _height2 - 3 + config.graphical.barChunk, color.black);
+				drawBar(_x30, _x30 + _len10, _y3 + _height2 / 2, _height2 - 3, color.grey);
+				drawBar(_x30, _x30 + _len10 * _gui.__s.getProgress(), _y3 + _height2 / 2, _height2 - 3.5, color.gold);
 				// Draw the class type
-				text.class.draw('Level ' + _gui.__s.getLevel() + ' ' + mockups[_gui.type].name, _x30 + _len8 / 2, _y3 + _height2 / 2, _height2 - 4, color.guiwhite, 'center', true);
+				text.class.draw('Level ' + _gui.__s.getLevel() + ' ' + mockups[_gui.type].name, _x30 + _len10 / 2, _y3 + _height2 / 2, _height2 - 4, color.guiwhite, 'center', true);
 				_height2 = 14;
 				_y3 -= _height2 + _vspacing2;
 				// Draw the %-of-leader bar
-				drawBar(_x30 + _len8 * 0.1, _x30 + _len8 * 0.9, _y3 + _height2 / 2, _height2 - 3 + config.graphical.barChunk, color.black);
-				drawBar(_x30 + _len8 * 0.1, _x30 + _len8 * 0.9, _y3 + _height2 / 2, _height2 - 3, color.grey);
-				drawBar(_x30 + _len8 * 0.1, _x30 + _len8 * (0.1 + 0.8 * (max ? Math.min(1, _gui.__s.getScore() / max) : 1)), _y3 + _height2 / 2, _height2 - 3.5, color.green);
+				drawBar(_x30 + _len10 * 0.1, _x30 + _len10 * 0.9, _y3 + _height2 / 2, _height2 - 3 + config.graphical.barChunk, color.black);
+				drawBar(_x30 + _len10 * 0.1, _x30 + _len10 * 0.9, _y3 + _height2 / 2, _height2 - 3, color.grey);
+				drawBar(_x30 + _len10 * 0.1, _x30 + _len10 * (0.1 + 0.8 * (max ? Math.min(1, _gui.__s.getScore() / max) : 1)), _y3 + _height2 / 2, _height2 - 3.5, color.green);
 				// Draw the score
-				text.score.draw('Score: ' + handleLargeNumber(_gui.__s.getScore()), _x30 + _len8 / 2, _y3 + _height2 / 2, _height2 - 2, color.guiwhite, 'center', true);
+				text.score.draw('Score: ' + handleLargeNumber(_gui.__s.getScore()), _x30 + _len10 / 2, _y3 + _height2 / 2, _height2 - 2, color.guiwhite, 'center', true);
 				// Draw the name
 				ctx.lineWidth = 4;
-				text.name.draw(player.name, Math.round(_x30 + _len8 / 2) + 0.5, Math.round(_y3 - 10 - _vspacing2) + 0.5, 32, color.guiwhite, 'center');
+				text.name.draw(player.name, Math.round(_x30 + _len10 / 2) + 0.5, Math.round(_y3 - 10 - _vspacing2) + 0.5, 32, color.guiwhite, 'center');
 			}
 
 			{
 				// Draw minimap and FPS monitors
-				var _len9 = alcoveSize * global.screenWidth;
-				var _height3 = _len9;
-				var _x31 = global.screenWidth - _len9 - spacing;
+				var _len11 = alcoveSize * global.screenWidth;
+				var _height3 = _len11;
+				var _x31 = global.screenWidth - _len11 - spacing;
 				var _y4 = global.screenHeight - _height3 - spacing;
 
 				ctx.globalAlpha = 0.5;
 				var _W = roomSetup[0].length,
 				    _H = roomSetup.length,
-				    _i14 = 0;
+				    _i15 = 0;
 				var _iteratorNormalCompletion11 = true;
 				var _didIteratorError11 = false;
 				var _iteratorError11 = undefined;
@@ -3334,7 +3339,7 @@ var app =
 					for (var _iterator11 = roomSetup[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
 						var row = _step11.value;
 
-						var _j3 = 0;
+						var _j4 = 0;
 						var _iteratorNormalCompletion13 = true;
 						var _didIteratorError13 = false;
 						var _iteratorError13 = undefined;
@@ -3344,7 +3349,7 @@ var app =
 								var cell = _step13.value;
 
 								ctx.fillStyle = getZoneColor(cell, false);
-								drawGuiRect(_x31 + _j3++ * _len9 / _W, _y4 + _i14 * _height3 / _H, _len9 / _W, _height3 / _H);
+								drawGuiRect(_x31 + _j4++ * _len11 / _W, _y4 + _i15 * _height3 / _H, _len11 / _W, _height3 / _H);
 							}
 						} catch (err) {
 							_didIteratorError13 = true;
@@ -3362,7 +3367,7 @@ var app =
 						}
 
 						;
-						_i14++;
+						_i15++;
 					}
 				} catch (err) {
 					_didIteratorError11 = true;
@@ -3381,7 +3386,7 @@ var app =
 
 				;
 				ctx.fillStyle = color.grey;
-				drawGuiRect(_x31, _y4, _len9, _height3);
+				drawGuiRect(_x31, _y4, _len11, _height3);
 				var _iteratorNormalCompletion12 = true;
 				var _didIteratorError12 = false;
 				var _iteratorError12 = undefined;
@@ -3393,12 +3398,12 @@ var app =
 						if (o[2] === 17) {
 							ctx.fillStyle = mixColors(getColor(o[2]), color.black, 0.5);
 							ctx.globalAlpha = 0.8;
-							drawGuiRect(_x31 + o[0] / global.gameWidth * _len9, _y4 + o[1] / global.gameHeight * _height3, 1, 1);
+							drawGuiRect(_x31 + o[0] / global.gameWidth * _len11, _y4 + o[1] / global.gameHeight * _height3, 1, 1);
 						} else {
 							ctx.strokeStyle = mixColors(getColor(o[2]), color.black, 0.5);
 							ctx.lineWidth = 1;
 							ctx.globalAlpha = 1;
-							drawGuiRect(_x31 + o[0] / global.gameWidth * _len9 - 1, _y4 + o[1] / global.gameWidth * _height3 - 1, 3, 3, true);
+							drawGuiRect(_x31 + o[0] / global.gameWidth * _len11 - 1, _y4 + o[1] / global.gameWidth * _height3 - 1, 3, 3, true);
 							ctx.lineWidth = 3;
 						}
 					}
@@ -3422,33 +3427,33 @@ var app =
 				ctx.lineWidth = 1;
 				ctx.strokeStyle = color.black;
 				drawGuiRect( // My position
-				_x31 + player.x / global.gameWidth * _len9 - 1, _y4 + player.y / global.gameWidth * _height3 - 1, 3, 3, true);
+				_x31 + player.x / global.gameWidth * _len11 - 1, _y4 + player.y / global.gameWidth * _height3 - 1, 3, 3, true);
 				ctx.lineWidth = 3;
 				ctx.fillStyle = color.black;
-				drawGuiRect(_x31, _y4, _len9, _height3, true); // Border
+				drawGuiRect(_x31, _y4, _len11, _height3, true); // Border
 
-				drawGuiRect(_x31, _y4 - 40, _len9, 30);
-				lagGraph(lag.get(), _x31, _y4 - 40, _len9, 30, color.teal);
-				gapGraph(metrics.rendergap, _x31, _y4 - 40, _len9, 30, color.pink);
-				timingGraph(GRAPHDATA, _x31, _y4 - 40, _len9, 30, color.yellow);
+				drawGuiRect(_x31, _y4 - 40, _len11, 30);
+				lagGraph(lag.get(), _x31, _y4 - 40, _len11, 30, color.teal);
+				gapGraph(metrics.rendergap, _x31, _y4 - 40, _len11, 30, color.pink);
+				timingGraph(GRAPHDATA, _x31, _y4 - 40, _len11, 30, color.yellow);
 				// Text
-				text.debug[5].draw('Prediction: ' + Math.round(GRAPHDATA) + 'ms', _x31 + _len9, _y4 - 50 - 5 * 14, 10, color.guiwhite, 'right');
-				text.debug[4].draw('Update Rate: ' + metrics.updatetime + 'Hz', _x31 + _len9, _y4 - 50 - 4 * 14, 10, color.guiwhite, 'right');
-				text.debug[3].draw('Latency: ' + metrics.latency + 'ms', _x31 + _len9, _y4 - 50 - 3 * 14, 10, color.guiwhite, 'right');
-				text.debug[2].draw('Client FPS: ' + metrics.rendertime, _x31 + _len9, _y4 - 50 - 2 * 14, 10, color.guiwhite, 'right');
-				text.debug[1].draw('Server Speed: ' + (100 * _gui.fps).toFixed(2) + '%' + (_gui.fps === 1 ? '' : ' OVERLOADED!'), _x31 + _len9, _y4 - 50 - 1 * 14, 10, _gui.fps === 1 ? color.guiwhite : color.orange, 'right');
-				text.debug[0].draw(serverName, _x31 + _len9, _y4 - 50, 10, color.guiwhite, 'right');
+				text.debug[5].draw('Prediction: ' + Math.round(GRAPHDATA) + 'ms', _x31 + _len11, _y4 - 50 - 5 * 14, 10, color.guiwhite, 'right');
+				text.debug[4].draw('Update Rate: ' + metrics.updatetime + 'Hz', _x31 + _len11, _y4 - 50 - 4 * 14, 10, color.guiwhite, 'right');
+				text.debug[3].draw('Latency: ' + metrics.latency + 'ms', _x31 + _len11, _y4 - 50 - 3 * 14, 10, color.guiwhite, 'right');
+				text.debug[2].draw('Client FPS: ' + metrics.rendertime, _x31 + _len11, _y4 - 50 - 2 * 14, 10, color.guiwhite, 'right');
+				text.debug[1].draw('Server Speed: ' + (100 * _gui.fps).toFixed(2) + '%' + (_gui.fps === 1 ? '' : ' OVERLOADED!'), _x31 + _len11, _y4 - 50 - 1 * 14, 10, _gui.fps === 1 ? color.guiwhite : color.orange, 'right');
+				text.debug[0].draw(serverName, _x31 + _len11, _y4 - 50, 10, color.guiwhite, 'right');
 			}
 
 			{
 				// Draw leaderboard
 				var _vspacing3 = 4;
-				var _len10 = alcoveSize * global.screenWidth;
+				var _len12 = alcoveSize * global.screenWidth;
 				var _height4 = 14;
-				var _x32 = global.screenWidth - _len10 - spacing;
+				var _x32 = global.screenWidth - _len12 - spacing;
 				var _y5 = spacing + _height4 + 7;
-				text.lbtitle.draw('Leaderboard:', Math.round(_x32 + _len10 / 2) + 0.5, Math.round(_y5 - 6) + 0.5, _height4 + 4, color.guiwhite, 'center');
-				var _i15 = 0;
+				text.lbtitle.draw('Leaderboard:', Math.round(_x32 + _len12 / 2) + 0.5, Math.round(_y5 - 6) + 0.5, _height4 + 4, color.guiwhite, 'center');
+				var _i16 = 0;
 				var _iteratorNormalCompletion14 = true;
 				var _didIteratorError14 = false;
 				var _iteratorError14 = undefined;
@@ -3457,12 +3462,12 @@ var app =
 					for (var _iterator14 = lb.data[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
 						var entry = _step14.value;
 
-						drawBar(_x32, _x32 + _len10, _y5 + _height4 / 2, _height4 - 3 + config.graphical.barChunk, color.black);
-						drawBar(_x32, _x32 + _len10, _y5 + _height4 / 2, _height4 - 3, color.grey);
+						drawBar(_x32, _x32 + _len12, _y5 + _height4 / 2, _height4 - 3 + config.graphical.barChunk, color.black);
+						drawBar(_x32, _x32 + _len12, _y5 + _height4 / 2, _height4 - 3, color.grey);
 						var shift = Math.min(1, entry.score / max);
-						drawBar(_x32, _x32 + _len10 * shift, _y5 + _height4 / 2, _height4 - 3.5, entry.barcolor);
+						drawBar(_x32, _x32 + _len12 * shift, _y5 + _height4 / 2, _height4 - 3.5, entry.barcolor);
 						// Leadboard name + score 
-						text.leaderboard[_i15++].draw(entry.label + ': ' + handleLargeNumber(Math.round(entry.score)), _x32 + _len10 / 2, _y5 + _height4 / 2, _height4 - 5, color.guiwhite, 'center', true);
+						text.leaderboard[_i16++].draw(entry.label + ': ' + handleLargeNumber(Math.round(entry.score)), _x32 + _len12 / 2, _y5 + _height4 / 2, _height4 - 5, color.guiwhite, 'center', true);
 						// Mini-image
 						var scale = _height4 / entry.position.axis,
 						    xx = _x32 - 1.5 * _height4 - scale * entry.position.middle.x * 0.707,
@@ -3517,8 +3522,8 @@ var app =
 						}
 					};
 					var internalSpacing = 8;
-					var _len11 = alcoveSize * global.screenWidth / 2 * 1;
-					var _height5 = _len11;
+					var _len13 = alcoveSize * global.screenWidth / 2 * 1;
+					var _height5 = _len13;
 					var _x33 = glide * 2 * spacing - spacing;
 					var _y6 = spacing;
 					var xo = _x33;
@@ -3527,40 +3532,40 @@ var app =
 					var _ticker = 0;
 					upgradeSpin += 0.01;
 					var colorIndex = 10;
-					var _i16 = 0;
+					var _i17 = 0;
 					_gui.upgrades.forEach(function drawAnUpgrade(model) {
 						if (_y6 > yo) yo = _y6;
 						xxx = _x33;
-						global.clickables.upgrade.place(_i16++, _x33, _y6, _len11, _height5);
+						global.clickables.upgrade.place(_i17++, _x33, _y6, _len13, _height5);
 						// Draw box
 						ctx.globalAlpha = 0.5;
 						ctx.fillStyle = getColor(colorIndex);
-						drawGuiRect(_x33, _y6, _len11, _height5);
+						drawGuiRect(_x33, _y6, _len13, _height5);
 						ctx.globalAlpha = 0.1;
 						ctx.fillStyle = getColor(-10 + colorIndex++);
 						if (colorIndex === 14) colorIndex = 21;
-						drawGuiRect(_x33, _y6, _len11, _height5 * 0.6);
+						drawGuiRect(_x33, _y6, _len13, _height5 * 0.6);
 						ctx.fillStyle = color.black;
-						drawGuiRect(_x33, _y6 + _height5 * 0.6, _len11, _height5 * 0.4);
+						drawGuiRect(_x33, _y6 + _height5 * 0.6, _len13, _height5 * 0.4);
 						ctx.globalAlpha = 1;
 						// Find offset location with rotation
 						var picture = getEntityImageFromMockup(model, _gui.color),
 						    position = mockups[model].position,
-						    scale = 0.6 * _len11 / position.axis,
-						    xx = _x33 + 0.5 * _len11 - scale * position.middle.x * Math.cos(upgradeSpin),
+						    scale = 0.6 * _len13 / position.axis,
+						    xx = _x33 + 0.5 * _len13 - scale * position.middle.x * Math.cos(upgradeSpin),
 						    yy = _y6 + 0.5 * _height5 - scale * position.middle.x * Math.sin(upgradeSpin);
 						drawEntity(xx, yy, picture, 1, 1, scale / picture.size, upgradeSpin, true);
 						// Tank name
-						text.upgradeNames[_i16 - 1].draw(picture.name, _x33 + 0.9 * _len11 / 2, _y6 + _height5 - 6, _height5 / 8 - 3, color.guiwhite, 'center');
+						text.upgradeNames[_i17 - 1].draw(picture.name, _x33 + 0.9 * _len13 / 2, _y6 + _height5 - 6, _height5 / 8 - 3, color.guiwhite, 'center');
 						// Upgrade key
-						text.upgradeKeys[_i16 - 1].draw('[' + getClassUpgradeKey(_ticker) + ']', _x33 + _len11 - 4, _y6 + _height5 - 6, _height5 / 8 - 3, color.guiwhite, 'right');
+						text.upgradeKeys[_i17 - 1].draw('[' + getClassUpgradeKey(_ticker) + ']', _x33 + _len13 - 4, _y6 + _height5 - 6, _height5 / 8 - 3, color.guiwhite, 'right');
 						ctx.strokeStyle = color.black;
 						ctx.globalAlpha = 1;
 						ctx.lineWidth = 3;
-						drawGuiRect(_x33, _y6, _len11, _height5, true); // Border
+						drawGuiRect(_x33, _y6, _len13, _height5, true); // Border
 						if (_ticker++ % 2) {
 							_y6 -= _height5 + internalSpacing;
-							_x33 += glide * (_len11 + internalSpacing);
+							_x33 += glide * (_len13 + internalSpacing);
 						} else {
 							_y6 += _height5 + internalSpacing;
 						}
@@ -3569,7 +3574,7 @@ var app =
 					var h = 14,
 					    _msg = "Ignore",
 					    m = measureText(_msg, h - 3) + 10;
-					var _xx = xo + (xxx + _len11 + internalSpacing - xo) / 2,
+					var _xx = xo + (xxx + _len13 + internalSpacing - xo) / 2,
 					    _yy = yo + _height5 + internalSpacing;
 					drawBar(_xx - m / 2, _xx + m / 2, _yy + h / 2, h + config.graphical.barChunk, color.black);
 					drawBar(_xx - m / 2, _xx + m / 2, _yy + h / 2, h, color.white);
@@ -3698,6 +3703,2122 @@ var app =
 			gameDrawDisconnected();
 		}
 	}
+
+	/***/
+},
+/* 1 */
+/***/function (module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__; // Generated by CoffeeScript 1.7.1
+	(function () {
+		var Color,
+		    DecomposedMatrix,
+		    DecomposedMatrix2D,
+		    InterpolableArray,
+		    InterpolableColor,
+		    InterpolableNumber,
+		    InterpolableObject,
+		    InterpolableString,
+		    Matrix,
+		    Matrix2D,
+		    Set,
+		    Vector,
+		    addTimeout,
+		    addUnitsToNumberInterpolables,
+		    animationTick,
+		    animations,
+		    animationsTimeouts,
+		    applyDefaults,
+		    applyFrame,
+		    applyProperties,
+		    baseSVG,
+		    cacheFn,
+		    cancelTimeout,
+		    clone,
+		    createInterpolable,
+		    defaultValueForKey,
+		    degProperties,
+		    dynamics,
+		    getCurrentProperties,
+		    interpolate,
+		    isDocumentVisible,
+		    isSVGElement,
+		    lastTime,
+		    leftDelayForTimeout,
+		    makeArrayFn,
+		    observeVisibilityChange,
+		    parseProperties,
+		    prefixFor,
+		    propertyWithPrefix,
+		    pxProperties,
+		    rAF,
+		    roundf,
+		    runLoopPaused,
+		    runLoopRunning,
+		    _runLoopTick,
+		    setRealTimeout,
+		    slow,
+		    slowRatio,
+		    startAnimation,
+		    startRunLoop,
+		    svgProperties,
+		    timeBeforeVisibilityChange,
+		    timeoutLastId,
+		    timeouts,
+		    toDashed,
+		    transformProperties,
+		    transformValueForProperty,
+		    unitForProperty,
+		    __bind = function __bind(fn, me) {
+			return function () {
+				return fn.apply(me, arguments);
+			};
+		};
+
+		isDocumentVisible = function isDocumentVisible() {
+			return document.visibilityState === "visible" || dynamics.tests != null;
+		};
+
+		observeVisibilityChange = function () {
+			var fns;
+			fns = [];
+			if (typeof document !== "undefined" && document !== null) {
+				document.addEventListener("visibilitychange", function () {
+					var fn, _i, _len, _results;
+					_results = [];
+					for (_i = 0, _len = fns.length; _i < _len; _i++) {
+						fn = fns[_i];
+						_results.push(fn(isDocumentVisible()));
+					}
+					return _results;
+				});
+			}
+			return function (fn) {
+				return fns.push(fn);
+			};
+		}();
+
+		clone = function clone(o) {
+			var k, newO, v;
+			newO = {};
+			for (k in o) {
+				v = o[k];
+				newO[k] = v;
+			}
+			return newO;
+		};
+
+		cacheFn = function cacheFn(func) {
+			var data;
+			data = {};
+			return function () {
+				var k, key, result, _i, _len;
+				key = "";
+				for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+					k = arguments[_i];
+					key += k.toString() + ",";
+				}
+				result = data[key];
+				if (!result) {
+					data[key] = result = func.apply(this, arguments);
+				}
+				return result;
+			};
+		};
+
+		makeArrayFn = function makeArrayFn(fn) {
+			return function (el) {
+				var args, i, res;
+				if (el instanceof Array || el instanceof NodeList || el instanceof HTMLCollection) {
+					res = function () {
+						var _i, _ref, _results;
+						_results = [];
+						for (i = _i = 0, _ref = el.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+							args = Array.prototype.slice.call(arguments, 1);
+							args.splice(0, 0, el[i]);
+							_results.push(fn.apply(this, args));
+						}
+						return _results;
+					}.apply(this, arguments);
+					return res;
+				}
+				return fn.apply(this, arguments);
+			};
+		};
+
+		applyDefaults = function applyDefaults(options, defaults) {
+			var k, v, _results;
+			_results = [];
+			for (k in defaults) {
+				v = defaults[k];
+				_results.push(options[k] != null ? options[k] : options[k] = v);
+			}
+			return _results;
+		};
+
+		applyFrame = function applyFrame(el, properties) {
+			var k, v, _results;
+			if (el.style != null) {
+				return applyProperties(el, properties);
+			} else {
+				_results = [];
+				for (k in properties) {
+					v = properties[k];
+					_results.push(el[k] = v.format());
+				}
+				return _results;
+			}
+		};
+
+		applyProperties = function applyProperties(el, properties) {
+			var isSVG, k, matrix, transforms, v;
+			properties = parseProperties(properties);
+			transforms = [];
+			isSVG = isSVGElement(el);
+			for (k in properties) {
+				v = properties[k];
+				if (transformProperties.contains(k)) {
+					transforms.push([k, v]);
+				} else {
+					if (v.format != null) {
+						v = v.format();
+					}
+					if (typeof v === 'number') {
+						v = "" + v + unitForProperty(k, v);
+					}
+					if (el.hasAttribute != null && el.hasAttribute(k)) {
+						el.setAttribute(k, v);
+					} else if (el.style != null) {
+						el.style[propertyWithPrefix(k)] = v;
+					}
+					if (k in el) {
+						el[k] = v;
+					}
+				}
+			}
+			if (transforms.length > 0) {
+				if (isSVG) {
+					matrix = new Matrix2D();
+					matrix.applyProperties(transforms);
+					return el.setAttribute("transform", matrix.decompose().format());
+				} else {
+					v = transforms.map(function (transform) {
+						return transformValueForProperty(transform[0], transform[1]);
+					}).join(" ");
+					return el.style[propertyWithPrefix("transform")] = v;
+				}
+			}
+		};
+
+		isSVGElement = function isSVGElement(el) {
+			var _ref, _ref1;
+			if (typeof SVGElement !== "undefined" && SVGElement !== null && typeof SVGSVGElement !== "undefined" && SVGSVGElement !== null) {
+				return el instanceof SVGElement && !(el instanceof SVGSVGElement);
+			} else {
+				return (_ref = (_ref1 = dynamics.tests) != null ? typeof _ref1.isSVG === "function" ? _ref1.isSVG(el) : void 0 : void 0) != null ? _ref : false;
+			}
+		};
+
+		roundf = function roundf(v, decimal) {
+			var d;
+			d = Math.pow(10, decimal);
+			return Math.round(v * d) / d;
+		};
+
+		Set = function () {
+			function Set(array) {
+				var v, _i, _len;
+				this.obj = {};
+				for (_i = 0, _len = array.length; _i < _len; _i++) {
+					v = array[_i];
+					this.obj[v] = 1;
+				}
+			}
+
+			Set.prototype.contains = function (v) {
+				return this.obj[v] === 1;
+			};
+
+			return Set;
+		}();
+
+		toDashed = function toDashed(str) {
+			return str.replace(/([A-Z])/g, function ($1) {
+				return "-" + $1.toLowerCase();
+			});
+		};
+
+		pxProperties = new Set('marginTop,marginLeft,marginBottom,marginRight,paddingTop,paddingLeft,paddingBottom,paddingRight,top,left,bottom,right,translateX,translateY,translateZ,perspectiveX,perspectiveY,perspectiveZ,width,height,maxWidth,maxHeight,minWidth,minHeight,borderRadius'.split(','));
+
+		degProperties = new Set('rotate,rotateX,rotateY,rotateZ,skew,skewX,skewY,skewZ'.split(','));
+
+		transformProperties = new Set('translate,translateX,translateY,translateZ,scale,scaleX,scaleY,scaleZ,rotate,rotateX,rotateY,rotateZ,rotateC,rotateCX,rotateCY,skew,skewX,skewY,skewZ,perspective'.split(','));
+
+		svgProperties = new Set('accent-height,ascent,azimuth,baseFrequency,baseline-shift,bias,cx,cy,d,diffuseConstant,divisor,dx,dy,elevation,filterRes,fx,fy,gradientTransform,height,k1,k2,k3,k4,kernelMatrix,kernelUnitLength,letter-spacing,limitingConeAngle,markerHeight,markerWidth,numOctaves,order,overline-position,overline-thickness,pathLength,points,pointsAtX,pointsAtY,pointsAtZ,r,radius,rx,ry,seed,specularConstant,specularExponent,stdDeviation,stop-color,stop-opacity,strikethrough-position,strikethrough-thickness,surfaceScale,target,targetX,targetY,transform,underline-position,underline-thickness,viewBox,width,x,x1,x2,y,y1,y2,z'.split(','));
+
+		unitForProperty = function unitForProperty(k, v) {
+			if (typeof v !== 'number') {
+				return '';
+			}
+			if (pxProperties.contains(k)) {
+				return 'px';
+			} else if (degProperties.contains(k)) {
+				return 'deg';
+			}
+			return '';
+		};
+
+		transformValueForProperty = function transformValueForProperty(k, v) {
+			var match, unit;
+			match = ("" + v).match(/^([0-9.-]*)([^0-9]*)$/);
+			if (match != null) {
+				v = match[1];
+				unit = match[2];
+			} else {
+				v = parseFloat(v);
+			}
+			v = roundf(parseFloat(v), 10);
+			if (unit == null || unit === "") {
+				unit = unitForProperty(k, v);
+			}
+			return "" + k + "(" + v + unit + ")";
+		};
+
+		parseProperties = function parseProperties(properties) {
+			var axis, match, parsed, property, value, _i, _len, _ref;
+			parsed = {};
+			for (property in properties) {
+				value = properties[property];
+				if (transformProperties.contains(property)) {
+					match = property.match(/(translate|rotateC|rotate|skew|scale|perspective)(X|Y|Z|)/);
+					if (match && match[2].length > 0) {
+						parsed[property] = value;
+					} else {
+						_ref = ['X', 'Y', 'Z'];
+						for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+							axis = _ref[_i];
+							parsed[match[1] + axis] = value;
+						}
+					}
+				} else {
+					parsed[property] = value;
+				}
+			}
+			return parsed;
+		};
+
+		defaultValueForKey = function defaultValueForKey(key) {
+			var v;
+			v = key === 'opacity' ? 1 : 0;
+			return "" + v + unitForProperty(key, v);
+		};
+
+		getCurrentProperties = function getCurrentProperties(el, keys) {
+			var isSVG, key, matrix, properties, style, v, _i, _j, _len, _len1, _ref;
+			properties = {};
+			isSVG = isSVGElement(el);
+			if (el.style != null) {
+				style = window.getComputedStyle(el, null);
+				for (_i = 0, _len = keys.length; _i < _len; _i++) {
+					key = keys[_i];
+					if (transformProperties.contains(key)) {
+						if (properties['transform'] == null) {
+							if (isSVG) {
+								matrix = new Matrix2D((_ref = el.transform.baseVal.consolidate()) != null ? _ref.matrix : void 0);
+							} else {
+								matrix = Matrix.fromTransform(style[propertyWithPrefix('transform')]);
+							}
+							properties['transform'] = matrix.decompose();
+						}
+					} else {
+						if (el.hasAttribute != null && el.hasAttribute(key)) {
+							v = el.getAttribute(key);
+						} else if (key in el) {
+							v = el[key];
+						} else {
+							v = style[key];
+						}
+						if ((v == null || key === 'd') && svgProperties.contains(key)) {
+							v = el.getAttribute(key);
+						}
+						if (v === "" || v == null) {
+							v = defaultValueForKey(key);
+						}
+						properties[key] = createInterpolable(v);
+					}
+				}
+			} else {
+				for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
+					key = keys[_j];
+					properties[key] = createInterpolable(el[key]);
+				}
+			}
+			addUnitsToNumberInterpolables(el, properties);
+			return properties;
+		};
+
+		addUnitsToNumberInterpolables = function addUnitsToNumberInterpolables(el, properties) {
+			var interpolable, k;
+			for (k in properties) {
+				interpolable = properties[k];
+				if (interpolable instanceof InterpolableNumber && el.style != null && k in el.style) {
+					interpolable = new InterpolableString([interpolable, unitForProperty(k, 0)]);
+				}
+				properties[k] = interpolable;
+			}
+			return properties;
+		};
+
+		createInterpolable = function createInterpolable(value) {
+			var interpolable, klass, klasses, _i, _len;
+			klasses = [InterpolableArray, InterpolableObject, InterpolableNumber, InterpolableString];
+			for (_i = 0, _len = klasses.length; _i < _len; _i++) {
+				klass = klasses[_i];
+				interpolable = klass.create(value);
+				if (interpolable != null) {
+					return interpolable;
+				}
+			}
+			return null;
+		};
+
+		InterpolableString = function () {
+			function InterpolableString(parts) {
+				this.parts = parts;
+				this.format = __bind(this.format, this);
+				this.interpolate = __bind(this.interpolate, this);
+			}
+
+			InterpolableString.prototype.interpolate = function (endInterpolable, t) {
+				var end, i, newParts, start, _i, _ref;
+				start = this.parts;
+				end = endInterpolable.parts;
+				newParts = [];
+				for (i = _i = 0, _ref = Math.min(start.length, end.length); 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+					if (start[i].interpolate != null) {
+						newParts.push(start[i].interpolate(end[i], t));
+					} else {
+						newParts.push(start[i]);
+					}
+				}
+				return new InterpolableString(newParts);
+			};
+
+			InterpolableString.prototype.format = function () {
+				var parts;
+				parts = this.parts.map(function (val) {
+					if (val.format != null) {
+						return val.format();
+					} else {
+						return val;
+					}
+				});
+				return parts.join('');
+			};
+
+			InterpolableString.create = function (value) {
+				var index, match, matches, parts, re, type, types, _i, _j, _len, _len1;
+				value = "" + value;
+				matches = [];
+				types = [{
+					re: /(#[a-f\d]{3,6})/ig,
+					klass: InterpolableColor,
+					parse: function parse(v) {
+						return v;
+					}
+				}, {
+					re: /(rgba?\([0-9.]*, ?[0-9.]*, ?[0-9.]*(?:, ?[0-9.]*)?\))/ig,
+					klass: InterpolableColor,
+					parse: function parse(v) {
+						return v;
+					}
+				}, {
+					re: /([-+]?[\d.]+)/ig,
+					klass: InterpolableNumber,
+					parse: parseFloat
+				}];
+				for (_i = 0, _len = types.length; _i < _len; _i++) {
+					type = types[_i];
+					re = type.re;
+					while (match = re.exec(value)) {
+						matches.push({
+							index: match.index,
+							length: match[1].length,
+							interpolable: type.klass.create(type.parse(match[1]))
+						});
+					}
+				}
+				matches = matches.sort(function (a, b) {
+					if (a.index > b.index) {
+						return 1;
+					} else {
+						return -1;
+					}
+				});
+				parts = [];
+				index = 0;
+				for (_j = 0, _len1 = matches.length; _j < _len1; _j++) {
+					match = matches[_j];
+					if (match.index < index) {
+						continue;
+					}
+					if (match.index > index) {
+						parts.push(value.substring(index, match.index));
+					}
+					parts.push(match.interpolable);
+					index = match.index + match.length;
+				}
+				if (index < value.length) {
+					parts.push(value.substring(index));
+				}
+				return new InterpolableString(parts);
+			};
+
+			return InterpolableString;
+		}();
+
+		InterpolableObject = function () {
+			function InterpolableObject(obj) {
+				this.format = __bind(this.format, this);
+				this.interpolate = __bind(this.interpolate, this);
+				this.obj = obj;
+			}
+
+			InterpolableObject.prototype.interpolate = function (endInterpolable, t) {
+				var end, k, newObj, start, v;
+				start = this.obj;
+				end = endInterpolable.obj;
+				newObj = {};
+				for (k in start) {
+					v = start[k];
+					if (v.interpolate != null) {
+						newObj[k] = v.interpolate(end[k], t);
+					} else {
+						newObj[k] = v;
+					}
+				}
+				return new InterpolableObject(newObj);
+			};
+
+			InterpolableObject.prototype.format = function () {
+				return this.obj;
+			};
+
+			InterpolableObject.create = function (value) {
+				var k, obj, v;
+				if (value instanceof Object) {
+					obj = {};
+					for (k in value) {
+						v = value[k];
+						obj[k] = createInterpolable(v);
+					}
+					return new InterpolableObject(obj);
+				}
+				return null;
+			};
+
+			return InterpolableObject;
+		}();
+
+		InterpolableNumber = function () {
+			function InterpolableNumber(value) {
+				this.format = __bind(this.format, this);
+				this.interpolate = __bind(this.interpolate, this);
+				this.value = parseFloat(value);
+			}
+
+			InterpolableNumber.prototype.interpolate = function (endInterpolable, t) {
+				var end, start;
+				start = this.value;
+				end = endInterpolable.value;
+				return new InterpolableNumber((end - start) * t + start);
+			};
+
+			InterpolableNumber.prototype.format = function () {
+				return roundf(this.value, 5);
+			};
+
+			InterpolableNumber.create = function (value) {
+				if (typeof value === 'number') {
+					return new InterpolableNumber(value);
+				}
+				return null;
+			};
+
+			return InterpolableNumber;
+		}();
+
+		InterpolableArray = function () {
+			function InterpolableArray(values) {
+				this.values = values;
+				this.format = __bind(this.format, this);
+				this.interpolate = __bind(this.interpolate, this);
+			}
+
+			InterpolableArray.prototype.interpolate = function (endInterpolable, t) {
+				var end, i, newValues, start, _i, _ref;
+				start = this.values;
+				end = endInterpolable.values;
+				newValues = [];
+				for (i = _i = 0, _ref = Math.min(start.length, end.length); 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+					if (start[i].interpolate != null) {
+						newValues.push(start[i].interpolate(end[i], t));
+					} else {
+						newValues.push(start[i]);
+					}
+				}
+				return new InterpolableArray(newValues);
+			};
+
+			InterpolableArray.prototype.format = function () {
+				return this.values.map(function (val) {
+					if (val.format != null) {
+						return val.format();
+					} else {
+						return val;
+					}
+				});
+			};
+
+			InterpolableArray.createFromArray = function (arr) {
+				var values;
+				values = arr.map(function (val) {
+					return createInterpolable(val) || val;
+				});
+				values = values.filter(function (val) {
+					return val != null;
+				});
+				return new InterpolableArray(values);
+			};
+
+			InterpolableArray.create = function (value) {
+				if (value instanceof Array) {
+					return InterpolableArray.createFromArray(value);
+				}
+				return null;
+			};
+
+			return InterpolableArray;
+		}();
+
+		Color = function () {
+			function Color(rgb, format) {
+				this.rgb = rgb != null ? rgb : {};
+				this.format = format;
+				this.toRgba = __bind(this.toRgba, this);
+				this.toRgb = __bind(this.toRgb, this);
+				this.toHex = __bind(this.toHex, this);
+			}
+
+			Color.fromHex = function (hex) {
+				var hex3, result;
+				hex3 = hex.match(/^#([a-f\d]{1})([a-f\d]{1})([a-f\d]{1})$/i);
+				if (hex3 != null) {
+					hex = "#" + hex3[1] + hex3[1] + hex3[2] + hex3[2] + hex3[3] + hex3[3];
+				}
+				result = hex.match(/^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
+				if (result != null) {
+					return new Color({
+						r: parseInt(result[1], 16),
+						g: parseInt(result[2], 16),
+						b: parseInt(result[3], 16),
+						a: 1
+					}, "hex");
+				}
+				return null;
+			};
+
+			Color.fromRgb = function (rgb) {
+				var match, _ref;
+				match = rgb.match(/^rgba?\(([0-9.]*), ?([0-9.]*), ?([0-9.]*)(?:, ?([0-9.]*))?\)$/);
+				if (match != null) {
+					return new Color({
+						r: parseFloat(match[1]),
+						g: parseFloat(match[2]),
+						b: parseFloat(match[3]),
+						a: parseFloat((_ref = match[4]) != null ? _ref : 1)
+					}, match[4] != null ? "rgba" : "rgb");
+				}
+				return null;
+			};
+
+			Color.componentToHex = function (c) {
+				var hex;
+				hex = c.toString(16);
+				if (hex.length === 1) {
+					return "0" + hex;
+				} else {
+					return hex;
+				}
+			};
+
+			Color.prototype.toHex = function () {
+				return "#" + Color.componentToHex(this.rgb.r) + Color.componentToHex(this.rgb.g) + Color.componentToHex(this.rgb.b);
+			};
+
+			Color.prototype.toRgb = function () {
+				return "rgb(" + this.rgb.r + ", " + this.rgb.g + ", " + this.rgb.b + ")";
+			};
+
+			Color.prototype.toRgba = function () {
+				return "rgba(" + this.rgb.r + ", " + this.rgb.g + ", " + this.rgb.b + ", " + this.rgb.a + ")";
+			};
+
+			return Color;
+		}();
+
+		InterpolableColor = function () {
+			function InterpolableColor(color) {
+				this.color = color;
+				this.format = __bind(this.format, this);
+				this.interpolate = __bind(this.interpolate, this);
+			}
+
+			InterpolableColor.prototype.interpolate = function (endInterpolable, t) {
+				var end, k, rgb, start, v, _i, _len, _ref;
+				start = this.color;
+				end = endInterpolable.color;
+				rgb = {};
+				_ref = ['r', 'g', 'b'];
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					k = _ref[_i];
+					v = Math.round((end.rgb[k] - start.rgb[k]) * t + start.rgb[k]);
+					rgb[k] = Math.min(255, Math.max(0, v));
+				}
+				k = "a";
+				v = roundf((end.rgb[k] - start.rgb[k]) * t + start.rgb[k], 5);
+				rgb[k] = Math.min(1, Math.max(0, v));
+				return new InterpolableColor(new Color(rgb, end.format));
+			};
+
+			InterpolableColor.prototype.format = function () {
+				if (this.color.format === "hex") {
+					return this.color.toHex();
+				} else if (this.color.format === "rgb") {
+					return this.color.toRgb();
+				} else if (this.color.format === "rgba") {
+					return this.color.toRgba();
+				}
+			};
+
+			InterpolableColor.create = function (value) {
+				var color;
+				if (typeof value !== "string") {
+					return;
+				}
+				color = Color.fromHex(value) || Color.fromRgb(value);
+				if (color != null) {
+					return new InterpolableColor(color);
+				}
+				return null;
+			};
+
+			return InterpolableColor;
+		}();
+
+		DecomposedMatrix2D = function () {
+			function DecomposedMatrix2D(props) {
+				this.props = props;
+				this.applyRotateCenter = __bind(this.applyRotateCenter, this);
+				this.format = __bind(this.format, this);
+				this.interpolate = __bind(this.interpolate, this);
+			}
+
+			DecomposedMatrix2D.prototype.interpolate = function (endMatrix, t) {
+				var i, k, newProps, _i, _j, _k, _l, _len, _len1, _ref, _ref1, _ref2;
+				newProps = {};
+				_ref = ['translate', 'scale', 'rotate'];
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					k = _ref[_i];
+					newProps[k] = [];
+					for (i = _j = 0, _ref1 = this.props[k].length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+						newProps[k][i] = (endMatrix.props[k][i] - this.props[k][i]) * t + this.props[k][i];
+					}
+				}
+				for (i = _k = 1; _k <= 2; i = ++_k) {
+					newProps['rotate'][i] = endMatrix.props['rotate'][i];
+				}
+				_ref2 = ['skew'];
+				for (_l = 0, _len1 = _ref2.length; _l < _len1; _l++) {
+					k = _ref2[_l];
+					newProps[k] = (endMatrix.props[k] - this.props[k]) * t + this.props[k];
+				}
+				return new DecomposedMatrix2D(newProps);
+			};
+
+			DecomposedMatrix2D.prototype.format = function () {
+				return "translate(" + this.props.translate.join(',') + ") rotate(" + this.props.rotate.join(',') + ") skewX(" + this.props.skew + ") scale(" + this.props.scale.join(',') + ")";
+			};
+
+			DecomposedMatrix2D.prototype.applyRotateCenter = function (rotateC) {
+				var i, m, m2d, negativeTranslate, _i, _results;
+				m = baseSVG.createSVGMatrix();
+				m = m.translate(rotateC[0], rotateC[1]);
+				m = m.rotate(this.props.rotate[0]);
+				m = m.translate(-rotateC[0], -rotateC[1]);
+				m2d = new Matrix2D(m);
+				negativeTranslate = m2d.decompose().props.translate;
+				_results = [];
+				for (i = _i = 0; _i <= 1; i = ++_i) {
+					_results.push(this.props.translate[i] -= negativeTranslate[i]);
+				}
+				return _results;
+			};
+
+			return DecomposedMatrix2D;
+		}();
+
+		baseSVG = typeof document !== "undefined" && document !== null ? document.createElementNS("http://www.w3.org/2000/svg", "svg") : void 0;
+
+		Matrix2D = function () {
+			function Matrix2D(m) {
+				this.m = m;
+				this.applyProperties = __bind(this.applyProperties, this);
+				this.decompose = __bind(this.decompose, this);
+				if (!this.m) {
+					this.m = baseSVG.createSVGMatrix();
+				}
+			}
+
+			Matrix2D.prototype.decompose = function () {
+				var kx, ky, kz, r0, r1;
+				r0 = new Vector([this.m.a, this.m.b]);
+				r1 = new Vector([this.m.c, this.m.d]);
+				kx = r0.length();
+				kz = r0.dot(r1);
+				r0 = r0.normalize();
+				ky = r1.combine(r0, 1, -kz).length();
+				return new DecomposedMatrix2D({
+					translate: [this.m.e, this.m.f],
+					rotate: [Math.atan2(this.m.b, this.m.a) * 180 / Math.PI, this.rotateCX, this.rotateCY],
+					scale: [kx, ky],
+					skew: kz / ky * 180 / Math.PI
+				});
+			};
+
+			Matrix2D.prototype.applyProperties = function (properties) {
+				var hash, k, props, v, _i, _len, _ref, _ref1;
+				hash = {};
+				for (_i = 0, _len = properties.length; _i < _len; _i++) {
+					props = properties[_i];
+					hash[props[0]] = props[1];
+				}
+				for (k in hash) {
+					v = hash[k];
+					if (k === "translateX") {
+						this.m = this.m.translate(v, 0);
+					} else if (k === "translateY") {
+						this.m = this.m.translate(0, v);
+					} else if (k === "scaleX") {
+						this.m = this.m.scaleNonUniform(v, 1);
+					} else if (k === "scaleY") {
+						this.m = this.m.scaleNonUniform(1, v);
+					} else if (k === "rotateZ") {
+						this.m = this.m.rotate(v);
+					} else if (k === "skewX") {
+						this.m = this.m.skewX(v);
+					} else if (k === "skewY") {
+						this.m = this.m.skewY(v);
+					}
+				}
+				this.rotateCX = (_ref = hash.rotateCX) != null ? _ref : 0;
+				return this.rotateCY = (_ref1 = hash.rotateCY) != null ? _ref1 : 0;
+			};
+
+			return Matrix2D;
+		}();
+
+		Vector = function () {
+			function Vector(els) {
+				this.els = els;
+				this.combine = __bind(this.combine, this);
+				this.normalize = __bind(this.normalize, this);
+				this.length = __bind(this.length, this);
+				this.cross = __bind(this.cross, this);
+				this.dot = __bind(this.dot, this);
+				this.e = __bind(this.e, this);
+			}
+
+			Vector.prototype.e = function (i) {
+				if (i < 1 || i > this.els.length) {
+					return null;
+				} else {
+					return this.els[i - 1];
+				}
+			};
+
+			Vector.prototype.dot = function (vector) {
+				var V, n, product;
+				V = vector.els || vector;
+				product = 0;
+				n = this.els.length;
+				if (n !== V.length) {
+					return null;
+				}
+				n += 1;
+				while (--n) {
+					product += this.els[n - 1] * V[n - 1];
+				}
+				return product;
+			};
+
+			Vector.prototype.cross = function (vector) {
+				var A, B;
+				B = vector.els || vector;
+				if (this.els.length !== 3 || B.length !== 3) {
+					return null;
+				}
+				A = this.els;
+				return new Vector([A[1] * B[2] - A[2] * B[1], A[2] * B[0] - A[0] * B[2], A[0] * B[1] - A[1] * B[0]]);
+			};
+
+			Vector.prototype.length = function () {
+				var a, e, _i, _len, _ref;
+				a = 0;
+				_ref = this.els;
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					e = _ref[_i];
+					a += Math.pow(e, 2);
+				}
+				return Math.sqrt(a);
+			};
+
+			Vector.prototype.normalize = function () {
+				var e, i, length, newElements, _ref;
+				length = this.length();
+				newElements = [];
+				_ref = this.els;
+				for (i in _ref) {
+					e = _ref[i];
+					newElements[i] = e / length;
+				}
+				return new Vector(newElements);
+			};
+
+			Vector.prototype.combine = function (b, ascl, bscl) {
+				var i, result, _i, _ref;
+				result = [];
+				for (i = _i = 0, _ref = this.els.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+					result[i] = ascl * this.els[i] + bscl * b.els[i];
+				}
+				return new Vector(result);
+			};
+
+			return Vector;
+		}();
+
+		DecomposedMatrix = function () {
+			function DecomposedMatrix() {
+				this.toMatrix = __bind(this.toMatrix, this);
+				this.format = __bind(this.format, this);
+				this.interpolate = __bind(this.interpolate, this);
+			}
+
+			DecomposedMatrix.prototype.interpolate = function (decomposedB, t, only) {
+				var angle, decomposed, decomposedA, i, invscale, invth, k, qa, qb, scale, th, _i, _j, _k, _l, _len, _ref, _ref1;
+				if (only == null) {
+					only = null;
+				}
+				decomposedA = this;
+				decomposed = new DecomposedMatrix();
+				_ref = ['translate', 'scale', 'skew', 'perspective'];
+				for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+					k = _ref[_i];
+					decomposed[k] = [];
+					for (i = _j = 0, _ref1 = decomposedA[k].length - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+						if (only == null || only.indexOf(k) > -1 || only.indexOf("" + k + ['x', 'y', 'z'][i]) > -1) {
+							decomposed[k][i] = (decomposedB[k][i] - decomposedA[k][i]) * t + decomposedA[k][i];
+						} else {
+							decomposed[k][i] = decomposedA[k][i];
+						}
+					}
+				}
+				if (only == null || only.indexOf('rotate') !== -1) {
+					qa = decomposedA.quaternion;
+					qb = decomposedB.quaternion;
+					angle = qa[0] * qb[0] + qa[1] * qb[1] + qa[2] * qb[2] + qa[3] * qb[3];
+					if (angle < 0.0) {
+						for (i = _k = 0; _k <= 3; i = ++_k) {
+							qa[i] = -qa[i];
+						}
+						angle = -angle;
+					}
+					if (angle + 1.0 > .05) {
+						if (1.0 - angle >= .05) {
+							th = Math.acos(angle);
+							invth = 1.0 / Math.sin(th);
+							scale = Math.sin(th * (1.0 - t)) * invth;
+							invscale = Math.sin(th * t) * invth;
+						} else {
+							scale = 1.0 - t;
+							invscale = t;
+						}
+					} else {
+						qb[0] = -qa[1];
+						qb[1] = qa[0];
+						qb[2] = -qa[3];
+						qb[3] = qa[2];
+						scale = Math.sin(piDouble * (.5 - t));
+						invscale = Math.sin(piDouble * t);
+					}
+					decomposed.quaternion = [];
+					for (i = _l = 0; _l <= 3; i = ++_l) {
+						decomposed.quaternion[i] = qa[i] * scale + qb[i] * invscale;
+					}
+				} else {
+					decomposed.quaternion = decomposedA.quaternion;
+				}
+				return decomposed;
+			};
+
+			DecomposedMatrix.prototype.format = function () {
+				return this.toMatrix().toString();
+			};
+
+			DecomposedMatrix.prototype.toMatrix = function () {
+				var decomposedMatrix, i, j, match, matrix, quaternion, skew, temp, w, x, y, z, _i, _j, _k, _l;
+				decomposedMatrix = this;
+				matrix = Matrix.I(4);
+				for (i = _i = 0; _i <= 3; i = ++_i) {
+					matrix.els[i][3] = decomposedMatrix.perspective[i];
+				}
+				quaternion = decomposedMatrix.quaternion;
+				x = quaternion[0];
+				y = quaternion[1];
+				z = quaternion[2];
+				w = quaternion[3];
+				skew = decomposedMatrix.skew;
+				match = [[1, 0], [2, 0], [2, 1]];
+				for (i = _j = 2; _j >= 0; i = --_j) {
+					if (skew[i]) {
+						temp = Matrix.I(4);
+						temp.els[match[i][0]][match[i][1]] = skew[i];
+						matrix = matrix.multiply(temp);
+					}
+				}
+				matrix = matrix.multiply(new Matrix([[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w), 0], [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w), 0], [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y), 0], [0, 0, 0, 1]]));
+				for (i = _k = 0; _k <= 2; i = ++_k) {
+					for (j = _l = 0; _l <= 2; j = ++_l) {
+						matrix.els[i][j] *= decomposedMatrix.scale[i];
+					}
+					matrix.els[3][i] = decomposedMatrix.translate[i];
+				}
+				return matrix;
+			};
+
+			return DecomposedMatrix;
+		}();
+
+		Matrix = function () {
+			function Matrix(els) {
+				this.els = els;
+				this.toString = __bind(this.toString, this);
+				this.decompose = __bind(this.decompose, this);
+				this.inverse = __bind(this.inverse, this);
+				this.augment = __bind(this.augment, this);
+				this.toRightTriangular = __bind(this.toRightTriangular, this);
+				this.transpose = __bind(this.transpose, this);
+				this.multiply = __bind(this.multiply, this);
+				this.dup = __bind(this.dup, this);
+				this.e = __bind(this.e, this);
+			}
+
+			Matrix.prototype.e = function (i, j) {
+				if (i < 1 || i > this.els.length || j < 1 || j > this.els[0].length) {
+					return null;
+				}
+				return this.els[i - 1][j - 1];
+			};
+
+			Matrix.prototype.dup = function () {
+				return new Matrix(this.els);
+			};
+
+			Matrix.prototype.multiply = function (matrix) {
+				var M, c, cols, elements, i, j, ki, kj, nc, ni, nj, returnVector, sum;
+				returnVector = matrix.modulus ? true : false;
+				M = matrix.els || matrix;
+				if (typeof M[0][0] === 'undefined') {
+					M = new Matrix(M).els;
+				}
+				ni = this.els.length;
+				ki = ni;
+				kj = M[0].length;
+				cols = this.els[0].length;
+				elements = [];
+				ni += 1;
+				while (--ni) {
+					i = ki - ni;
+					elements[i] = [];
+					nj = kj;
+					nj += 1;
+					while (--nj) {
+						j = kj - nj;
+						sum = 0;
+						nc = cols;
+						nc += 1;
+						while (--nc) {
+							c = cols - nc;
+							sum += this.els[i][c] * M[c][j];
+						}
+						elements[i][j] = sum;
+					}
+				}
+				M = new Matrix(elements);
+				if (returnVector) {
+					return M.col(1);
+				} else {
+					return M;
+				}
+			};
+
+			Matrix.prototype.transpose = function () {
+				var cols, elements, i, j, ni, nj, rows;
+				rows = this.els.length;
+				cols = this.els[0].length;
+				elements = [];
+				ni = cols;
+				ni += 1;
+				while (--ni) {
+					i = cols - ni;
+					elements[i] = [];
+					nj = rows;
+					nj += 1;
+					while (--nj) {
+						j = rows - nj;
+						elements[i][j] = this.els[j][i];
+					}
+				}
+				return new Matrix(elements);
+			};
+
+			Matrix.prototype.toRightTriangular = function () {
+				var M, els, i, j, k, kp, multiplier, n, np, p, _i, _j, _ref, _ref1;
+				M = this.dup();
+				n = this.els.length;
+				k = n;
+				kp = this.els[0].length;
+				while (--n) {
+					i = k - n;
+					if (M.els[i][i] === 0) {
+						for (j = _i = _ref = i + 1; _ref <= k ? _i < k : _i > k; j = _ref <= k ? ++_i : --_i) {
+							if (M.els[j][i] !== 0) {
+								els = [];
+								np = kp;
+								np += 1;
+								while (--np) {
+									p = kp - np;
+									els.push(M.els[i][p] + M.els[j][p]);
+								}
+								M.els[i] = els;
+								break;
+							}
+						}
+					}
+					if (M.els[i][i] !== 0) {
+						for (j = _j = _ref1 = i + 1; _ref1 <= k ? _j < k : _j > k; j = _ref1 <= k ? ++_j : --_j) {
+							multiplier = M.els[j][i] / M.els[i][i];
+							els = [];
+							np = kp;
+							np += 1;
+							while (--np) {
+								p = kp - np;
+								els.push(p <= i ? 0 : M.els[j][p] - M.els[i][p] * multiplier);
+							}
+							M.els[j] = els;
+						}
+					}
+				}
+				return M;
+			};
+
+			Matrix.prototype.augment = function (matrix) {
+				var M, T, cols, i, j, ki, kj, ni, nj;
+				M = matrix.els || matrix;
+				if (typeof M[0][0] === 'undefined') {
+					M = new Matrix(M).els;
+				}
+				T = this.dup();
+				cols = T.els[0].length;
+				ni = T.els.length;
+				ki = ni;
+				kj = M[0].length;
+				if (ni !== M.length) {
+					return null;
+				}
+				ni += 1;
+				while (--ni) {
+					i = ki - ni;
+					nj = kj;
+					nj += 1;
+					while (--nj) {
+						j = kj - nj;
+						T.els[i][cols + j] = M[i][j];
+					}
+				}
+				return T;
+			};
+
+			Matrix.prototype.inverse = function () {
+				var M, divisor, els, i, inverse_elements, j, ki, kp, new_element, ni, np, p, _i;
+				ni = this.els.length;
+				ki = ni;
+				M = this.augment(Matrix.I(ni)).toRightTriangular();
+				kp = M.els[0].length;
+				inverse_elements = [];
+				ni += 1;
+				while (--ni) {
+					i = ni - 1;
+					els = [];
+					np = kp;
+					inverse_elements[i] = [];
+					divisor = M.els[i][i];
+					np += 1;
+					while (--np) {
+						p = kp - np;
+						new_element = M.els[i][p] / divisor;
+						els.push(new_element);
+						if (p >= ki) {
+							inverse_elements[i].push(new_element);
+						}
+					}
+					M.els[i] = els;
+					for (j = _i = 0; 0 <= i ? _i < i : _i > i; j = 0 <= i ? ++_i : --_i) {
+						els = [];
+						np = kp;
+						np += 1;
+						while (--np) {
+							p = kp - np;
+							els.push(M.els[j][p] - M.els[i][p] * M.els[j][i]);
+						}
+						M.els[j] = els;
+					}
+				}
+				return new Matrix(inverse_elements);
+			};
+
+			Matrix.I = function (n) {
+				var els, i, j, k, nj;
+				els = [];
+				k = n;
+				n += 1;
+				while (--n) {
+					i = k - n;
+					els[i] = [];
+					nj = k;
+					nj += 1;
+					while (--nj) {
+						j = k - nj;
+						els[i][j] = i === j ? 1 : 0;
+					}
+				}
+				return new Matrix(els);
+			};
+
+			Matrix.prototype.decompose = function () {
+				var els, i, inversePerspectiveMatrix, j, k, matrix, pdum3, perspective, perspectiveMatrix, quaternion, result, rightHandSide, rotate, row, rowElement, s, scale, skew, t, translate, transposedInversePerspectiveMatrix, type, typeKey, v, w, x, y, z, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r;
+				matrix = this;
+				translate = [];
+				scale = [];
+				skew = [];
+				quaternion = [];
+				perspective = [];
+				els = [];
+				for (i = _i = 0; _i <= 3; i = ++_i) {
+					els[i] = [];
+					for (j = _j = 0; _j <= 3; j = ++_j) {
+						els[i][j] = matrix.els[i][j];
+					}
+				}
+				if (els[3][3] === 0) {
+					return false;
+				}
+				for (i = _k = 0; _k <= 3; i = ++_k) {
+					for (j = _l = 0; _l <= 3; j = ++_l) {
+						els[i][j] /= els[3][3];
+					}
+				}
+				perspectiveMatrix = matrix.dup();
+				for (i = _m = 0; _m <= 2; i = ++_m) {
+					perspectiveMatrix.els[i][3] = 0;
+				}
+				perspectiveMatrix.els[3][3] = 1;
+				if (els[0][3] !== 0 || els[1][3] !== 0 || els[2][3] !== 0) {
+					rightHandSide = new Vector(els.slice(0, 4)[3]);
+					inversePerspectiveMatrix = perspectiveMatrix.inverse();
+					transposedInversePerspectiveMatrix = inversePerspectiveMatrix.transpose();
+					perspective = transposedInversePerspectiveMatrix.multiply(rightHandSide).els;
+					for (i = _n = 0; _n <= 2; i = ++_n) {
+						els[i][3] = 0;
+					}
+					els[3][3] = 1;
+				} else {
+					perspective = [0, 0, 0, 1];
+				}
+				for (i = _o = 0; _o <= 2; i = ++_o) {
+					translate[i] = els[3][i];
+					els[3][i] = 0;
+				}
+				row = [];
+				for (i = _p = 0; _p <= 2; i = ++_p) {
+					row[i] = new Vector(els[i].slice(0, 3));
+				}
+				scale[0] = row[0].length();
+				row[0] = row[0].normalize();
+				skew[0] = row[0].dot(row[1]);
+				row[1] = row[1].combine(row[0], 1.0, -skew[0]);
+				scale[1] = row[1].length();
+				row[1] = row[1].normalize();
+				skew[0] /= scale[1];
+				skew[1] = row[0].dot(row[2]);
+				row[2] = row[2].combine(row[0], 1.0, -skew[1]);
+				skew[2] = row[1].dot(row[2]);
+				row[2] = row[2].combine(row[1], 1.0, -skew[2]);
+				scale[2] = row[2].length();
+				row[2] = row[2].normalize();
+				skew[1] /= scale[2];
+				skew[2] /= scale[2];
+				pdum3 = row[1].cross(row[2]);
+				if (row[0].dot(pdum3) < 0) {
+					for (i = _q = 0; _q <= 2; i = ++_q) {
+						scale[i] *= -1;
+						for (j = _r = 0; _r <= 2; j = ++_r) {
+							row[i].els[j] *= -1;
+						}
+					}
+				}
+				rowElement = function rowElement(index, elementIndex) {
+					return row[index].els[elementIndex];
+				};
+				rotate = [];
+				rotate[1] = Math.asin(-rowElement(0, 2));
+				if (Math.cos(rotate[1]) !== 0) {
+					rotate[0] = Math.atan2(rowElement(1, 2), rowElement(2, 2));
+					rotate[2] = Math.atan2(rowElement(0, 1), rowElement(0, 0));
+				} else {
+					rotate[0] = Math.atan2(-rowElement(2, 0), rowElement(1, 1));
+					rotate[1] = 0;
+				}
+				t = rowElement(0, 0) + rowElement(1, 1) + rowElement(2, 2) + 1.0;
+				if (t > 1e-4) {
+					s = 0.5 / Math.sqrt(t);
+					w = 0.25 / s;
+					x = (rowElement(2, 1) - rowElement(1, 2)) * s;
+					y = (rowElement(0, 2) - rowElement(2, 0)) * s;
+					z = (rowElement(1, 0) - rowElement(0, 1)) * s;
+				} else if (rowElement(0, 0) > rowElement(1, 1) && rowElement(0, 0) > rowElement(2, 2)) {
+					s = Math.sqrt(1.0 + rowElement(0, 0) - rowElement(1, 1) - rowElement(2, 2)) * 2.0;
+					x = 0.25 * s;
+					y = (rowElement(0, 1) + rowElement(1, 0)) / s;
+					z = (rowElement(0, 2) + rowElement(2, 0)) / s;
+					w = (rowElement(2, 1) - rowElement(1, 2)) / s;
+				} else if (rowElement(1, 1) > rowElement(2, 2)) {
+					s = Math.sqrt(1.0 + rowElement(1, 1) - rowElement(0, 0) - rowElement(2, 2)) * 2.0;
+					x = (rowElement(0, 1) + rowElement(1, 0)) / s;
+					y = 0.25 * s;
+					z = (rowElement(1, 2) + rowElement(2, 1)) / s;
+					w = (rowElement(0, 2) - rowElement(2, 0)) / s;
+				} else {
+					s = Math.sqrt(1.0 + rowElement(2, 2) - rowElement(0, 0) - rowElement(1, 1)) * 2.0;
+					x = (rowElement(0, 2) + rowElement(2, 0)) / s;
+					y = (rowElement(1, 2) + rowElement(2, 1)) / s;
+					z = 0.25 * s;
+					w = (rowElement(1, 0) - rowElement(0, 1)) / s;
+				}
+				quaternion = [x, y, z, w];
+				result = new DecomposedMatrix();
+				result.translate = translate;
+				result.scale = scale;
+				result.skew = skew;
+				result.quaternion = quaternion;
+				result.perspective = perspective;
+				result.rotate = rotate;
+				for (typeKey in result) {
+					type = result[typeKey];
+					for (k in type) {
+						v = type[k];
+						if (isNaN(v)) {
+							type[k] = 0;
+						}
+					}
+				}
+				return result;
+			};
+
+			Matrix.prototype.toString = function () {
+				var i, j, str, _i, _j;
+				str = 'matrix3d(';
+				for (i = _i = 0; _i <= 3; i = ++_i) {
+					for (j = _j = 0; _j <= 3; j = ++_j) {
+						str += roundf(this.els[i][j], 10);
+						if (!(i === 3 && j === 3)) {
+							str += ',';
+						}
+					}
+				}
+				str += ')';
+				return str;
+			};
+
+			Matrix.matrixForTransform = cacheFn(function (transform) {
+				var matrixEl, result, style, _ref, _ref1, _ref2;
+				matrixEl = document.createElement('div');
+				matrixEl.style.position = 'absolute';
+				matrixEl.style.visibility = 'hidden';
+				matrixEl.style[propertyWithPrefix("transform")] = transform;
+				document.body.appendChild(matrixEl);
+				style = window.getComputedStyle(matrixEl, null);
+				result = (_ref = (_ref1 = style.transform) != null ? _ref1 : style[propertyWithPrefix("transform")]) != null ? _ref : (_ref2 = dynamics.tests) != null ? _ref2.matrixForTransform(transform) : void 0;
+				document.body.removeChild(matrixEl);
+				return result;
+			});
+
+			Matrix.fromTransform = function (transform) {
+				var digits, elements, i, match, matrixElements, _i;
+				match = transform != null ? transform.match(/matrix3?d?\(([-0-9,e \.]*)\)/) : void 0;
+				if (match) {
+					digits = match[1].split(',');
+					digits = digits.map(parseFloat);
+					if (digits.length === 6) {
+						elements = [digits[0], digits[1], 0, 0, digits[2], digits[3], 0, 0, 0, 0, 1, 0, digits[4], digits[5], 0, 1];
+					} else {
+						elements = digits;
+					}
+				} else {
+					elements = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+				}
+				matrixElements = [];
+				for (i = _i = 0; _i <= 3; i = ++_i) {
+					matrixElements.push(elements.slice(i * 4, i * 4 + 4));
+				}
+				return new Matrix(matrixElements);
+			};
+
+			return Matrix;
+		}();
+
+		prefixFor = cacheFn(function (property) {
+			var k, prefix, prop, propArray, propertyName, _i, _j, _len, _len1, _ref;
+			if (document.body.style[property] !== void 0) {
+				return '';
+			}
+			propArray = property.split('-');
+			propertyName = "";
+			for (_i = 0, _len = propArray.length; _i < _len; _i++) {
+				prop = propArray[_i];
+				propertyName += prop.substring(0, 1).toUpperCase() + prop.substring(1);
+			}
+			_ref = ["Webkit", "Moz", "ms"];
+			for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+				prefix = _ref[_j];
+				k = prefix + propertyName;
+				if (document.body.style[k] !== void 0) {
+					return prefix;
+				}
+			}
+			return '';
+		});
+
+		propertyWithPrefix = cacheFn(function (property) {
+			var prefix;
+			prefix = prefixFor(property);
+			if (prefix === 'Moz') {
+				return "" + prefix + (property.substring(0, 1).toUpperCase() + property.substring(1));
+			}
+			if (prefix !== '') {
+				return "-" + prefix.toLowerCase() + "-" + toDashed(property);
+			}
+			return toDashed(property);
+		});
+
+		rAF = typeof window !== "undefined" && window !== null ? window.requestAnimationFrame : void 0;
+
+		animations = [];
+
+		animationsTimeouts = [];
+
+		slow = false;
+
+		slowRatio = 1;
+
+		if (typeof window !== "undefined" && window !== null) {
+			window.addEventListener('keyup', function (e) {
+				if (e.keyCode === 68 && e.shiftKey && e.ctrlKey) {
+					return dynamics.toggleSlow();
+				}
+			});
+		}
+
+		if (rAF == null) {
+			lastTime = 0;
+			rAF = function rAF(callback) {
+				var currTime, id, timeToCall;
+				currTime = Date.now();
+				timeToCall = Math.max(0, 16 - (currTime - lastTime));
+				id = window.setTimeout(function () {
+					return callback(currTime + timeToCall);
+				}, timeToCall);
+				lastTime = currTime + timeToCall;
+				return id;
+			};
+		}
+
+		runLoopRunning = false;
+
+		runLoopPaused = false;
+
+		startRunLoop = function startRunLoop() {
+			if (!runLoopRunning) {
+				runLoopRunning = true;
+				return rAF(_runLoopTick);
+			}
+		};
+
+		_runLoopTick = function runLoopTick(t) {
+			var animation, toRemoveAnimations, _i, _len;
+			if (runLoopPaused) {
+				rAF(_runLoopTick);
+				return;
+			}
+			toRemoveAnimations = [];
+			for (_i = 0, _len = animations.length; _i < _len; _i++) {
+				animation = animations[_i];
+				if (!animationTick(t, animation)) {
+					toRemoveAnimations.push(animation);
+				}
+			}
+			animations = animations.filter(function (animation) {
+				return toRemoveAnimations.indexOf(animation) === -1;
+			});
+			if (animations.length === 0) {
+				return runLoopRunning = false;
+			} else {
+				return rAF(_runLoopTick);
+			}
+		};
+
+		animationTick = function animationTick(t, animation) {
+			var key, properties, property, tt, y, _base, _base1, _ref;
+			if (animation.tStart == null) {
+				animation.tStart = t;
+			}
+			tt = (t - animation.tStart) / animation.options.duration;
+			y = animation.curve(tt);
+			properties = {};
+			if (tt >= 1) {
+				if (animation.curve.returnsToSelf) {
+					properties = animation.properties.start;
+				} else {
+					properties = animation.properties.end;
+				}
+			} else {
+				_ref = animation.properties.start;
+				for (key in _ref) {
+					property = _ref[key];
+					properties[key] = interpolate(property, animation.properties.end[key], y);
+				}
+			}
+			applyFrame(animation.el, properties);
+			if (typeof (_base = animation.options).change === "function") {
+				_base.change(animation.el, Math.min(1, tt));
+			}
+			if (tt >= 1) {
+				if (typeof (_base1 = animation.options).complete === "function") {
+					_base1.complete(animation.el);
+				}
+			}
+			return tt < 1;
+		};
+
+		interpolate = function interpolate(start, end, y) {
+			if (start != null && start.interpolate != null) {
+				return start.interpolate(end, y);
+			}
+			return null;
+		};
+
+		startAnimation = function startAnimation(el, properties, options, timeoutId) {
+			var endProperties, isSVG, k, matrix, startProperties, transforms, v;
+			if (timeoutId != null) {
+				animationsTimeouts = animationsTimeouts.filter(function (timeout) {
+					return timeout.id !== timeoutId;
+				});
+			}
+			dynamics.stop(el, {
+				timeout: false
+			});
+			if (!options.animated) {
+				dynamics.css(el, properties);
+				if (typeof options.complete === "function") {
+					options.complete(this);
+				}
+				return;
+			}
+			startProperties = getCurrentProperties(el, Object.keys(properties));
+			properties = parseProperties(properties);
+			endProperties = {};
+			transforms = [];
+			for (k in properties) {
+				v = properties[k];
+				if (el.style != null && transformProperties.contains(k)) {
+					transforms.push([k, v]);
+				} else {
+					endProperties[k] = createInterpolable(v);
+				}
+			}
+			if (transforms.length > 0) {
+				isSVG = isSVGElement(el);
+				if (isSVG) {
+					matrix = new Matrix2D();
+					matrix.applyProperties(transforms);
+				} else {
+					v = transforms.map(function (transform) {
+						return transformValueForProperty(transform[0], transform[1]);
+					}).join(" ");
+					matrix = Matrix.fromTransform(Matrix.matrixForTransform(v));
+				}
+				endProperties['transform'] = matrix.decompose();
+				if (isSVG) {
+					startProperties.transform.applyRotateCenter([endProperties.transform.props.rotate[1], endProperties.transform.props.rotate[2]]);
+				}
+			}
+			addUnitsToNumberInterpolables(el, endProperties);
+			animations.push({
+				el: el,
+				properties: {
+					start: startProperties,
+					end: endProperties
+				},
+				options: options,
+				curve: options.type.call(options.type, options)
+			});
+			return startRunLoop();
+		};
+
+		timeouts = [];
+
+		timeoutLastId = 0;
+
+		setRealTimeout = function setRealTimeout(timeout) {
+			if (!isDocumentVisible()) {
+				return;
+			}
+			return rAF(function () {
+				if (timeouts.indexOf(timeout) === -1) {
+					return;
+				}
+				return timeout.realTimeoutId = setTimeout(function () {
+					timeout.fn();
+					return cancelTimeout(timeout.id);
+				}, timeout.delay);
+			});
+		};
+
+		addTimeout = function addTimeout(fn, delay) {
+			var timeout;
+			timeoutLastId += 1;
+			timeout = {
+				id: timeoutLastId,
+				tStart: Date.now(),
+				fn: fn,
+				delay: delay,
+				originalDelay: delay
+			};
+			setRealTimeout(timeout);
+			timeouts.push(timeout);
+			return timeoutLastId;
+		};
+
+		cancelTimeout = function cancelTimeout(id) {
+			return timeouts = timeouts.filter(function (timeout) {
+				if (timeout.id === id && timeout.realTimeoutId) {
+					clearTimeout(timeout.realTimeoutId);
+				}
+				return timeout.id !== id;
+			});
+		};
+
+		leftDelayForTimeout = function leftDelayForTimeout(time, timeout) {
+			var consumedDelay;
+			if (time != null) {
+				consumedDelay = time - timeout.tStart;
+				return timeout.originalDelay - consumedDelay;
+			} else {
+				return timeout.originalDelay;
+			}
+		};
+
+		if (typeof window !== "undefined" && window !== null) {
+			window.addEventListener('unload', function () {});
+		}
+
+		timeBeforeVisibilityChange = null;
+
+		observeVisibilityChange(function (visible) {
+			var animation, difference, timeout, _i, _j, _k, _len, _len1, _len2, _results;
+			runLoopPaused = !visible;
+			if (!visible) {
+				timeBeforeVisibilityChange = Date.now();
+				_results = [];
+				for (_i = 0, _len = timeouts.length; _i < _len; _i++) {
+					timeout = timeouts[_i];
+					_results.push(clearTimeout(timeout.realTimeoutId));
+				}
+				return _results;
+			} else {
+				if (runLoopRunning) {
+					difference = Date.now() - timeBeforeVisibilityChange;
+					for (_j = 0, _len1 = animations.length; _j < _len1; _j++) {
+						animation = animations[_j];
+						if (animation.tStart != null) {
+							animation.tStart += difference;
+						}
+					}
+				}
+				for (_k = 0, _len2 = timeouts.length; _k < _len2; _k++) {
+					timeout = timeouts[_k];
+					timeout.delay = leftDelayForTimeout(timeBeforeVisibilityChange, timeout);
+					setRealTimeout(timeout);
+				}
+				return timeBeforeVisibilityChange = null;
+			}
+		});
+
+		dynamics = {};
+
+		dynamics.linear = function () {
+			return function (t) {
+				return t;
+			};
+		};
+
+		dynamics.spring = function (options) {
+			var A1, A2, decal, frequency, friction, s;
+			if (options == null) {
+				options = {};
+			}
+			applyDefaults(options, dynamics.spring.defaults);
+			frequency = Math.max(1, options.frequency / 20);
+			friction = Math.pow(20, options.friction / 100);
+			s = options.anticipationSize / 1000;
+			decal = Math.max(0, s);
+			A1 = function A1(t) {
+				var M, a, b, x0, x1;
+				M = 0.8;
+				x0 = s / (1 - s);
+				x1 = 0;
+				b = (x0 - M * x1) / (x0 - x1);
+				a = (M - b) / x0;
+				return a * t * options.anticipationStrength / 100 + b;
+			};
+			A2 = function A2(t) {
+				return Math.pow(friction / 10, -t) * (1 - t);
+			};
+			return function (t) {
+				var A, At, a, angle, b, frictionT, y0, yS;
+				frictionT = t / (1 - s) - s / (1 - s);
+				if (t < s) {
+					yS = s / (1 - s) - s / (1 - s);
+					y0 = 0 / (1 - s) - s / (1 - s);
+					b = Math.acos(1 / A1(yS));
+					a = (Math.acos(1 / A1(y0)) - b) / (frequency * -s);
+					A = A1;
+				} else {
+					A = A2;
+					b = 0;
+					a = 1;
+				}
+				At = A(frictionT);
+				angle = frequency * (t - s) * a + b;
+				return 1 - At * Math.cos(angle);
+			};
+		};
+
+		dynamics.bounce = function (options) {
+			var A, fn, frequency, friction;
+			if (options == null) {
+				options = {};
+			}
+			applyDefaults(options, dynamics.bounce.defaults);
+			frequency = Math.max(1, options.frequency / 20);
+			friction = Math.pow(20, options.friction / 100);
+			A = function A(t) {
+				return Math.pow(friction / 10, -t) * (1 - t);
+			};
+			fn = function fn(t) {
+				var At, a, angle, b;
+				b = -3.14 / 2;
+				a = 1;
+				At = A(t);
+				angle = frequency * t * a + b;
+				return At * Math.cos(angle);
+			};
+			fn.returnsToSelf = true;
+			return fn;
+		};
+
+		dynamics.gravity = function (options) {
+			var L, bounciness, curves, elasticity, fn, getPointInCurve, gravity;
+			if (options == null) {
+				options = {};
+			}
+			applyDefaults(options, dynamics.gravity.defaults);
+			bounciness = Math.min(options.bounciness / 1250, 0.8);
+			elasticity = options.elasticity / 1000;
+			gravity = 100;
+			curves = [];
+			L = function () {
+				var b, curve;
+				b = Math.sqrt(2 / gravity);
+				curve = {
+					a: -b,
+					b: b,
+					H: 1
+				};
+				if (options.returnsToSelf) {
+					curve.a = 0;
+					curve.b = curve.b * 2;
+				}
+				while (curve.H > 0.001) {
+					L = curve.b - curve.a;
+					curve = {
+						a: curve.b,
+						b: curve.b + L * bounciness,
+						H: curve.H * bounciness * bounciness
+					};
+				}
+				return curve.b;
+			}();
+			getPointInCurve = function getPointInCurve(a, b, H, t) {
+				var c, t2;
+				L = b - a;
+				t2 = 2 / L * t - 1 - a * 2 / L;
+				c = t2 * t2 * H - H + 1;
+				if (options.returnsToSelf) {
+					c = 1 - c;
+				}
+				return c;
+			};
+			(function () {
+				var L2, b, curve, _results;
+				b = Math.sqrt(2 / (gravity * L * L));
+				curve = {
+					a: -b,
+					b: b,
+					H: 1
+				};
+				if (options.returnsToSelf) {
+					curve.a = 0;
+					curve.b = curve.b * 2;
+				}
+				curves.push(curve);
+				L2 = L;
+				_results = [];
+				while (curve.b < 1 && curve.H > 0.001) {
+					L2 = curve.b - curve.a;
+					curve = {
+						a: curve.b,
+						b: curve.b + L2 * bounciness,
+						H: curve.H * elasticity
+					};
+					_results.push(curves.push(curve));
+				}
+				return _results;
+			})();
+			fn = function fn(t) {
+				var curve, i, v;
+				i = 0;
+				curve = curves[i];
+				while (!(t >= curve.a && t <= curve.b)) {
+					i += 1;
+					curve = curves[i];
+					if (!curve) {
+						break;
+					}
+				}
+				if (!curve) {
+					v = options.returnsToSelf ? 0 : 1;
+				} else {
+					v = getPointInCurve(curve.a, curve.b, curve.H, t);
+				}
+				return v;
+			};
+			fn.returnsToSelf = options.returnsToSelf;
+			return fn;
+		};
+
+		dynamics.forceWithGravity = function (options) {
+			if (options == null) {
+				options = {};
+			}
+			applyDefaults(options, dynamics.forceWithGravity.defaults);
+			options.returnsToSelf = true;
+			return dynamics.gravity(options);
+		};
+
+		dynamics.bezier = function () {
+			var Bezier, Bezier_, yForX;
+			Bezier_ = function Bezier_(t, p0, p1, p2, p3) {
+				return Math.pow(1 - t, 3) * p0 + 3 * Math.pow(1 - t, 2) * t * p1 + 3 * (1 - t) * Math.pow(t, 2) * p2 + Math.pow(t, 3) * p3;
+			};
+			Bezier = function Bezier(t, p0, p1, p2, p3) {
+				return {
+					x: Bezier_(t, p0.x, p1.x, p2.x, p3.x),
+					y: Bezier_(t, p0.y, p1.y, p2.y, p3.y)
+				};
+			};
+			yForX = function yForX(xTarget, Bs, returnsToSelf) {
+				var B, aB, i, lower, percent, upper, x, xTolerance, _i, _len;
+				B = null;
+				for (_i = 0, _len = Bs.length; _i < _len; _i++) {
+					aB = Bs[_i];
+					if (xTarget >= aB(0).x && xTarget <= aB(1).x) {
+						B = aB;
+					}
+					if (B !== null) {
+						break;
+					}
+				}
+				if (!B) {
+					if (returnsToSelf) {
+						return 0;
+					} else {
+						return 1;
+					}
+				}
+				xTolerance = 0.0001;
+				lower = 0;
+				upper = 1;
+				percent = (upper + lower) / 2;
+				x = B(percent).x;
+				i = 0;
+				while (Math.abs(xTarget - x) > xTolerance && i < 100) {
+					if (xTarget > x) {
+						lower = percent;
+					} else {
+						upper = percent;
+					}
+					percent = (upper + lower) / 2;
+					x = B(percent).x;
+					i += 1;
+				}
+				return B(percent).y;
+			};
+			return function (options) {
+				var Bs, fn, points;
+				if (options == null) {
+					options = {};
+				}
+				points = options.points;
+				Bs = function () {
+					var i, k, _fn;
+					Bs = [];
+					_fn = function _fn(pointA, pointB) {
+						var B2;
+						B2 = function B2(t) {
+							return Bezier(t, pointA, pointA.cp[pointA.cp.length - 1], pointB.cp[0], pointB);
+						};
+						return Bs.push(B2);
+					};
+					for (i in points) {
+						k = parseInt(i);
+						if (k >= points.length - 1) {
+							break;
+						}
+						_fn(points[k], points[k + 1]);
+					}
+					return Bs;
+				}();
+				fn = function fn(t) {
+					if (t === 0) {
+						return 0;
+					} else if (t === 1) {
+						return 1;
+					} else {
+						return yForX(t, Bs, this.returnsToSelf);
+					}
+				};
+				fn.returnsToSelf = points[points.length - 1].y === 0;
+				return fn;
+			};
+		}();
+
+		dynamics.easeInOut = function (options) {
+			var friction, _ref;
+			if (options == null) {
+				options = {};
+			}
+			friction = (_ref = options.friction) != null ? _ref : dynamics.easeInOut.defaults.friction;
+			return dynamics.bezier({
+				points: [{
+					x: 0,
+					y: 0,
+					cp: [{
+						x: 0.92 - friction / 1000,
+						y: 0
+					}]
+				}, {
+					x: 1,
+					y: 1,
+					cp: [{
+						x: 0.08 + friction / 1000,
+						y: 1
+					}]
+				}]
+			});
+		};
+
+		dynamics.easeIn = function (options) {
+			var friction, _ref;
+			if (options == null) {
+				options = {};
+			}
+			friction = (_ref = options.friction) != null ? _ref : dynamics.easeIn.defaults.friction;
+			return dynamics.bezier({
+				points: [{
+					x: 0,
+					y: 0,
+					cp: [{
+						x: 0.92 - friction / 1000,
+						y: 0
+					}]
+				}, {
+					x: 1,
+					y: 1,
+					cp: [{
+						x: 1,
+						y: 1
+					}]
+				}]
+			});
+		};
+
+		dynamics.easeOut = function (options) {
+			var friction, _ref;
+			if (options == null) {
+				options = {};
+			}
+			friction = (_ref = options.friction) != null ? _ref : dynamics.easeOut.defaults.friction;
+			return dynamics.bezier({
+				points: [{
+					x: 0,
+					y: 0,
+					cp: [{
+						x: 0,
+						y: 0
+					}]
+				}, {
+					x: 1,
+					y: 1,
+					cp: [{
+						x: 0.08 + friction / 1000,
+						y: 1
+					}]
+				}]
+			});
+		};
+
+		dynamics.spring.defaults = {
+			frequency: 300,
+			friction: 200,
+			anticipationSize: 0,
+			anticipationStrength: 0
+		};
+
+		dynamics.bounce.defaults = {
+			frequency: 300,
+			friction: 200
+		};
+
+		dynamics.forceWithGravity.defaults = dynamics.gravity.defaults = {
+			bounciness: 400,
+			elasticity: 200
+		};
+
+		dynamics.easeInOut.defaults = dynamics.easeIn.defaults = dynamics.easeOut.defaults = {
+			friction: 500
+		};
+
+		dynamics.css = makeArrayFn(function (el, properties) {
+			return applyProperties(el, properties, true);
+		});
+
+		dynamics.animate = makeArrayFn(function (el, properties, options) {
+			var id;
+			if (options == null) {
+				options = {};
+			}
+			options = clone(options);
+			applyDefaults(options, {
+				type: dynamics.easeInOut,
+				duration: 1000,
+				delay: 0,
+				animated: true
+			});
+			options.duration = Math.max(0, options.duration * slowRatio);
+			options.delay = Math.max(0, options.delay);
+			if (options.delay === 0) {
+				return startAnimation(el, properties, options);
+			} else {
+				id = dynamics.setTimeout(function () {
+					return startAnimation(el, properties, options, id);
+				}, options.delay);
+				return animationsTimeouts.push({
+					id: id,
+					el: el
+				});
+			}
+		});
+
+		dynamics.stop = makeArrayFn(function (el, options) {
+			if (options == null) {
+				options = {};
+			}
+			if (options.timeout == null) {
+				options.timeout = true;
+			}
+			if (options.timeout) {
+				animationsTimeouts = animationsTimeouts.filter(function (timeout) {
+					if (timeout.el === el && (options.filter == null || options.filter(timeout))) {
+						dynamics.clearTimeout(timeout.id);
+						return false;
+					}
+					return true;
+				});
+			}
+			return animations = animations.filter(function (animation) {
+				return animation.el !== el;
+			});
+		});
+
+		dynamics.setTimeout = function (fn, delay) {
+			return addTimeout(fn, delay * slowRatio);
+		};
+
+		dynamics.clearTimeout = function (id) {
+			return cancelTimeout(id);
+		};
+
+		dynamics.toggleSlow = function () {
+			slow = !slow;
+			if (slow) {
+				slowRatio = 3;
+			} else {
+				slowRatio = 1;
+			}
+			return typeof console !== "undefined" && console !== null ? typeof console.log === "function" ? console.log("dynamics.js: slow animations " + (slow ? "enabled" : "disabled")) : void 0 : void 0;
+		};
+
+		if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
+			module.exports = dynamics;
+		} else if (true) {
+			!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+				return dynamics;
+			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+			window.dynamics = dynamics;
+		}
+	}).call(this);
 
 	/***/
 }]

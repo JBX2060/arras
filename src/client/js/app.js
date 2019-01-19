@@ -7,6 +7,8 @@
 //var global = require('./lib/global');
 //var util = require('./lib/util');
 
+const dynamic = require('dynamics.js');
+
 //imported manualy cause stuffs going wrong
 var global = {
     // Keys and other mathematical constants and some other shit
@@ -2922,6 +2924,7 @@ const gameDraw = (() => {
                 if (!instance.render.draws) {
                     return 1;
                 }
+                /*
                 let motion = compensation();
                 if (instance.render.status.getFade() === 1) {
                     motion.set();
@@ -2938,6 +2941,8 @@ const gameDraw = (() => {
                 x += global.screenWidth / 2;
                 y += global.screenHeight / 2;
                 drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);
+                */
+                
             }
           
             for (var instance of entities) {
