@@ -469,22 +469,18 @@ exports.greentriangle = {
     DRAW_HEALTH: true
 };
 exports.greensquare = {
-    PARENT: [exports.food],
-    LABEL: 'Square',
-    VALUE: 2000,
+    PARENT: [exports.genericTank],
+    PARENT: [exports.genericTank],
+    LABEL: 'Basic',
     SHAPE: 4,
     SIZE: 10,
     COLOR: 1,
-    CONTROLLERS: ['nearestDifferentMaster', 'mapTargetToGoal'],
-    AI: { NO_LEAD: true },
     BODY: {
         DAMAGE: 0.5,
         DENSITY: 4,
         HEALTH: 20,
         PENETRATION: 2
-    },
-    DRAW_HEALTH: true,
-    INTANGIBLE: false
+    }
 };
 
 exports.gem = {
