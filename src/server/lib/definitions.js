@@ -468,19 +468,6 @@ exports.greentriangle = {
     },
     DRAW_HEALTH: true,
 };
-exports.greensquare = {
-    PARENT: [exports.genericTank],
-    LABEL: 'Basic',
-    SHAPE: 4,
-    SIZE: 10,
-    COLOR: 1,
-    BODY: {
-        DAMAGE: 0.5,
-        DENSITY: 4,
-        HEALTH: 20,
-        PENETRATION: 2,
-    },
-};
 
 exports.gem = {
     PARENT: [exports.food],
@@ -879,6 +866,28 @@ exports.genericTank = {
     DRAW_HEALTH: true,
 };
 let gun = { };
+
+let sqrskill = 6; //13;
+exports.playablesquare = {
+    PARENT: [exports.genericTank],
+    LABEL: 'Square',
+    SHAPE: 4,
+    SIZE: 10,
+    COLOR: 1,
+    DANGER: 6,
+    BODY: {
+        FOV: base.FOV * 1.05,
+        DENSITY: base.DENSITY * 2,
+    },
+    TURRETS: [{ /** SIZE     X       Y     ANGLE    ARC */
+        POSITION: [  21.5,   0,      0,      0,     360,  0,], 
+        TYPE: exports.smasherBody,
+    }],
+    IS_SMASHER: true,
+    SKILL_CAP: [sqrskill, 0, 0, 0, 0, sqrskill, sqrskill, sqrskill, sqrskill, sqrskill],
+    STAT_NAMES: statnames.smasher,
+};
+
 
 exports.autoTurret = {
     PARENT: [exports.genericTank],
