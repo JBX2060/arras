@@ -2181,7 +2181,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 120);
+    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 60);
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
