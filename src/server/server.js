@@ -4225,7 +4225,6 @@ const sockets = (() => {
 
 var gameloop = (() => {
     // Collision stuff
-    /*
     let collide = (() => {
         function simplecollide(my, n) {
             let diff = (1 + util.getDistance(my, n) / 2) * roomSpeed;
@@ -4327,7 +4326,6 @@ var gameloop = (() => {
                         }
                     }
                 }
-                /********* PROCEED ********/
                 if (goahead) {
                     // Add to record
                     my.collisionArray.push(n);
@@ -4348,7 +4346,6 @@ var gameloop = (() => {
                         component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
                     }
                     let componentNorm = component / delt.length;
-                    /************ APPLY COLLISION ***********/
                     // Prepare some things
                     let reductionFactor = 1,
                         deathFactor = {
@@ -4388,7 +4385,6 @@ var gameloop = (() => {
                             _n: (n.maxSpeed) ? ( Math.pow(motion._n.length/n.maxSpeed, 0.25) ) : ( 1 ),
                         };
 
-                        /********** DO DAMAGE *********/
                         let bail = false;
                         if (my.shape === n.shape && my.settings.isNecromancer && n.type === 'food') {
                             //bail = my.necro(n);
@@ -4458,7 +4454,6 @@ var gameloop = (() => {
                             n.damageRecieved += damage._me * deathFactor._me;
                         }
                     }
-                    /************* DO MOTION ***********/    
                     if (nIsFirmCollide < 0) {
                         nIsFirmCollide *= -0.5;
                         my.accel.x -= nIsFirmCollide * component * dir.x;
@@ -4493,16 +4488,16 @@ var gameloop = (() => {
                                 _n: c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
                             };
                         // Apply impulse as force
-                        my.accel.x += modifiers._me * force.x * 2;
-                        my.accel.y += modifiers._me * force.y * 2;
-                        n.accel.x -= modifiers._n * force.x * 2;
-                        n.accel.y -= modifiers._n * force.y * 2;
+                        my.accel.x += modifiers._me * force.x * my.velocity.x;
+                        my.accel.y += modifiers._me * force.y * my.velocity.y;
+                        n.accel.x -= modifiers._n * force.x * n.velocity.x;
+                        n.accel.y -= modifiers._n * force.y * n.velocity.y;
                     }
                 }
             }
         }
-        */
         // The actual collision resolution function
+        
          return collision => {
             // Pull the two objects from the collision grid      
             let instance = collision[0],
@@ -4619,10 +4614,11 @@ var gameloop = (() => {
         logs.collide.set();
         
         if (entities.length > 1) {
-            // Load the grid
+           // Load the grid
            grid.update();
            grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
+        
         logs.collide.mark();
         // Do entities life
         logs.entities.set();   
