@@ -2356,7 +2356,7 @@ var app =
 		minimap = [];
 		setInterval(function () {
 			return moveCompensation.iterate(global.socket.cmd.getMotion());
-		}, 1000 / 60);
+		}, 1000 / 120);
 		document.getElementById('gameCanvas').focus();
 		window.onbeforeunload = function () {
 			return true;
@@ -3084,8 +3084,6 @@ var app =
 					}
 					instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
 					instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
-					instance.render.x = instance.x;
-					instance.render.y = instance.y;
 					instance.render.f = instance.id === _gui.playerid && !instance.twiggle ? Math.atan2(target.y, target.x) : motion.predictFacing(instance.render.lastf, instance.facing);
 					var x = instance.id === _gui.playerid ? 0 : ratio * instance.render.x - px,
 					    y = instance.id === _gui.playerid ? 0 : ratio * instance.render.y - py;

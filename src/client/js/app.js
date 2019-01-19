@@ -2181,7 +2181,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 60);
+    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 120);
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
@@ -2930,8 +2930,6 @@ const gameDraw = (() => {
                 }
                 instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
                 instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
-                instance.render.x = instance.x;
-                instance.render.y = instance.y;
                 instance.render.f = (instance.id === gui.playerid && !instance.twiggle) ?
                     Math.atan2(target.y, target.x) :
                     motion.predictFacing(instance.render.lastf, instance.facing);
