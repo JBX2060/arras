@@ -16,7 +16,6 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
-const fast = require('fast.js');
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -2636,7 +2635,7 @@ var logs = (() => {
                 layer: e.layer,
                 statnames: e.settings.skillNames,
                 position: positionInfo,
-                guns: fast.map(e.guns, (function(gun) {
+                guns: e.guns.map(function(gun) {
                     return {
                         offset: rounder(gun.offset),
                         direction: rounder(gun.direction),
@@ -2645,8 +2644,8 @@ var logs = (() => {
                         aspect: rounder(gun.aspect),
                         angle: rounder(gun.angle),
                     };
-                })),
-                turrets: fast.map(e.turrets, (function(t) { 
+                }),
+                turrets: e.turrets.map(function(t) { 
                     let out = getMockup(t, {});
                     out.sizeFactor = rounder(t.bound.size);
                     out.offset = rounder(t.bound.offset);
@@ -2654,13 +2653,13 @@ var logs = (() => {
                     out.layer = rounder(t.bound.layer);
                     out.angle = rounder(t.bound.angle);
                     return out;
-                })),
+                }),
             };
         }
         function getDimensions(entities) {
             /* Ritter's Algorithm (Okay it got serious modified for how we start it)
             * 1) Add all the ends of the guns to our list of points needed to be bounded and a couple points for the body of the tank..
-            
+            */
             let endpoints = [];
             let pointDisplay = [];
             let pushEndpoints = function(model, scale, focus={ x: 0, y: 0 }, rot=0) {
@@ -2719,7 +2718,7 @@ var logs = (() => {
                 massCenter.y += point.y;
             });
             massCenter.x /= endpoints.length;
-            massCenter.y /= endpoints.length;
+            massCenter.y /= endpoints.length; */
             // 3) Choose three different points (hopefully ones very far from each other)
             let chooseFurthestAndRemove = function(furthestFrom) {
                 let index = 0;
@@ -2875,8 +2874,7 @@ var logs = (() => {
             });
             util.log('Mockups written to ' + loc + '!');
         };
-    })(), */
-    
+    })(),
     generateVersionControlHash = (() => {
         let crypto = require('crypto');
         let write = (() => {

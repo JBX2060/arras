@@ -2574,16 +2574,7 @@ var express = require('express'),
     WebSocket = require('ws'),
     app = express(),
     fs = require('fs'),
-    exportDefinitionsToClinet = (() => {
-    function round(value) {
-        if (Math.abs(value) < 0.00001) {
-            value = 0;
-        }
-        return +value.toPrecision(6);
-    }
-})(),
-
-/* exportDefintionsToClient = (() => { 
+    exportDefintionsToClient = (() => { 
     function rounder(val) {
         if (Math.abs(val) < 0.00001) val = 0;
         return +val.toPrecision(6);
@@ -2627,7 +2618,7 @@ var express = require('express'),
     function getDimensions(entities) {
         /* Ritter's Algorithm (Okay it got serious modified for how we start it)
         * 1) Add all the ends of the guns to our list of points needed to be bounded and a couple points for the body of the tank..
-        
+        */
         let endpoints = [];
         let pointDisplay = [];
         let pushEndpoints = function(model, scale, focus={ x: 0, y: 0 }, rot=0) {
@@ -2686,7 +2677,8 @@ var express = require('express'),
             massCenter.y += point.y;
         });
         massCenter.x /= endpoints.length;
-        massCenter.y /= endpoints.length;
+        massCenter.y /= endpoints.length; 
+        */
         // 3) Choose three different points (hopefully ones very far from each other)
         let chooseFurthestAndRemove = function(furthestFrom) {
             let index = 0;
