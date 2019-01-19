@@ -1,6 +1,5 @@
 // GUN DEFINITIONS
 const combineStats = function(arr) {
-    if (!arr.some(undefined)) {
      let data = arr.reduce((a, b) => a.map((r, i) => r * b[i]));
      return {
           reload:     data[0],
@@ -17,9 +16,6 @@ const combineStats = function(arr) {
           spray:      data[11],
           resist:     data[12],
       };
-    } else {
-        console.error(new Error(arr.map(r => r && r.length)))
-    }
 };
 const skillSet = (() => {
     let config = require('../../../config.json');
