@@ -4225,6 +4225,7 @@ const sockets = (() => {
 
 var gameloop = (() => {
     // Collision stuff
+    /*
     let collide = (() => {
         function simplecollide(my, n) {
             let diff = (1 + util.getDistance(my, n) / 2) * roomSpeed;
@@ -4500,6 +4501,7 @@ var gameloop = (() => {
                 }
             }
         }
+        */
         // The actual collision resolution function
          return collision => {
             // Pull the two objects from the collision grid      
@@ -4561,6 +4563,7 @@ var gameloop = (() => {
             }     
         };
     })();
+    
     // Living stuff
     function entitiesactivationloop(my) {
         // Update collisions.
@@ -4594,7 +4597,7 @@ var gameloop = (() => {
             }
         }
         // Update collisions.
-        my.collisionArray = []; 
+        //my.collisionArray = []; 
     }
     let time;
     // Return the loop function
@@ -4617,8 +4620,8 @@ var gameloop = (() => {
         
         if (entities.length > 1) {
             // Load the grid
-            grid.update();
-            grid.queryForCollisionPairs().forEach(collision => collide(collision));
+           grid.update();
+           grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life

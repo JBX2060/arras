@@ -25,6 +25,7 @@ dependencies:
   nodemon: 1.18.9
   paper: 0.11.8
   performance-now: 2.1.0
+  physicsjs: 0.7.0
   rev-del: 1.0.5
   rimraf: 2.6.3
   sat: 0.6.0
@@ -4353,6 +4354,11 @@ packages:
     dev: false
     resolution:
       integrity: sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
+  /physicsjs/0.7.0:
+    bundledDependencies: []
+    dev: false
+    resolution:
+      integrity: sha1-1GgYuQ0mZ6EznrJir5jTMWMkKRA=
   /pify/2.3.0:
     dev: false
     engines:
@@ -6130,6 +6136,7 @@ specifiers:
   nodemon: ^1.9.2
   paper: ^0.11.5
   performance-now: ^2.1.0
+  physicsjs: ^0.7.0
   rev-del: ^1.0.5
   rimraf: ^2.6.2
   sat: ^0.6.0
