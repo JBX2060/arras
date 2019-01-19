@@ -1132,10 +1132,6 @@ exports.playablesquare = {
         FOV: base.FOV * 1.05,
         DENSITY: base.DENSITY * 2
     },
-    TURRETS: [{ /** SIZE     X       Y     ANGLE    ARC */
-        POSITION: [21.5, 0, 0, 0, 360, 0],
-        TYPE: exports.megasmashBody
-    }],
     IS_SMASHER: true,
     SKILL_CAP: [sqrskill, 0, 0, 0, 0, sqrskill, sqrskill, sqrskill, sqrskill, sqrskill],
     STAT_NAMES: statnames.smasher
