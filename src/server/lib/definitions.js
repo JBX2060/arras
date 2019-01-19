@@ -1146,13 +1146,29 @@ exports.dominationBody = {
     INDEPENDENT: true,
 };
 
-let sqrskill = 6; //13;
+exports.playableegg = {
+    PARENT: [exports.genericTank],
+    LABEL: 'Egg',
+    SHAPE: 0,
+    SIZE: 5,
+    COLOR: 6,
+    FACING_TYPE: 'autospin',
+    BODY: {
+        DAMAGE: 4,
+        DENSITY: 2,
+        HEALTH: 10,
+        PUSHABILITY: 0,
+    },
+    IS_SMASHER: true,
+    SKILL_CAP: [3, 0, 0, 0, 0, 3, 3, 3, 3, 3],
+    STAT_NAMES: statnames.smasher,
+};
+
 exports.playablesquare = {
     PARENT: [exports.genericTank],
     LABEL: 'Square',
     SHAPE: 4,
     SIZE: 10,
-    COLOR: 1,
     DANGER: 6,
     FACING_TYPE: 'autospin',
     BODY: {
@@ -1162,7 +1178,45 @@ exports.playablesquare = {
         PENETRATION: 2,
     },
     IS_SMASHER: true,
-    SKILL_CAP: [sqrskill, 0, 0, 0, 0, sqrskill, sqrskill, sqrskill, sqrskill, sqrskill],
+    SKILL_CAP: [6, 0, 0, 0, 0, 6, 6, 6, 6, 6],
+    STAT_NAMES: statnames.smasher,
+};
+
+exports.playabletriangle = {
+    PARENT: [exports.genericTank],
+    LABEL: 'Triangle',
+    SHAPE: 3,
+    SIZE: 10,
+    COLOR: 2,
+    DANGER: 7,
+    FACING_TYPE: 'autospin',
+    BODY: {
+        DAMAGE: basePolygonDamage,
+        DENSITY: 4,
+        HEALTH: basePolygonHealth,
+        PENETRATION: 2,
+    },
+    IS_SMASHER: true,
+    SKILL_CAP: [7, 0, 0, 0, 0, 7, 7, 7, 7, 7],
+    STAT_NAMES: statnames.smasher,
+};
+
+exports.playablegreensquare = {
+    PARENT: [exports.genericTank],
+    LABEL: 'Triangle',
+    SHAPE: 3,
+    SIZE: 10,
+    COLOR: 2,
+    DANGER: 7,
+    FACING_TYPE: 'autospin',
+    BODY: {
+        DAMAGE: basePolygonDamage,
+        DENSITY: 4,
+        HEALTH: basePolygonHealth,
+        PENETRATION: 2,
+    },
+    IS_SMASHER: true,
+    SKILL_CAP: [7, 0, 0, 0, 0, 7, 7, 7, 7, 7],
     STAT_NAMES: statnames.smasher,
 };
     exports.baseSwarmTurret = {
@@ -4541,5 +4595,9 @@ exports.stresstester = {
                 ],
 
     };
+
+exports.playableegg.UPGRADES_TIER_1 = [exports.playablesquare];
+exports.playablesquare.UPGRADES_TIER_2 = [exports.playabletriangle];
+exports.playabletriangle.UPGRADES_TIER_
 
 
