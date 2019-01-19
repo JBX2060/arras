@@ -7,8 +7,6 @@
 //var global = require('./lib/global');
 //var util = require('./lib/util');
 
-const vel = require('velocity-animate');
-
 //imported manualy cause stuffs going wrong
 var global = {
     // Keys and other mathematical constants and some other shit
@@ -2924,19 +2922,19 @@ const gameDraw = (() => {
                 if (!instance.render.draws) {
                     return 1;
                 }
-                //let motion = compensation();
-                //if (instance.render.status.getFade() === 1) {
-                //    motion.set();
-                //} else {
-                //    motion.set(instance.render.lastRender, instance.render.interval);
-                //}
-                //instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
-                //instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
+                let motion = compensation();
+                if (instance.render.status.getFade() === 1) {
+                    motion.set();
+                } else {
+                    motion.set(instance.render.lastRender, instance.render.interval);
+                }
+                instance.render.x = motion.predict(instance.render.lastx, instance.x, instance.render.lastvx, instance.vx);
+                instance.render.y = motion.predict(instance.render.lasty, instance.y, instance.render.lastvy, instance.vy);
                 instance.render.x = instance.x;
                 instance.render.y = instance.y;
-                //instance.render.f = (instance.id === gui.playerid && !instance.twiggle) ?
-                //    Math.atan2(target.y, target.x) :
-                //    motion.predictFacing(instance.render.lastf, instance.facing);
+                instance.render.f = (instance.id === gui.playerid && !instance.twiggle) ?
+                    Math.atan2(target.y, target.x) :
+                    motion.predictFacing(instance.render.lastf, instance.facing);
                 let x = (instance.id === gui.playerid) ? 0 : ratio * instance.render.x - px,
                     y = (instance.id === gui.playerid) ? 0 : ratio * instance.render.y - py;
                 x += global.screenWidth / 2;
@@ -3477,7 +3475,6 @@ const gameDrawDisconnected = (() => {
 })();
 
 // The main function
-var fps;
 function animloop() {
     global.animLoopHandle = window.requestAnimFrame(animloop);
     player.renderv += (player.view - player.renderv) / 120;
