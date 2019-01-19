@@ -1201,6 +1201,25 @@ exports.playabletriangle = {
     STAT_NAMES: statnames.smasher,
 };
 
+exports.playablepentagon = {
+    PARENT: [exports.genericTank],
+    LABEL: 'Pentagon',
+    SHAPE: 5,
+    SIZE: 16,
+    COLOR: 1,
+    FACING_TYPE: 'autospin',
+    BODY: {
+        DAMAGE: 1.5 * basePolygonDamage,
+        DENSITY: 8,
+        HEALTH: 10 * basePolygonHealth,
+        RESIST: 1.25,
+        PENETRATION: 1.1,
+    },
+    IS_SMASHER: true,
+    SKILL_CAP: [8, 0, 0, 0, 0, 8, 8, 8, 8, 8],
+    STAT_NAMES: statnames.smasher,
+};
+
 exports.playablegreensquare = {
     PARENT: [exports.genericTank],
     LABEL: 'Triangle',
@@ -4598,6 +4617,6 @@ exports.stresstester = {
 
 exports.playableegg.UPGRADES_TIER_1 = [exports.playablesquare];
 exports.playablesquare.UPGRADES_TIER_2 = [exports.playabletriangle];
-exports.playabletriangle.UPGRADES_TIER_
+exports.playabletriangle.UPGRADES_TIER_3 = [exports.playablepentagon];
 
 
