@@ -2615,7 +2615,7 @@ var logs = (() => {
     WebSocket = require('ws'),
     app = express(),
     fs = require('fs'),      
-    exportDefintionsToClient = (() => { 
+     exportDefintionsToClient = (() => { 
         function rounder(val) {
             if (Math.abs(val) < 0.00001) val = 0;
             return +val.toPrecision(6);
@@ -2698,17 +2698,13 @@ var logs = (() => {
                         y: y + l * Math.sin(gun.angle - r),
                     });
                 });
-              
-                function addTurret(turret) {
+                model.turrets.forEach(function(turret) {
                     pushEndpoints(
                         turret, turret.bound.size, 
                         { x: turret.bound.offset * Math.cos(turret.bound.angle), y: turret.bound.offset * Math.sin(turret.bound.angle) }, 
                         turret.bound.angle
                     );
-                }
-                for (var turret of model.turrets) {
-                    addTurret(turret)
-                };
+                });
             };
             pushEndpoints(entities, 1);
             // 2) Find their mass center
@@ -2718,7 +2714,7 @@ var logs = (() => {
                 massCenter.y += point.y;
             });
             massCenter.x /= endpoints.length;
-            massCenter.y /= endpoints.length; */
+            massCenter.y /= endpoints.length;*/
             // 3) Choose three different points (hopefully ones very far from each other)
             let chooseFurthestAndRemove = function(furthestFrom) {
                 let index = 0;
@@ -2750,7 +2746,7 @@ var logs = (() => {
                         /* We need neither to calculate the last part of the triangle 
                         * (because it's always the same) nor divide by 2 to get the 
                         * actual area (because we're just comparing it)
-                        
+                        */
                     list.enqueue(1/a, i);
                 }
                 index = list.dequeue();

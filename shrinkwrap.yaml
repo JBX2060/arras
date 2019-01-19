@@ -5,7 +5,6 @@ dependencies:
   chai: 3.5.0
   eris: 0.9.0
   express: 4.16.4
-  fast-json-stringify: 1.10.0
   fs: 0.0.2
   google-closure-library: 20170910.0.0
   gulp: 3.9.1
@@ -23,8 +22,6 @@ dependencies:
   keypress: 0.2.1
   mocha: 2.5.3
   mysql: 2.16.0
-  nanotimer: 0.3.15
-  napajs: 0.2.2412
   nodemon: 1.18.9
   paper: 0.11.8
   performance-now: 2.1.0
@@ -58,15 +55,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha1-ReN/s56No/JbruP/U2niu18iAXo=
-  /ajv/6.7.0:
-    dependencies:
-      fast-deep-equal: 2.0.1
-      fast-json-stable-stringify: 2.0.0
-      json-schema-traverse: 0.4.1
-      uri-js: 4.2.2
-    dev: false
-    resolution:
-      integrity: sha512-RZXPviBTtfmtka9n9sy1N5M5b82CbxWIR6HIis4s3WQTXDJamc/0gpCWNGz6EWdWp4DOfjzJfhz/AS9zVPjjWg==
   /align-text/0.1.4:
     dependencies:
       kind-of: 3.2.2
@@ -1413,12 +1401,6 @@ packages:
       node: '>=4.0.0'
     resolution:
       integrity: sha512-LOHxIOaPYdHlJRtCQfDIVZtfw/ufM8+rVj649RIHzcm/vGwQRXFt6OPqIFWsm2XEMrNIEtWR64sY1LEKD2vAOA==
-  /deepmerge/3.1.0:
-    dev: false
-    engines:
-      node: '>=0.10.0'
-    resolution:
-      integrity: sha512-/TnecbwXEdycfbsM2++O3eGiatEFHjjNciHEwJclM+T5Kd94qD1AP+2elP/Mq0L5b9VZJao5znR01Mz6eX8Seg==
   /default-compare/1.0.0:
     dependencies:
       kind-of: 5.1.0
@@ -1907,21 +1889,6 @@ packages:
       node: '>= 0.10'
     resolution:
       integrity: sha512-k9oEhlyc0FrVh25qYuSELjr8oxsCoc4/LEZfg2iJJrfEk/tZL9bCoJE47gqAvI2m/AUjluCS4+3I0eTx8n3AEw==
-  /fast-deep-equal/2.0.1:
-    dev: false
-    resolution:
-      integrity: sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
-  /fast-json-stable-stringify/2.0.0:
-    dev: false
-    resolution:
-      integrity: sha1-1RQsDK7msRifh9OnYREGT4bIu/I=
-  /fast-json-stringify/1.10.0:
-    dependencies:
-      ajv: 6.7.0
-      deepmerge: 3.1.0
-    dev: false
-    resolution:
-      integrity: sha512-qO+GSdwCQHXJjoRbS/pYJzzz8BNUrCk0jdPhDg68mdIG/hOC0k66PUKFz300LAH42vNQkuPFvpwa0JV44ZG3Uw==
   /filename-regex/2.0.1:
     dev: false
     engines:
@@ -3197,10 +3164,6 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-Q8XN38hGsVQhdlM+4gd1Xl7OB1VieSuCJf+fEJjpo59JH99bVJhXRXAh26qQ15wfdd1VPMuDWNeSWoNl53T4YA==
-  /json-schema-traverse/0.4.1:
-    dev: false
-    resolution:
-      integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==
   /json-stable-stringify-without-jsonify/1.0.1:
     dev: false
     resolution:
@@ -3958,14 +3921,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==
-  /nanotimer/0.3.15:
-    dev: false
-    resolution:
-      integrity: sha1-KA0nfbkUbspvilcLVyq68qmsx1Q=
-  /napajs/0.2.2412:
-    dev: false
-    resolution:
-      integrity: sha512-xgLP9i3ad2TKa08cIK4Mb00YcZrBVUq1zxWX7fPLP1d6U4YVHgMR4IoJVWfVVDb0nU5k2+fGY7TH9oZFRwMdgQ==
   /natives/1.1.6:
     dev: false
     resolution:
@@ -4551,12 +4506,6 @@ packages:
     dev: false
     resolution:
       integrity: sha1-wNWmOycYgArY4esPpSachN1BhF4=
-  /punycode/2.1.1:
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-XRsRjdf+j5ml+y/6GKHPZbrF/8p2Yga0JPtdqTIY2Xe5ohJPD9saDJJLPvp9+NSBprVvevdXZybnj2cv8OEd0A==
   /qs/6.5.2:
     dev: false
     engines:
@@ -5764,12 +5713,6 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-gwMdhgJHGuj/+wHJJs9e6PcCszpxR1b236igrOkUofGhqJuG+amlIKwApH1IW1WWl7ovZxsX49lMBWLxSdm5Dw==
-  /uri-js/4.2.2:
-    dependencies:
-      punycode: 2.1.1
-    dev: false
-    resolution:
-      integrity: sha512-KY9Frmirql91X2Qgjry0Wd4Y+YTdrdZheS8TFwvkbLWf/G5KNJDCh6pKL5OZctEW4+0Baa5idK2ZQuELRwPznQ==
   /urix/0.1.0:
     dev: false
     resolution:
@@ -6167,7 +6110,6 @@ specifiers:
   chai: ^3.5.0
   eris: ^0.9.0
   express: ^4.13.4
-  fast-json-stringify: ^1.10.0
   fs: ^0.0.2
   google-closure-library: ^20170910.0.0
   gulp: ^3.9.1
@@ -6185,8 +6127,6 @@ specifiers:
   keypress: ^0.2.1
   mocha: ^2.5.3
   mysql: ^2.5.5
-  nanotimer: ^0.3.15
-  napajs: ^0.2.2412
   nodemon: ^1.9.2
   paper: ^0.11.5
   performance-now: ^2.1.0
