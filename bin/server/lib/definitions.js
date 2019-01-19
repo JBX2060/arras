@@ -1437,6 +1437,78 @@ exports.basic = {
             NEGATIVE_RECOIL: false // def
         } }]
 };
+
+exports.bombarder = {
+    PARENT: [exports.genericTank],
+    LABEL: 'Bombarder',
+    //CONTROLLERS: ['nearestDifferentMaster'],
+    GUNS: [{ /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
+        POSITION: [14, 4, 1, 0, 0, 180, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.flank, g.tri, g.thruster, g.halfrecoil]),
+            TYPE: exports.bullet,
+            LABEL: '', // def
+            STAT_CALCULATOR: 0, // def
+            WAIT_TO_CYCLE: false, // def
+            AUTOFIRE: false, // def
+            SYNCS_SKILLS: false, // def         
+            MAX_CHILDREN: 0, // def  
+            ALT_FIRE: false, // def 
+            NEGATIVE_RECOIL: false // def
+        } }, {
+        POSITION: [14, 4, 1, 0, 0, 135, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.flank, g.tri, g.thruster, g.halfrecoil]),
+            TYPE: exports.bullet,
+            LABEL: '', // def
+            STAT_CALCULATOR: 0, // def
+            WAIT_TO_CYCLE: false, // def
+            AUTOFIRE: false, // def
+            SYNCS_SKILLS: false, // def         
+            MAX_CHILDREN: 0, // def  
+            ALT_FIRE: false, // def 
+            NEGATIVE_RECOIL: false // def
+        } }, {
+        POSITION: [14, 4, 1, 0, 0, -135, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.flank, g.tri, g.thruster, g.halfrecoil]),
+            TYPE: exports.bullet,
+            LABEL: '', // def
+            STAT_CALCULATOR: 0, // def
+            WAIT_TO_CYCLE: false, // def
+            AUTOFIRE: false, // def
+            SYNCS_SKILLS: false, // def         
+            MAX_CHILDREN: 0, // def  
+            ALT_FIRE: false, // def 
+            NEGATIVE_RECOIL: false // def
+        } }, {
+        POSITION: [14, 4, 1, 0, 0, 155, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.flank, g.tri, g.thruster, g.halfrecoil]),
+            TYPE: exports.bullet,
+            LABEL: '', // def
+            STAT_CALCULATOR: 0, // def
+            WAIT_TO_CYCLE: false, // def
+            AUTOFIRE: false, // def
+            SYNCS_SKILLS: false, // def         
+            MAX_CHILDREN: 0, // def  
+            ALT_FIRE: false, // def 
+            NEGATIVE_RECOIL: false // def
+        } }, {
+        POSITION: [14, 4, 1, 0, 0, -155, 0],
+        PROPERTIES: {
+            SHOOT_SETTINGS: combineStats([g.basic, g.flank, g.tri, g.thruster, g.halfrecoil]),
+            TYPE: exports.bullet,
+            LABEL: '', // def
+            STAT_CALCULATOR: 0, // def
+            WAIT_TO_CYCLE: false, // def
+            AUTOFIRE: false, // def
+            SYNCS_SKILLS: false, // def         
+            MAX_CHILDREN: 0, // def  
+            ALT_FIRE: false, // def 
+            NEGATIVE_RECOIL: false // def
+        } }]
+};
 exports.testbed = {
     PARENT: [exports.genericTank],
     LABEL: 'TESTBED',
