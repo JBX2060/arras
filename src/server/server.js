@@ -1722,7 +1722,8 @@ class Entity {
                 };
                 // Update grid if needed
                 if (sizeDiff > Math.SQRT2 || sizeDiff < Math.SQRT1_2) {
-                    this.removeFromGrid(); this.addToGrid();
+                    this.removeFromGrid(); 
+                    this.addToGrid();
                     savedSize = data.size;
                 }
             };
@@ -2306,24 +2307,15 @@ class Entity {
         this.flattenedPhoto = null;
         this.photo = (this.settings.drawShape) ? this.camera() : this.photo = undefined;
     }
-    
-    accelerate(acceleration, angle, force) {
-        acceleration = util.clamp(force, -this.topSpeed, this.topSpeed);
-        this.acceleration.x = Math.cos(angle) * acceleration;
-        this.acceleration.y = Math.sin(angle) * acceleration;
-    }
   
-    lerp(v0, v1, t) {
-      return v0*(1-t)+v1*t
-    }
-
     physics() {
         if (this.accel.x == null || this.velocity.x == null) {
             util.error('Void Error!');
             util.error(this.collisionArray);
             util.error(this.label);
             util.error(this);
-            nullVector(this.accel); nullVector(this.velocity);
+            nullVector(this.accel); 
+            nullVector(this.velocity);
         }
         // Apply acceleration
         this.velocity.x += this.accel.x * timestep;
@@ -4485,13 +4477,13 @@ var gameloop = (() => {
                             },
                             modifiers = {
                                 _me: c.KNOCKBACK_CONSTANT * my.pushability / my.mass * deathFactor._n,
-                                _n: c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
+                                _n:  c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
                             };
                         // Apply impulse as force
-                        my.accel.x += modifiers._me * force.x * -my.velocity.x;
-                        my.accel.y += modifiers._me * force.y * -my.velocity.y;
-                        n.accel.x -= modifiers._n * force.x * -n.velocity.x;
-                        n.accel.y -= modifiers._n * force.y * -n.velocity.y;
+                        my.accel.x += modifiers._me * force.x * 2;
+                        my.accel.y += modifiers._me * force.y * 2;
+                        n.accel.x -= modifiers._n * force.x * 2;
+                        n.accel.y -= modifiers._n * force.y * 2;
                     }
                 }
             }
