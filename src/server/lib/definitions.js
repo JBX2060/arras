@@ -867,27 +867,6 @@ exports.genericTank = {
 };
 let gun = { };
 
-let sqrskill = 6; //13;
-exports.playablesquare = {
-    PARENT: [exports.genericTank],
-    LABEL: 'Square',
-    SHAPE: 4,
-    SIZE: 10,
-    COLOR: 1,
-    DANGER: 6,
-    BODY: {
-        FOV: base.FOV * 1.05,
-        DENSITY: base.DENSITY * 2,
-    },
-    TURRETS: [{ /** SIZE     X       Y     ANGLE    ARC */
-        POSITION: [  21.5,   0,      0,      0,     360,  0,], 
-        TYPE: exports.smasherBody,
-    }],
-    IS_SMASHER: true,
-    SKILL_CAP: [sqrskill, 0, 0, 0, 0, sqrskill, sqrskill, sqrskill, sqrskill, sqrskill],
-    STAT_NAMES: statnames.smasher,
-};
-
 
 exports.autoTurret = {
     PARENT: [exports.genericTank],
@@ -1165,6 +1144,28 @@ exports.dominationBody = {
     COLOR: 9,
     SHAPE: 8,
     INDEPENDENT: true,
+};
+
+let sqrskill = 6; //13;
+exports.playablesquare = {
+    PARENT: [exports.genericTank],
+    LABEL: 'Square',
+    SHAPE: 4,
+    SIZE: 10,
+    COLOR: 1,
+    DANGER: 6,
+    FACING_TYPE: 'autospin',
+    BODY: {
+        FOV: base.FOV * 1.05,
+        DENSITY: base.DENSITY * 2,
+    },
+    TURRETS: [{ /** SIZE     X       Y     ANGLE    ARC */
+                POSITION: [  21.5,   0,      0,      0,     360,  0,], 
+                TYPE: exports.spike1,
+    }],
+    IS_SMASHER: true,
+    SKILL_CAP: [sqrskill, 0, 0, 0, 0, sqrskill, sqrskill, sqrskill, sqrskill, sqrskill],
+    STAT_NAMES: statnames.smasher,
 };
     exports.baseSwarmTurret = {
         PARENT: [exports.genericTank],
