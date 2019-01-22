@@ -1107,6 +1107,7 @@ class Gun {
             time: 0,
             power: 0,
         };
+        this.bullets = [];
         this.body = body;
         this.master = body.source;
         this.label = '';
@@ -1190,6 +1191,25 @@ class Gun {
             this.cycle = !this.waitToCycle - this.delay;
             this.trueRecoil = this.settings.recoil * 2;
         }
+    }
+  
+    initilize() {
+        let sk = (this.bulletStats == 'master') ? this.body.skill : this.bulletStats;
+        let maxBulletsOnScreen = Math.ceil((this.settings.range / Math.sqrt(sk.spd)) / (this.settings.reload / 2)) + 1;
+        for (let i = 0; i < maxBulletsOnScreen; i++) {
+            
+        }
+    }
+  
+    generateBullet() {
+        var o = new Entity({
+            x: 0,
+            y: 0,
+        }, this.master.master);
+        o.velocity = new Vector(0, 0);
+        this.bulletInit(o);
+        o.active = false;
+        o.coreSize = o.SIZE;
     }
     
     recoil() {
@@ -1606,6 +1626,7 @@ class HealthType {
 
 class Entity {
     constructor(position, master = this) {
+        this.active = true;
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
         this.creationTime = (new Date()).getTime();
@@ -4589,16 +4610,13 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        var curTime = now();
-        timestep = 0.00525 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.00525;
-        }
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
         for (var e of entities) {
+          if (e.active === true) {
            entitiesactivationloop(e);
+          }
         }
         //entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
@@ -4615,13 +4633,14 @@ var gameloop = (() => {
         // Do entities life
         logs.entities.set();   
         for (var e of entities) {
-           entitiesliveloop(e);
+          if (e.active === true) {
+             entitiesliveloop(e);
+          }
         }
           logs.entities.mark();
           logs.master.mark();
           // Remove dead entities
           purgeEntities();  
-          lastTime = curTime;
           room.lastCycle = util.time();    
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5128,13 +5147,18 @@ var gameexecution = function () {
 
   actualTicks++;
   if (previousTick + tickLengthMs <= current) {
-    var delta = (current - previousTick) / 1000;
+        var curTime = now();
+        timestep = 0.00525 * (curTime - lastTime);
+        if (timestep <= 0 || timestep > 1.0) {
+            timestep = 0.00525;
+        }
     
     previousTick = current;
 
     gameloop();
     
     actualTicks = 0;
+    lastTime = curTime;
   }
 
   if (Date.now() - previousTick < tickLengthMs - 16) {
