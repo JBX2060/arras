@@ -1107,7 +1107,8 @@ class Gun {
             time: 0,
             power: 0,
         };
-        this.bullets = [];
+        this.storedbullets = [];
+        this.initilized = false;
         this.body = body;
         this.master = body.source;
         this.label = '';
@@ -1197,11 +1198,12 @@ class Gun {
         let sk = (this.bulletStats == 'master') ? this.body.skill : this.bulletStats;
         let maxBulletsOnScreen = Math.ceil((this.settings.range / Math.sqrt(sk.spd)) / (this.settings.reload / 2)) + 1;
         for (let i = 0; i < maxBulletsOnScreen; i++) {
-            
+            this.storedbullets.push(this.generatebullet());
         }
+        console.log(this.storedbullets);
     }
   
-    generateBullet() {
+    generatebullet() {
         var o = new Entity({
             x: 0,
             y: 0,
@@ -1210,6 +1212,7 @@ class Gun {
         this.bulletInit(o);
         o.active = false;
         o.coreSize = o.SIZE;
+        return o;
     }
     
     recoil() {
@@ -1543,6 +1546,12 @@ var bringToLife = (() => {
         my.face();
         // Handle guns and turrets if we've got them
         my.guns.forEach(gun => gun.live());
+        for (var gun of my.guns) {
+           gun.live();
+           if (gun.initilized !== true) {
+              gun.initilize();
+           }
+        }
         my.turrets.forEach(turret => turret.life());
         if (my.skill.maintain()) my.refreshBodyAttributes();
         //if (my.invisible[1]) {
@@ -1766,6 +1775,9 @@ class Entity {
     } 
 
     define(set) {
+        if (set.mockup != null) {
+            this.mockup = set.mockup;
+        }
         if (set.PARENT != null) {
             for (let i=0; i<set.PARENT.length; i++) {
                 this.define(set.PARENT[i]);
@@ -1951,11 +1963,12 @@ class Entity {
         if (set.ALT_ABILITIES != null) { 
             this.abilities = set.ALT_ABILITIES; 
         }
-        if (set.GUNS != null) { 
+        if (set.GUNS != null) {
             let newGuns = [];
-            set.GUNS.forEach((gundef) => {
-                newGuns.push(new Gun(this, gundef));
-            });
+            for (let gundef of set.GUNS) {
+                let g = new Gun(this, gundef);
+                newGuns.push(g);
+            }
             this.guns = newGuns;
         }
         if (set.MAX_CHILDREN != null) { 
@@ -2025,9 +2038,7 @@ class Entity {
                     o.bindToMaster(def.POSITION, this);
             });
         }
-        if (set.mockup != null) {
-            this.mockup = set.mockup;
-        }
+
     }
 
     refreshBodyAttributes() {
