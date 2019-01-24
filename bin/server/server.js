@@ -2026,7 +2026,7 @@ class Entity {
     }
 
     refreshBodyAttributes() {
-        if (this.cache === null || this.cache === undefined) {
+        if (this.cache === undefined) {
             this.cache = [0, 0, 0, 0, 0, 0];
         }
 
@@ -2035,7 +2035,7 @@ class Entity {
 
             this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
             if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-            this.cache[0] = this.skill.ack;
+            this.cache[0] = this.skill.acl;
 
             this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
             if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
@@ -2072,17 +2072,17 @@ class Entity {
 
         let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
 
-        //if (this.skill.acl != this.cache[0]) {
-        this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
-        if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        //this.cache[0] = this.skill.acl;
-        //}
+        if (this.skill.acl != this.cache[0]) {
+            this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
+            if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
+            this.cache[0] = this.skill.acl;
+        }
 
-        //if (this.skill.mob != this.cache[1]) {
-        this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
-        if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
-        //this.cache[1] = this.skill.mob;
-        //}
+        if (this.skill.mob != this.cache[1]) {
+            this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
+            if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
+            this.cache[1] = this.skill.mob;
+        }
 
         //if (this.HEALTH != this.cache[2]) {
         this.health.set(((this.settings.healthWithLevel ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt);
