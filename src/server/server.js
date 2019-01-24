@@ -6,7 +6,7 @@
 // General requires
 require('google-closure-library');
 goog.require('goog.structs.PriorityQueue');
-goog.require('goog.structs.QuadTree');
+goog.require('goog.structs.QuadTree');a
 
 // Import game settings.
 const c = require('../../config.json');
@@ -1101,12 +1101,13 @@ const lazyRealSizes = (() => {
 })();
 
 // Define how guns work
- class Gun {
+class Gun {
     constructor(body, info) {
         this.lastShot = {
             time: 0,
             power: 0,
         };
+        this.cache = [];
         this.body = body;
         this.master = body.source;
         this.label = '';
@@ -1188,8 +1189,33 @@ const lazyRealSizes = (() => {
         this.motion = 0;
         if (this.canShoot) {
             this.cycle = !this.waitToCycle - this.delay;
-            this.trueRecoil = this.settings.recoil;
+            this.trueRecoil = this.settings.recoil * 2;
         }
+    }
+  
+    initilize() {
+        let sk = (this.bulletStats == 'master') ? this.body.skill : this.bulletStats;
+        let maxBulletsOnScreen = Math.ceil((this.settings.range / Math.sqrt(sk.spd)) / (this.settings.reload / 2)) + 1;
+        for (let i = 0; i < maxBulletsOnScreen; i++) {
+            this.cache.push(this.generate());
+        }
+        this.initilized = true;
+    }
+  
+    generate() {
+        var o = new Entity({
+            x: 0,
+            y: 0,
+        }, this.master.master);
+        /*let jumpAhead = this.cycle - 1;
+        if (jumpAhead) {
+            o.x += s.x * this.cycle / jumpAhead;
+            o.y += s.y * this.cycle / jumpAhead;
+        }*/
+        o.velocity = new Vector(0, 0);
+        this.bulletInit(o);
+        o.coreSize = o.SIZE;
+        return o;
     }
     
     recoil() {
@@ -1253,7 +1279,7 @@ const lazyRealSizes = (() => {
             // Cycle up if we should
             if (shootPermission || !this.waitToCycle) {
                 if (this.cycle < 1) {
-                    this.cycle += 1 / this.settings.reload / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
+                    this.cycle += 1 / (this.settings.reload * 2) / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
                 } 
             } 
             // Firing routines
@@ -1328,18 +1354,30 @@ const lazyRealSizes = (() => {
             }                     
         }
         // Create the bullet
+        /*
         var o = new Entity({
             x: this.body.x + this.body.size * gx - s.x,
             y: this.body.y + this.body.size * gy - s.y,
         }, this.master.master);
-        /*let jumpAhead = this.cycle - 1;
+        let jumpAhead = this.cycle - 1;
         if (jumpAhead) {
             o.x += s.x * this.cycle / jumpAhead;
             o.y += s.y * this.cycle / jumpAhead;
-        }*/
+        }
         o.velocity = s;
         this.bulletInit(o);
         o.coreSize = o.SIZE;
+        */
+        let o = this.cache[0];
+        o = new Entity({
+            x: this.body.x + this.body.size * gx - s.x,
+            y: this.body.y + this.body.size * gy - s.y,
+        }, this.master.master);
+        this.bulletInit(o);
+        o.x = this.body.x + this.body.size * gx - s.x;
+        o.y = this.body.y + this.body.size * gy - s.y;
+        o.coreSize = o.SIZE;
+        o.velocity = s;
     }
 
     bulletInit(o) {
@@ -1365,13 +1403,16 @@ const lazyRealSizes = (() => {
         o.source = this.body;
         o.facing = o.velocity.direction;
         // Necromancers.
-        if (this.calculator == 7) {
+        if (this.calculator == 'necro') {
             let oo = o;
             o.necro = host => {
-                let shootPermission = this.countsOwnKids ? this.countsOwnKids > this.children.length *
-					(this.bulletStats === 'master' ? this.body.skill.rld : this.bulletStats.rld) :
-					this.body.maxChildren ? this.body.maxChildren > this.body.children.length *
-					(this.bulletStats === 'master' ? this.body.skill.rld : this.bulletStats.rld) : true;
+                let shootPermission = (this.countsOwnKids) ?
+                    this.countsOwnKids > this.children.length * 
+                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
+                : (this.body.maxChildren) ?
+                    this.body.maxChildren > this.body.children.length * 
+                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
+                : true;   
                 if (shootPermission) {
                     let save = {
                         facing: host.facing,
@@ -1483,136 +1524,6 @@ var bringToLife = (() => {
     };
     return my => {
         // Size
-        if (my.SIZE - my.coreSize) my.coreSize += (my.SIZE - my.coreSize) / 100;
-        // Think 
-        let faucet = (my.settings.independent || my.source == null || my.source === my) ? {} : my.source.control;
-        let b = {
-            target: remapTarget(faucet, my.source, my),
-            goal: undefined,
-            fire: faucet.fire,
-            main: faucet.main,
-            alt: faucet.alt,
-            power: undefined,
-        };
-        // Seek attention
-        if (my.settings.attentionCraver && !faucet.main && my.range) {
-            my.range -= 1;
-        }
-        // So we start with my master's thoughts and then we filter them down through our control stack
-        my.controllers.forEach(AI => {
-            let a = AI.think(b);
-            let passValue = passer(a, b, AI.acceptsFromTop);
-            passValue('target');
-            passValue('goal');
-            passValue('fire');
-            passValue('main');
-            passValue('alt');
-            passValue('power');
-        });        
-        my.control.target = (b.target == null) ? my.control.target : b.target;
-        my.control.goal = b.goal;
-        my.control.fire = b.fire;
-        my.control.main = b.main;
-        my.control.alt = b.alt;
-        my.control.power = (b.power == null) ? 1 : b.power;
-        // React
-        my.move(); 
-        my.face();
-        // Handle guns and turrets if we've got them
-        my.guns.forEach(gun => gun.live());
-        my.turrets.forEach(turret => turret.life());
-        if (my.skill.maintain()) my.refreshBodyAttributes();
-    }; 
-})();
-
-class HealthType {
-    constructor(health, type, resist = 0) {
-        this.max = health;
-        this.amount = health;
-        this.type = type;
-        this.resist = resist;
-        this.regen = 0;
-    }
-
-    set(health, regen = 0) {
-        this.amount = (this.max) ? this.amount / this.max * health : health;
-        this.max = health;
-        this.regen = regen;
-    }
-
-    display() {
-        return this.amount / this.max;
-    }
-
-    getDamage(amount, capped = true) {
-        switch (this.type) {
-        case 'dynamic': 
-            return (capped) ? (
-                Math.min(amount * this.permeability, this.amount)
-            ) : (
-                amount * this.permeability
-            );
-        case 'static':
-            return (capped) ? (
-                Math.min(amount, this.amount)
-            ) : (
-                amount
-            );
-        }            
-    }
-
-    regenerate(boost = false) {
-        boost /= 2;
-        let cons = 5;
-        switch (this.type) {
-        case 'static':
-            if (this.amount >= this.max || !this.amount) break;
-            this.amount += cons * (this.max / 10 / 60 / 2.5 + boost);
-            break;
-        case 'dynamic':
-            let r = util.clamp(this.amount / this.max, 0, 1);
-            if (!r) {
-                this.amount = 0.0001;
-            }
-            if (r === 1) {
-                this.amount = this.max;
-            } else {
-                this.amount += cons * (this.regen * Math.exp(-50 * Math.pow(Math.sqrt(0.5 * r) - 0.4, 2)) / 3 + r * this.max / 10 / 15 + boost);
-            }
-        break; 
-        }
-        this.amount = util.clamp(this.amount, 0, this.max);
-    }
-
-    get permeability() {
-        switch(this.type) {
-        case 'static': return 1;
-        case 'dynamic': return (this.max) ? util.clamp(this.amount / this.max, 0, 1) : 0;
-        }
-    }
-
-    get ratio() {
-        return (this.max) ? util.clamp(1 - Math.pow(this.amount / this.max - 1, 4), 0, 1) : 0;
-    }
-}
-
-var bringToLife = (() => {
-    let remapTarget = (i, ref, self) => {
-        if (i.target == null || (!i.main && !i.alt)) return undefined;
-        return {
-            x: i.target.x + ref.x - self.x,
-            y: i.target.y + ref.y - self.y,
-        };
-    };
-    let passer = (a, b, acceptsFromTop) => {
-        return index => {
-            if (a != null && a[index] != null && (b[index] == null || acceptsFromTop)) {
-                b[index] = a[index];
-            }
-        };
-    };
-    return my => {
-        // Size
         if (my.SIZE !== my.coreSize) my.coreSize = my.SIZE;
         // Think 
         let faucet = (my.settings.independent || my.source == null || my.source === my) ? {} : my.source.control;
@@ -1649,15 +1560,15 @@ var bringToLife = (() => {
         my.move(); 
         my.face();
         // Handle guns and turrets if we've got them
-        my.guns.forEach(gun => gun.live());
-        for (var gun of my.guns) {
+        for (let gun of my.guns) {
            gun.live();
            if (gun.initilized === false) {
-              gun.initilize();
-              gun.initilized = true;
+              gun.initilize(); 
            }
         }
-        my.turrets.forEach(turret => turret.life());
+        for (let turret of my.turrets) {
+           turret.life(); 
+        }
         if (my.skill.maintain()) my.refreshBodyAttributes();
         //if (my.invisible[1]) {
 		  	//    my.alpha = Math.max(0.01, my.alpha - my.invisible[1]);
@@ -1740,9 +1651,14 @@ class HealthType {
 
 class Entity {
     constructor(position, master = this) {
+        //this.cache = [0, 0, 0, 0, 0, 0];
+        //this.defaultset = false;
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
         this.creationTime = (new Date()).getTime();
+      // Fun stuff :P
+        this.rainbow = false
+        this.rainbow_back = false
         // Inheritance
         this.master = master;
         this.source = this;
@@ -1800,19 +1716,25 @@ class Entity {
         this.SIZE = 1;
         this.define(Class.genericEntity);
         // Initalize physics and collision
-        this.maxSpeed = 0;
         this.facing = 0;
         this.vfacing = 0;
         this.range = 0;
         this.damageRecieved = 0;
         this.stepRemaining = 1;
+        this.collisionArray = [];
+        this.invuln = false;
+        this.alpha = 1;
+        // Physics 2.0 stuff
         this.x = position.x;
         this.y = position.y;
         this.velocity = new Vector(0, 0);
         this.accel = new Vector(0, 0);
-        this.damp = 0.05;
-        this.collisionArray = [];
-        this.invuln = false;
+        this.impulse = new Vector(0, 0);
+        this.maxSpeed = 0;
+        this.maxAccel = 0;
+        this.resistance = 0.13;
+        this.impulseZero = 0.01;
+        this.knockbackLimit = 125;
         // Get a new unique id
         this.id = entitiesIdLog++;
         this.team = this.id;
@@ -2002,19 +1924,24 @@ class Entity {
         if (set.RESET_UPGRADES) {
             this.upgrades = [];
         }
+        if (set.ALPHA != null) this.alpha = set.ALPHA;
+        if (set.INVISIBLE != null) this.invisible = [
+			  	  set.INVISIBLE[0],
+			  	  set.INVISIBLE[1]
+			  ];
         if (set.UPGRADES_TIER_1 != null) { 
             set.UPGRADES_TIER_1.forEach((e) => {
-                this.upgrades.push({ class: e, level: c.TIER_1, index: e.index,});
+                this.upgrades.push({class: e, level: c.TIER_1, index: e.index});
             });
         }
         if (set.UPGRADES_TIER_2 != null) { 
             set.UPGRADES_TIER_2.forEach((e) => {
-                this.upgrades.push({ class: e, level: c.TIER_2, index: e.index,});
+                this.upgrades.push({class: e, level: c.TIER_2, index: e.index});
             });
         }
         if (set.UPGRADES_TIER_3 != null) { 
             set.UPGRADES_TIER_3.forEach((e) => {
-                this.upgrades.push({ class: e, level: c.TIER_3, index: e.index,});
+                this.upgrades.push({class: e, level: c.TIER_3, index: e.index});
             });
         }
         if (set.SIZE != null) {
@@ -2129,17 +2056,25 @@ class Entity {
     }
 
     refreshBodyAttributes() {
-        let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
+        if (this.cache === null || this.cache === undefined) {
+           this.cache = [0, 0, 0, 0, 0, 0]; 
+        }
+      
+        if (this.defaultset === false) {
+              let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
 
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
+        this.cache[0] = this.acceleration;
 
         this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
+        this.cache[1] = this.topSpeed;
         
         this.health.set(
             (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
         );
+        this.cache[2] = this.health;
 
         this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
 
@@ -2147,22 +2082,81 @@ class Entity {
             (((this.settings.healthWithLevel) ? 0.6 * this.skill.level : 0) + this.SHIELD) * this.skill.shi, 
             Math.max(0, ((((this.settings.healthWithLevel) ? 0.006 * this.skill.level : 0) + 1) * this.REGEN) * this.skill.rgn)
         );
+        this.cache[3] = this.shield;
         
         this.damage = this.DAMAGE * this.skill.atk;
+        this.cache[4] = this.damage;
 
-        this.penetration = this.PENETRATION + 1.5 * (this.skill.brst + 0.8 * (this.skill.atk - 1));
+        this.penetration = this.PENETRATION + 1.5 * (this.skill.atk + 0.8 * (this.skill.atk - 1));
+        this.cache[5] = this.penetration;
 
         if (!this.settings.dieAtRange || !this.range) {
             this.range = this.RANGE;
         }
-
+      
         this.fov = this.FOV * 250 * Math.sqrt(this.size) * (1 + 0.003 * this.skill.level);
         
         this.density = (1 + 0.08 * this.skill.level) * this.DENSITY; 
-
+        
         this.stealth = this.STEALTH;
 
-        this.pushability = this.PUSHABILITY;        
+        this.pushability = this.PUSHABILITY;  
+          
+        this.defaultset = true;
+        }
+        
+        
+        let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
+        
+        if (this.skill.acl != this.cache[0]) {
+        this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
+        if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
+        this.cache[0] = this.skill.acl;
+        }
+        
+        if (this.skill.mob != this.cache[1]) {
+        this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
+        if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
+        this.cache[1] = this.skill.mob;
+        }
+        
+        if (this.skill.hlt != this.cache[2]) {
+        this.health.set(
+            (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
+        );
+        this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
+        this.cache[2] = this.skill.hlt
+        }
+
+        if (this.skill.shi != this.cache[3]) {
+        this.shield.set(
+            (((this.settings.healthWithLevel) ? 0.6 * this.skill.level : 0) + this.SHIELD) * this.skill.shi, 
+            Math.max(0, ((((this.settings.healthWithLevel) ? 0.006 * this.skill.level : 0) + 1) * this.REGEN) * this.skill.rgn)
+        );
+        this.cache[3] = this.skill.shi;
+        }
+        
+        //if (this.damage != this.cache[4]) {
+        this.damage = this.DAMAGE * this.skill.atk;
+        //this.cache[4] = this.damage;
+        //}
+        
+        //if (this.penetration != this.cache[5]) {
+        this.penetration = this.PENETRATION + 1.5 * (this.skill.brst + 0.8 * (this.skill.atk - 1));
+        //this.cache[5] = this.penetration;
+        //}
+
+        if (!this.settings.dieAtRange || !this.range) {
+            this.range = this.RANGE;
+        }
+        
+        this.fov = this.FOV * 250 * Math.sqrt(this.size) * (1 + 0.003 * this.skill.level);
+        
+        this.density = (1 + 0.08 * this.skill.level) * this.DENSITY; 
+        
+        this.stealth = this.STEALTH;
+
+        this.pushability = this.PUSHABILITY;    
     }    
 
     bindToMaster(position, bond) {
@@ -2239,6 +2233,7 @@ class Entity {
             score: this.skill.score,
             guns: this.guns.map(gun => gun.getLastShot()),
             turrets: this.turrets.map(turret => turret.camera(true)),
+            alpha: this.alpha
         };
     }   
     
@@ -2395,7 +2390,7 @@ class Entity {
         case 'looseWithTarget':
         case 'looseToTarget':
         case 'smoothToTarget':
-            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 4 / roomSpeed); 
+            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 1 / roomSpeed); 
             break;        
         case 'bound':
             let givenangle;
@@ -2425,6 +2420,16 @@ class Entity {
         this.flattenedPhoto = null;
         this.photo = (this.settings.drawShape) ? this.camera() : this.photo = undefined;
     }
+    
+    accelerate(acceleration, angle, force) {
+        acceleration = util.clamp(force, -this.topSpeed, this.topSpeed);
+        this.acceleration.x = Math.cos(angle) * acceleration;
+        this.acceleration.y = Math.sin(angle) * acceleration;
+    }
+  
+    lerp(v0, v1, t) {
+      return v0*(1-t)+v1*t
+    }
 
     physics() {
         if (this.accel.x == null || this.velocity.x == null) {
@@ -2435,25 +2440,22 @@ class Entity {
             nullVector(this.accel); nullVector(this.velocity);
         }
         // Apply acceleration
-        this.velocity.x += this.accel.x;
-        this.velocity.y += this.accel.y;
+        this.velocity.x += this.accel.x * timestep;
+        this.velocity.y += this.accel.y * timestep;
         // Reset acceleration
-        nullVector(this.accel); 
+        nullVector(this.accel);
         // Apply motion
         this.stepRemaining = 1;
         this.x += this.stepRemaining * this.velocity.x / roomSpeed;
-        this.y += this.stepRemaining * this.velocity.y / roomSpeed;        
+        this.y += this.stepRemaining * this.velocity.y / roomSpeed;  
     }
 
-    friction() {
-        var motion = this.velocity.length,
-            excess = motion - this.maxSpeed;
+    friction() {        
+        var motion = this.velocity.length, excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-            var k = this.damp / roomSpeed,
-                drag = excess / (k + 1),
-                finalvelocity = this.maxSpeed + drag;
-            this.velocity.x = finalvelocity * this.velocity.x / motion;
-            this.velocity.y = finalvelocity * this.velocity.y / motion;
+          var k = this.damp * timestep * 0.97, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
+          this.velocity.x = ((finalVelocity * this.velocity.x / motion)) * 0.97;
+          this.velocity.y = ((finalVelocity * this.velocity.y / motion)) * 0.97;
         }
     }
 
@@ -2467,7 +2469,7 @@ class Entity {
             return 0;
         }
         if (!this.settings.canGoOutsideRoom) {
-            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
+            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed; //roomSpeed for next 3
             this.accel.x -= Math.max(this.x + this.realSize - room.width - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.min(this.y - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.max(this.y + this.realSize - room.height - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
@@ -2478,7 +2480,10 @@ class Entity {
                 (this.team !== -1 && room.isIn('bas1', loc)) ||
                 (this.team !== -2 && room.isIn('bas2', loc)) ||
                 (this.team !== -3 && room.isIn('bas3', loc)) ||
-                (this.team !== -4 && room.isIn('bas4', loc))
+                (this.team !== -4 && room.isIn('bas4', loc)) ||
+                (this.team !== -5 && room.isIn('bas5', loc)) ||
+                (this.team !== -6 && room.isIn('bas6', loc))
+              
             ) { this.kill(); }
         }
     }
@@ -4435,6 +4440,7 @@ var gameloop = (() => {
                         }
                     }
                 }
+                /********* PROCEED ********/
                 if (goahead) {
                     // Add to record
                     my.collisionArray.push(n);
@@ -4455,6 +4461,7 @@ var gameloop = (() => {
                         component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
                     }
                     let componentNorm = component / delt.length;
+                    /************ APPLY COLLISION ***********/
                     // Prepare some things
                     let reductionFactor = 1,
                         deathFactor = {
@@ -4494,6 +4501,7 @@ var gameloop = (() => {
                             _n: (n.maxSpeed) ? ( Math.pow(motion._n.length/n.maxSpeed, 0.25) ) : ( 1 ),
                         };
 
+                        /********** DO DAMAGE *********/
                         let bail = false;
                         if (my.shape === n.shape && my.settings.isNecromancer && n.type === 'food') {
                             //bail = my.necro(n);
@@ -4563,6 +4571,7 @@ var gameloop = (() => {
                             n.damageRecieved += damage._me * deathFactor._me;
                         }
                     }
+                    /************* DO MOTION ***********/    
                     if (nIsFirmCollide < 0) {
                         nIsFirmCollide *= -0.5;
                         my.accel.x -= nIsFirmCollide * component * dir.x;
@@ -4594,19 +4603,18 @@ var gameloop = (() => {
                             },
                             modifiers = {
                                 _me: c.KNOCKBACK_CONSTANT * my.pushability / my.mass * deathFactor._n,
-                                _n:  c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
+                                _n: c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
                             };
                         // Apply impulse as force
-                        my.accel.x += modifiers._me * force.x * 3;
-                        my.accel.y += modifiers._me * force.y * 3;
-                        n.accel.x -= modifiers._n * force.x * 3;
-                        n.accel.y -= modifiers._n * force.y * 3;
+                        my.accel.x += modifiers._me * force.x * 2;
+                        my.accel.y += modifiers._me * force.y * 2;
+                        n.accel.x -= modifiers._n * force.x * 2;
+                        n.accel.y -= modifiers._n * force.y * 2;
                     }
                 }
             }
         }
         // The actual collision resolution function
-        
          return collision => {
             // Pull the two objects from the collision grid      
             let instance = collision[0],
@@ -4667,7 +4675,6 @@ var gameloop = (() => {
             }     
         };
     })();
-    
     // Living stuff
     function entitiesactivationloop(my) {
         // Update collisions.
@@ -4701,18 +4708,21 @@ var gameloop = (() => {
             }
         }
         // Update collisions.
-        //my.collisionArray = []; 
+        my.collisionArray = []; 
     }
     let time;
     // Return the loop function
     return () => {
+        var curTime = now();
+        timestep = 0.00525 * (curTime - lastTime);
+        if (timestep <= 0 || timestep > 1.0) {
+            timestep = 0.00525;
+        }
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
         for (var e of entities) {
-          if (e.active === true) {
            entitiesactivationloop(e);
-          }
         }
         //entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
@@ -4720,23 +4730,21 @@ var gameloop = (() => {
         logs.collide.set();
         
         if (entities.length > 1) {
-           // Load the grid
-           grid.update();
-           grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            // Load the grid
+            grid.update();
+            grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
-        
         logs.collide.mark();
         // Do entities life
         logs.entities.set();   
         for (var e of entities) {
-          if (e.active === true) {
-             entitiesliveloop(e);
-          }
+           entitiesliveloop(e);
         }
           logs.entities.mark();
           logs.master.mark();
           // Remove dead entities
           purgeEntities();  
+          lastTime = curTime;
           room.lastCycle = util.time();    
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5243,18 +5251,13 @@ var gameexecution = function () {
 
   actualTicks++;
   if (previousTick + tickLengthMs <= current) {
-        var curTime = now();
-        timestep = 0.00525 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.00525;
-        }
+    var delta = (current - previousTick) / 1000;
     
     previousTick = current;
 
     gameloop();
     
     actualTicks = 0;
-    lastTime = curTime;
   }
 
   if (Date.now() - previousTick < tickLengthMs - 16) {
