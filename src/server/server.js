@@ -1201,6 +1201,7 @@ class Gun {
             this.storedbullets.push(this.generatebullet());
         }
         console.log(this.storedbullets);
+        this.initilized = true;
     }
   
     generatebullet() {
@@ -1350,17 +1351,27 @@ class Gun {
                 s.y += this.body.velocity.length * extraBoost * s.y / len;   
             }                     
         }
+        /*
         // Create the bullet
         var o = new Entity({
             x: this.body.x + this.body.size * gx - s.x,
             y: this.body.y + this.body.size * gy - s.y,
         }, this.master.master);
-        /*let jumpAhead = this.cycle - 1;
+        let jumpAhead = this.cycle - 1;
         if (jumpAhead) {
             o.x += s.x * this.cycle / jumpAhead;
             o.y += s.y * this.cycle / jumpAhead;
-        }*/
+        }
         o.velocity = s;
+        this.bulletInit(o);
+        o.coreSize = o.SIZE;
+        */
+        var o = this.storedbullets[0];
+        o.active = true;
+        o.x = this.body.x + this.body.size * gx - s.x;
+        o.y = this.body.y + this.body.size * gy - s.y;
+        o.velocity = s;
+        o.recycle = true;
         this.bulletInit(o);
         o.coreSize = o.SIZE;
     }
@@ -1548,7 +1559,7 @@ var bringToLife = (() => {
         my.guns.forEach(gun => gun.live());
         for (var gun of my.guns) {
            gun.live();
-           if (gun.initilized !== true) {
+           if (gun.initilized === false) {
               gun.initilize();
            }
         }
@@ -1634,7 +1645,8 @@ class HealthType {
 }
 
 class Entity {
-    constructor(position, master = this) {
+    constructor(position, master = this) { 
+        this.recycle = false;
         this.active = true;
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
@@ -2525,7 +2537,14 @@ class Entity {
     sendMessage(message) { } // Dummy
 
     kill() {
-        this.health.amount = -1;
+        if (this.recycle === false) {
+         this.health.amount = -1;
+        } else {
+          if (this.parent !== null) {
+         this.x = this.parent.x + 10;
+         this.y = this.parent.y;
+          }
+        }
     }
 
     destroy() {
