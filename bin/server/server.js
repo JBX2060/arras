@@ -1195,7 +1195,7 @@ class Gun {
         var o = new Entity({
             x: 0,
             y: 0
-        }, this.master.master);
+        }, this.master.master, true);
         o.velocity = new Vector(0, 0);
         this.bulletInit(o);
         o.active = false;
@@ -1603,8 +1603,6 @@ class HealthType {
 
 class Entity {
     constructor(position, master = this) {
-        this.recycle = false;
-        this.active = true;
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [] };
         this.creationTime = new Date().getTime();
@@ -2497,47 +2495,49 @@ class Entity {
             this.health.amount = -1;
         } else {
             if (this.parent !== null) {
-                this.x = this.parent.x + 10;
-                this.y = this.parent.y;
+                this.x = this.parent.body.x + 10;
+                this.y = this.parent.body.y;
             }
         }
     }
 
     destroy() {
         // Remove from the protected entities list
-        if (this.isProtected) util.remove(entitiesToAvoid, entitiesToAvoid.indexOf(this));
-        // Remove from minimap
-        let i = minimap.findIndex(entry => {
-            return entry[0] === this.id;
-        });
-        if (i != -1) util.remove(minimap, i);
-        // Remove this from views
-        views.forEach(v => v.remove(this));
-        // Remove from parent lists if needed
-        if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
-        // Kill all of its children
-        let ID = this.id;
-        entities.forEach(instance => {
-            if (instance.source.id === this.id) {
-                if (instance.settings.persistsAfterDeath) {
-                    instance.source = instance;
-                } else {
-                    instance.kill();
+        if (this.recycle === false) {
+            if (this.isProtected) util.remove(entitiesToAvoid, entitiesToAvoid.indexOf(this));
+            // Remove from minimap
+            let i = minimap.findIndex(entry => {
+                return entry[0] === this.id;
+            });
+            if (i != -1) util.remove(minimap, i);
+            // Remove this from views
+            views.forEach(v => v.remove(this));
+            // Remove from parent lists if needed
+            if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
+            // Kill all of its children
+            let ID = this.id;
+            entities.forEach(instance => {
+                if (instance.source.id === this.id) {
+                    if (instance.settings.persistsAfterDeath) {
+                        instance.source = instance;
+                    } else {
+                        instance.kill();
+                    }
                 }
-            }
-            if (instance.parent && instance.parent.id === this.id) {
-                instance.parent = null;
-            }
-            if (instance.master.id === this.id) {
-                instance.kill();
-                instance.master = instance;
-            }
-        });
-        // Remove everything bound to it
-        this.turrets.forEach(t => t.destroy());
-        // Remove from the collision grid
-        this.removeFromGrid();
-        this.isGhost = true;
+                if (instance.parent && instance.parent.id === this.id) {
+                    instance.parent = null;
+                }
+                if (instance.master.id === this.id) {
+                    instance.kill();
+                    instance.master = instance;
+                }
+            });
+            // Remove everything bound to it
+            this.turrets.forEach(t => t.destroy());
+            // Remove from the collision grid
+            this.removeFromGrid();
+            this.isGhost = true;
+        } else {}
     }
 
     isDead() {
