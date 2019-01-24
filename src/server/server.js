@@ -1101,14 +1101,12 @@ const lazyRealSizes = (() => {
 })();
 
 // Define how guns work
-class Gun {
+ class Gun {
     constructor(body, info) {
         this.lastShot = {
             time: 0,
             power: 0,
         };
-        this.storedbullets = [];
-        this.initilized = false;
         this.body = body;
         this.master = body.source;
         this.label = '';
@@ -1190,30 +1188,8 @@ class Gun {
         this.motion = 0;
         if (this.canShoot) {
             this.cycle = !this.waitToCycle - this.delay;
-            this.trueRecoil = this.settings.recoil * 2;
+            this.trueRecoil = this.settings.recoil;
         }
-    }
-  
-    initilize() {
-        let sk = (this.bulletStats == 'master') ? this.body.skill : this.bulletStats;
-        let maxBulletsOnScreen = Math.ceil((this.settings.range / Math.sqrt(sk.spd)) / (this.settings.reload / 2)) + 1;
-        for (let i = 0; i < maxBulletsOnScreen; i++) {
-            this.storedbullets.push(this.generatebullet());
-        }
-        console.log(this.storedbullets);
-        this.initilized = true;
-    }
-  
-    generatebullet() {
-        var o = new Entity({
-            x: 0,
-            y: 0,
-        }, this.master.master, true);
-        o.velocity = new Vector(0, 0);
-        this.bulletInit(o);
-        o.active = false;
-        o.coreSize = o.SIZE;
-        return o;
     }
     
     recoil() {
@@ -1277,7 +1253,7 @@ class Gun {
             // Cycle up if we should
             if (shootPermission || !this.waitToCycle) {
                 if (this.cycle < 1) {
-                    this.cycle += 1 / (this.settings.reload * 2) / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
+                    this.cycle += 1 / this.settings.reload / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
                 } 
             } 
             // Firing routines
@@ -1351,27 +1327,17 @@ class Gun {
                 s.y += this.body.velocity.length * extraBoost * s.y / len;   
             }                     
         }
-        /*
         // Create the bullet
         var o = new Entity({
             x: this.body.x + this.body.size * gx - s.x,
             y: this.body.y + this.body.size * gy - s.y,
         }, this.master.master);
-        let jumpAhead = this.cycle - 1;
+        /*let jumpAhead = this.cycle - 1;
         if (jumpAhead) {
             o.x += s.x * this.cycle / jumpAhead;
             o.y += s.y * this.cycle / jumpAhead;
-        }
+        }*/
         o.velocity = s;
-        this.bulletInit(o);
-        o.coreSize = o.SIZE;
-        */
-        var o = this.storedbullets[0];
-        o.active = true;
-        o.x = this.body.x + this.body.size * gx - s.x;
-        o.y = this.body.y + this.body.size * gy - s.y;
-        o.velocity = s;
-        o.recycle = true;
         this.bulletInit(o);
         o.coreSize = o.SIZE;
     }
@@ -1399,16 +1365,13 @@ class Gun {
         o.source = this.body;
         o.facing = o.velocity.direction;
         // Necromancers.
-        if (this.calculator == 'necro') {
+        if (this.calculator == 7) {
             let oo = o;
             o.necro = host => {
-                let shootPermission = (this.countsOwnKids) ?
-                    this.countsOwnKids > this.children.length * 
-                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
-                : (this.body.maxChildren) ?
-                    this.body.maxChildren > this.body.children.length * 
-                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
-                : true;   
+                let shootPermission = this.countsOwnKids ? this.countsOwnKids > this.children.length *
+					(this.bulletStats === 'master' ? this.body.skill.rld : this.bulletStats.rld) :
+					this.body.maxChildren ? this.body.maxChildren > this.body.children.length *
+					(this.bulletStats === 'master' ? this.body.skill.rld : this.bulletStats.rld) : true;
                 if (shootPermission) {
                     let save = {
                         facing: host.facing,
@@ -1520,6 +1483,136 @@ var bringToLife = (() => {
     };
     return my => {
         // Size
+        if (my.SIZE - my.coreSize) my.coreSize += (my.SIZE - my.coreSize) / 100;
+        // Think 
+        let faucet = (my.settings.independent || my.source == null || my.source === my) ? {} : my.source.control;
+        let b = {
+            target: remapTarget(faucet, my.source, my),
+            goal: undefined,
+            fire: faucet.fire,
+            main: faucet.main,
+            alt: faucet.alt,
+            power: undefined,
+        };
+        // Seek attention
+        if (my.settings.attentionCraver && !faucet.main && my.range) {
+            my.range -= 1;
+        }
+        // So we start with my master's thoughts and then we filter them down through our control stack
+        my.controllers.forEach(AI => {
+            let a = AI.think(b);
+            let passValue = passer(a, b, AI.acceptsFromTop);
+            passValue('target');
+            passValue('goal');
+            passValue('fire');
+            passValue('main');
+            passValue('alt');
+            passValue('power');
+        });        
+        my.control.target = (b.target == null) ? my.control.target : b.target;
+        my.control.goal = b.goal;
+        my.control.fire = b.fire;
+        my.control.main = b.main;
+        my.control.alt = b.alt;
+        my.control.power = (b.power == null) ? 1 : b.power;
+        // React
+        my.move(); 
+        my.face();
+        // Handle guns and turrets if we've got them
+        my.guns.forEach(gun => gun.live());
+        my.turrets.forEach(turret => turret.life());
+        if (my.skill.maintain()) my.refreshBodyAttributes();
+    }; 
+})();
+
+class HealthType {
+    constructor(health, type, resist = 0) {
+        this.max = health;
+        this.amount = health;
+        this.type = type;
+        this.resist = resist;
+        this.regen = 0;
+    }
+
+    set(health, regen = 0) {
+        this.amount = (this.max) ? this.amount / this.max * health : health;
+        this.max = health;
+        this.regen = regen;
+    }
+
+    display() {
+        return this.amount / this.max;
+    }
+
+    getDamage(amount, capped = true) {
+        switch (this.type) {
+        case 'dynamic': 
+            return (capped) ? (
+                Math.min(amount * this.permeability, this.amount)
+            ) : (
+                amount * this.permeability
+            );
+        case 'static':
+            return (capped) ? (
+                Math.min(amount, this.amount)
+            ) : (
+                amount
+            );
+        }            
+    }
+
+    regenerate(boost = false) {
+        boost /= 2;
+        let cons = 5;
+        switch (this.type) {
+        case 'static':
+            if (this.amount >= this.max || !this.amount) break;
+            this.amount += cons * (this.max / 10 / 60 / 2.5 + boost);
+            break;
+        case 'dynamic':
+            let r = util.clamp(this.amount / this.max, 0, 1);
+            if (!r) {
+                this.amount = 0.0001;
+            }
+            if (r === 1) {
+                this.amount = this.max;
+            } else {
+                this.amount += cons * (this.regen * Math.exp(-50 * Math.pow(Math.sqrt(0.5 * r) - 0.4, 2)) / 3 + r * this.max / 10 / 15 + boost);
+            }
+        break; 
+        }
+        this.amount = util.clamp(this.amount, 0, this.max);
+    }
+
+    get permeability() {
+        switch(this.type) {
+        case 'static': return 1;
+        case 'dynamic': return (this.max) ? util.clamp(this.amount / this.max, 0, 1) : 0;
+        }
+    }
+
+    get ratio() {
+        return (this.max) ? util.clamp(1 - Math.pow(this.amount / this.max - 1, 4), 0, 1) : 0;
+    }
+}
+
+var bringToLife = (() => {
+    let remapTarget = (i, ref, self) => {
+        if (i.target == null || (!i.main && !i.alt)) return undefined;
+        return {
+            x: i.target.x + ref.x - self.x,
+            y: i.target.y + ref.y - self.y,
+        };
+    };
+    let passer = (a, b, acceptsFromTop) => {
+        return index => {
+            if (a != null && a[index] != null && (b[index] == null || acceptsFromTop)) {
+                b[index] = a[index];
+            }
+        };
+    };
+    return my => {
+        // Size
         if (my.SIZE !== my.coreSize) my.coreSize = my.SIZE;
         // Think 
         let faucet = (my.settings.independent || my.source == null || my.source === my) ? {} : my.source.control;
@@ -1561,6 +1654,7 @@ var bringToLife = (() => {
            gun.live();
            if (gun.initilized === false) {
               gun.initilize();
+              gun.initilized = true;
            }
         }
         my.turrets.forEach(turret => turret.life());
@@ -1645,13 +1739,10 @@ class HealthType {
 }
 
 class Entity {
-    constructor(position, master = this) { 
+    constructor(position, master = this) {
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
         this.creationTime = (new Date()).getTime();
-      // Fun stuff :P
-        this.rainbow = false
-        this.rainbow_back = false
         // Inheritance
         this.master = master;
         this.source = this;
@@ -1709,25 +1800,19 @@ class Entity {
         this.SIZE = 1;
         this.define(Class.genericEntity);
         // Initalize physics and collision
+        this.maxSpeed = 0;
         this.facing = 0;
         this.vfacing = 0;
         this.range = 0;
         this.damageRecieved = 0;
         this.stepRemaining = 1;
-        this.collisionArray = [];
-        this.invuln = false;
-        this.alpha = 1;
-        // Physics 2.0 stuff
         this.x = position.x;
         this.y = position.y;
         this.velocity = new Vector(0, 0);
         this.accel = new Vector(0, 0);
-        this.impulse = new Vector(0, 0);
-        this.maxSpeed = 0;
-        this.maxAccel = 0;
-        this.resistance = 0.13;
-        this.impulseZero = 0.01;
-        this.knockbackLimit = 125;
+        this.damp = 0.05;
+        this.collisionArray = [];
+        this.invuln = false;
         // Get a new unique id
         this.id = entitiesIdLog++;
         this.team = this.id;
@@ -1762,8 +1847,7 @@ class Entity {
                 };
                 // Update grid if needed
                 if (sizeDiff > Math.SQRT2 || sizeDiff < Math.SQRT1_2) {
-                    this.removeFromGrid(); 
-                    this.addToGrid();
+                    this.removeFromGrid(); this.addToGrid();
                     savedSize = data.size;
                 }
             };
@@ -1785,9 +1869,6 @@ class Entity {
     } 
 
     define(set) {
-        if (set.mockup != null) {
-            this.mockup = set.mockup;
-        }
         if (set.PARENT != null) {
             for (let i=0; i<set.PARENT.length; i++) {
                 this.define(set.PARENT[i]);
@@ -1921,24 +2002,19 @@ class Entity {
         if (set.RESET_UPGRADES) {
             this.upgrades = [];
         }
-        if (set.ALPHA != null) this.alpha = set.ALPHA;
-        if (set.INVISIBLE != null) this.invisible = [
-			  	  set.INVISIBLE[0],
-			  	  set.INVISIBLE[1]
-			  ];
         if (set.UPGRADES_TIER_1 != null) { 
             set.UPGRADES_TIER_1.forEach((e) => {
-                this.upgrades.push({class: e, level: c.TIER_1, index: e.index});
+                this.upgrades.push({ class: e, level: c.TIER_1, index: e.index,});
             });
         }
         if (set.UPGRADES_TIER_2 != null) { 
             set.UPGRADES_TIER_2.forEach((e) => {
-                this.upgrades.push({class: e, level: c.TIER_2, index: e.index});
+                this.upgrades.push({ class: e, level: c.TIER_2, index: e.index,});
             });
         }
         if (set.UPGRADES_TIER_3 != null) { 
             set.UPGRADES_TIER_3.forEach((e) => {
-                this.upgrades.push({class: e, level: c.TIER_3, index: e.index});
+                this.upgrades.push({ class: e, level: c.TIER_3, index: e.index,});
             });
         }
         if (set.SIZE != null) {
@@ -1973,12 +2049,11 @@ class Entity {
         if (set.ALT_ABILITIES != null) { 
             this.abilities = set.ALT_ABILITIES; 
         }
-        if (set.GUNS != null) {
+        if (set.GUNS != null) { 
             let newGuns = [];
-            for (let gundef of set.GUNS) {
-                let g = new Gun(this, gundef);
-                newGuns.push(g);
-            }
+            set.GUNS.forEach((gundef) => {
+                newGuns.push(new Gun(this, gundef));
+            });
             this.guns = newGuns;
         }
         if (set.MAX_CHILDREN != null) { 
@@ -2048,7 +2123,9 @@ class Entity {
                     o.bindToMaster(def.POSITION, this);
             });
         }
-
+        if (set.mockup != null) {
+            this.mockup = set.mockup;
+        }
     }
 
     refreshBodyAttributes() {
@@ -2056,14 +2133,14 @@ class Entity {
 
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        
-        this.topSpeed = ((c.runSpeed * this.SPEED * (this.skill.mob * 2.74155) / speedReduce) / 1.395) * 0.8;
+
+        this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         
         this.health.set(
             (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
         );
-      
+
         this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
 
         this.shield.set(
@@ -2162,7 +2239,6 @@ class Entity {
             score: this.skill.score,
             guns: this.guns.map(gun => gun.getLastShot()),
             turrets: this.turrets.map(turret => turret.camera(true)),
-            alpha: this.alpha
         };
     }   
     
@@ -2319,7 +2395,7 @@ class Entity {
         case 'looseWithTarget':
         case 'looseToTarget':
         case 'smoothToTarget':
-            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 1 / roomSpeed); 
+            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 4 / roomSpeed); 
             break;        
         case 'bound':
             let givenangle;
@@ -2349,33 +2425,35 @@ class Entity {
         this.flattenedPhoto = null;
         this.photo = (this.settings.drawShape) ? this.camera() : this.photo = undefined;
     }
-  
+
     physics() {
         if (this.accel.x == null || this.velocity.x == null) {
             util.error('Void Error!');
             util.error(this.collisionArray);
             util.error(this.label);
             util.error(this);
-            nullVector(this.accel); 
-            nullVector(this.velocity);
+            nullVector(this.accel); nullVector(this.velocity);
         }
         // Apply acceleration
-        this.velocity.x += this.accel.x * timestep;
-        this.velocity.y += this.accel.y * timestep;
+        this.velocity.x += this.accel.x;
+        this.velocity.y += this.accel.y;
         // Reset acceleration
-        nullVector(this.accel);
+        nullVector(this.accel); 
         // Apply motion
         this.stepRemaining = 1;
         this.x += this.stepRemaining * this.velocity.x / roomSpeed;
-        this.y += this.stepRemaining * this.velocity.y / roomSpeed;  
+        this.y += this.stepRemaining * this.velocity.y / roomSpeed;        
     }
 
-    friction() {        
-        var motion = this.velocity.length, excess = motion - this.maxSpeed;
+    friction() {
+        var motion = this.velocity.length,
+            excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-          var k = this.damp * timestep * 0.97, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
-          this.velocity.x = ((finalVelocity * this.velocity.x / motion)) * 0.97;
-          this.velocity.y = ((finalVelocity * this.velocity.y / motion)) * 0.97;
+            var k = this.damp / roomSpeed,
+                drag = excess / (k + 1),
+                finalvelocity = this.maxSpeed + drag;
+            this.velocity.x = finalvelocity * this.velocity.x / motion;
+            this.velocity.y = finalvelocity * this.velocity.y / motion;
         }
     }
 
@@ -2389,7 +2467,7 @@ class Entity {
             return 0;
         }
         if (!this.settings.canGoOutsideRoom) {
-            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed; //roomSpeed for next 3
+            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.x -= Math.max(this.x + this.realSize - room.width - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.min(this.y - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.max(this.y + this.realSize - room.height - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
@@ -2400,10 +2478,7 @@ class Entity {
                 (this.team !== -1 && room.isIn('bas1', loc)) ||
                 (this.team !== -2 && room.isIn('bas2', loc)) ||
                 (this.team !== -3 && room.isIn('bas3', loc)) ||
-                (this.team !== -4 && room.isIn('bas4', loc)) ||
-                (this.team !== -5 && room.isIn('bas5', loc)) ||
-                (this.team !== -6 && room.isIn('bas6', loc))
-              
+                (this.team !== -4 && room.isIn('bas4', loc))
             ) { this.kill(); }
         }
     }
@@ -2535,19 +2610,11 @@ class Entity {
     sendMessage(message) { } // Dummy
 
     kill() {
-        if (this.recycle === false) {
-         this.health.amount = -1;
-        } else {
-          if (this.parent !== null) {
-         this.x = this.parent.body.x + 10;
-         this.y = this.parent.body.y;
-          }
-        }
+        this.health.amount = -1;
     }
 
     destroy() {
         // Remove from the protected entities list
-        if (this.recycle === false) {
         if (this.isProtected) util.remove(entitiesToAvoid, entitiesToAvoid.indexOf(this)); 
         // Remove from minimap
         let i = minimap.findIndex(entry => { return entry[0] === this.id; });
@@ -2579,9 +2646,6 @@ class Entity {
         // Remove from the collision grid
         this.removeFromGrid();
         this.isGhost = true;
-        } else {
-          
-        }
     }    
     
     isDead() {
