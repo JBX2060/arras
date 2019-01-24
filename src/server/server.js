@@ -6,7 +6,7 @@
 // General requires
 require('google-closure-library');
 goog.require('goog.structs.PriorityQueue');
-goog.require('goog.structs.QuadTree');a
+goog.require('goog.structs.QuadTree');
 
 // Import game settings.
 const c = require('../../config.json');
@@ -1562,9 +1562,9 @@ var bringToLife = (() => {
         // Handle guns and turrets if we've got them
         for (let gun of my.guns) {
            gun.live();
-           if (gun.initilized === false) {
-              gun.initilize(); 
-           }
+           //if (gun.initilized === false) {
+           //   gun.initilize(); 
+           //}
         }
         for (let turret of my.turrets) {
            turret.life(); 
@@ -1651,8 +1651,8 @@ class HealthType {
 
 class Entity {
     constructor(position, master = this) {
-        //this.cache = [0, 0, 0, 0, 0, 0];
-        //this.defaultset = false;
+        this.cache = [0, 0, 0, 0, 0, 0];
+        this.defaultset = false;
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
         this.creationTime = (new Date()).getTime();
@@ -2056,10 +2056,11 @@ class Entity {
     }
 
     refreshBodyAttributes() {
-        if (this.cache === null || this.cache === undefined) {
-           this.cache = [0, 0, 0, 0, 0, 0]; 
-        }
-      
+        //if (this.cache === null || this.cache === undefined) {
+        //   this.cache = [0, 0, 0, 0, 0, 0]; 
+        //}
+        
+        /*
         if (this.defaultset === false) {
               let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
 
@@ -2104,37 +2105,37 @@ class Entity {
           
         this.defaultset = true;
         }
-        
+        */
         
         let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
         
-        if (this.skill.acl != this.cache[0]) {
+        //if (this.skill.acl != this.cache[0]) {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        this.cache[0] = this.skill.acl;
-        }
+        //this.cache[0] = this.skill.acl;
+        //}
         
-        if (this.skill.mob != this.cache[1]) {
+        //if (this.skill.mob != this.cache[1]) {
         this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
         this.cache[1] = this.skill.mob;
-        }
+        //}
         
-        if (this.skill.hlt != this.cache[2]) {
+        //if (this.skill.hlt != this.cache[2]) {
         this.health.set(
             (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
         );
         this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
-        this.cache[2] = this.skill.hlt
-        }
+        //this.cache[2] = this.skill.hlt
+        //}
 
-        if (this.skill.shi != this.cache[3]) {
+        //if (this.skill.shi != this.cache[3]) {
         this.shield.set(
             (((this.settings.healthWithLevel) ? 0.6 * this.skill.level : 0) + this.SHIELD) * this.skill.shi, 
             Math.max(0, ((((this.settings.healthWithLevel) ? 0.006 * this.skill.level : 0) + 1) * this.REGEN) * this.skill.rgn)
         );
-        this.cache[3] = this.skill.shi;
-        }
+        //this.cache[3] = this.skill.shi;
+        //}
         
         //if (this.damage != this.cache[4]) {
         this.damage = this.DAMAGE * this.skill.atk;
