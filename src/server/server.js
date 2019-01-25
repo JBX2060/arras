@@ -2107,43 +2107,43 @@ class Entity {
         
         let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
         
-        if (this.skill.acl != this.cache[0]) {
+        if (this.ACCELERATION != this.cache[0]) {
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        this.cache[0] = this.skill.acl;
+        this.cache[0] = this.ACCELERATION;
         }
         
-        if (this.skill.mob != this.cache[1]) {
-        this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
+        if (this.SPEED != this.cache[1]) {
+        this.topSpeed = (c.runSpeed * this.SPEED * this.skill.mob / speedReduce) * 1.14866039425;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
-        this.cache[1] = this.skill.mob;
+        this.cache[1] = this.SPEED;
         }
         
-        //if (this.HEALTH != this.cache[2]) {
+        if (this.HEALTH != this.cache[2]) {
         this.health.set(
             (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
         );
         this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
-        //this.cache[2] = this.HEALTH;
-        //}
+        this.cache[2] = this.HEALTH;
+        }
 
-        //if (this.skill.shi != this.cache[3]) {
+        if (this.SHIELD != this.cache[3]) {
         this.shield.set(
             (((this.settings.healthWithLevel) ? 0.6 * this.skill.level : 0) + this.SHIELD) * this.skill.shi, 
             Math.max(0, ((((this.settings.healthWithLevel) ? 0.006 * this.skill.level : 0) + 1) * this.REGEN) * this.skill.rgn)
         );
-        //this.cache[3] = this.skill.shi;
-        //}
+        this.cache[3] = this.SHIELD;
+        }
         
-        //if (this.damage != this.cache[4]) {
+        if (this.DAMAGE != this.cache[4]) {
         this.damage = this.DAMAGE * this.skill.atk;
-        //this.cache[4] = this.damage;
-        //}
+        this.cache[4] = this.DAMAGE;
+        }
         
-        //if (this.penetration != this.cache[5]) {
+        if (this.penetration != this.cache[5]) {
         this.penetration = this.PENETRATION + 1.5 * (this.skill.brst + 0.8 * (this.skill.atk - 1));
-        //this.cache[5] = this.penetration;
-        //}
+        this.cache[5] = this.penetration;
+        }
 
         if (!this.settings.dieAtRange || !this.range) {
             this.range = this.RANGE;
