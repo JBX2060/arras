@@ -2039,7 +2039,7 @@ class Entity {
             if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
             this.cache[0] = this.ACCELERATION;
 
-            this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce * 2.91209677416;
+            this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce * 2.58853046592;
             if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
             this.cache[1] = this.SPEED;
 
@@ -2269,7 +2269,7 @@ class Entity {
                 if (gactive && l > this.size) {
                     let desiredxspeed = this.topSpeed * g.x / l,
                         desiredyspeed = this.topSpeed * g.y / l,
-                        turning = Math.sqrt((this.topSpeed * Math.max(1, this.range) + 1) / a);
+                        turning = Math.sqrt((this.topSpeed / 2 * Math.max(1, this.range) + 1) / a);
                     engine = {
                         x: (desiredxspeed - this.velocity.x) / Math.max(5, turning),
                         y: (desiredyspeed - this.velocity.y) / Math.max(5, turning)
@@ -2277,8 +2277,8 @@ class Entity {
                 } else {
                     if (this.velocity.length < this.topSpeed) {
                         engine = {
-                            x: this.velocity.x * a / 20,
-                            y: this.velocity.y * a / 20
+                            x: this.velocity.x * a / 40,
+                            y: this.velocity.y * a / 40
                         };
                     }
                 }
