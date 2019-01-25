@@ -19,10 +19,7 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
-
-const Collisions = require('collisions');
-const system = new Collisions();
-const result = system.createResult();
+const hb = require('hashbounds');
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -1467,7 +1464,7 @@ const dirtyCheck = (p, r) => {
         return Math.abs(p.x - e.x) < r + e.size && Math.abs(p.y - e.y) < r + e.size;
     });
 };
-const grid = new hshg.HSHG();
+const grid = new hb(4, 1, c.WIDTH, c.HEIGHT);
 var entitiesIdLog = 0;
 var entities = [];
 const purgeEntities = () => {
@@ -1640,10 +1637,11 @@ class Entity {
                 grid.removeObject(this);this.isInGrid = false;
             }
         };
-        this.addToGrid = () => {
-            if (!this.isInGrid && this.bond == null) {
-                grid.addObject(this);this.isInGrid = true;
-            }
+        //this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.insert( this.isInGrid = true; } };
+        let node = this;
+        let bounds = {
+            x: this.x,
+            y: this.y
         };
         this.activation = (() => {
             let active = true;
