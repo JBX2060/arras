@@ -2659,7 +2659,7 @@ class Entity {
         // Remove everything bound to it
         this.turrets.forEach(t => t.destroy());
         // Remove from the collision grid
-        //this.removeFromGrid();
+        this.removeFromGrid();
         this.isGhost = true;
     }    
     
@@ -4687,7 +4687,7 @@ var gameloop = (() => {
         my.collisionArray = []; 
         // Activation
         my.activation.update();
-        //my.updateAABB(my.activation.check()); 
+        my.updateAABB(my.activation.check()); 
     }
     function entitiesliveloop (my) {
         // Consider death.  
@@ -4735,11 +4735,14 @@ var gameloop = (() => {
         // Do collisions
         logs.collide.set();
         
-        //if (entities.length > 1) {
+        if (entities.length > 1) {
             // Load the grid
-            //grid.update();
+            grid.update();
+            for (let collision of grid.queryForCollisionPairs()) {
+               collide(collision);
+            }
             //grid.queryForCollisionPairs().forEach(collision => collide(collision));
-        //}
+        }
         logs.collide.mark();
         // Do entities life
         logs.entities.set();   
