@@ -2039,7 +2039,7 @@ class Entity {
             if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
             this.cache[0] = this.ACCELERATION;
 
-            this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
+            this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce * 2.91209677416;
             if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
             this.cache[1] = this.SPEED;
 
@@ -2069,19 +2069,21 @@ class Entity {
             this.skill.changed = false;
         }
 
+        /*
         let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
-
+        
         if (this.ACCELERATION != this.cache[0]) {
-            this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
-            if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-            this.cache[0] = this.ACCELERATION;
+        this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
+        if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
+        this.cache[0] = this.ACCELERATION;
         }
-
+        
         if (this.SPEED != this.cache[1]) {
-            this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce * 1.14866039425;
-            if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
-            this.cache[1] = this.SPEED;
+        this.topSpeed = (c.runSpeed * this.SPEED * this.skill.mob / speedReduce) * 1.14866039425;
+        if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
+        this.cache[1] = this.SPEED;
         }
+        */
 
         /*
         if (this.HEALTH != this.cache[2]) {
@@ -2218,6 +2220,7 @@ class Entity {
                 }
             });
             this.skill.update();
+            this.skill.changed = true;
             this.refreshBodyAttributes();
         }
     }
