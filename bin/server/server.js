@@ -2271,14 +2271,14 @@ class Entity {
                         desiredyspeed = this.topSpeed * g.y / l,
                         turning = Math.sqrt((this.topSpeed * Math.max(1, this.range) + 1) / a);
                     engine = {
-                        x: (desiredxspeed - this.velocity.x) / Math.max(5, turning) * 1.35,
-                        y: (desiredyspeed - this.velocity.y) / Math.max(5, turning) * 1.35
+                        x: (desiredxspeed - this.velocity.x) / Math.max(5, turning) * 1.325,
+                        y: (desiredyspeed - this.velocity.y) / Math.max(5, turning) * 1.325
                     };
                 } else {
                     if (this.velocity.length < this.topSpeed) {
                         engine = {
-                            x: this.velocity.x * a / 40,
-                            y: this.velocity.y * a / 40
+                            x: this.velocity.x * a / 45,
+                            y: this.velocity.y * a / 45
                         };
                     }
                 }
