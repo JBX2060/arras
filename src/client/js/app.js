@@ -405,7 +405,7 @@ function getEntityImageFromMockup(index, color = mockups[index].color) {
             getPositions: () => {
                 let a = [];
                 //mockup.guns.forEach(() => a.push(0));
-                for (let i = 0; i < mockup.guns; i++) {
+                for (let i = 0; i < mockup.guns.length; i++) {
                    a.push(0); 
                 }
                 return a;
@@ -1660,7 +1660,7 @@ const socketInit = (() => {
                                 throw new Error('Mismatch between data turret number and remembered turret number!');
                             }
                             //z.turrets.forEach(tur => { tur = process(tur); });
-                            for (let tur in z.turrets) {
+                            for (let tur of z.turrets) {
                                tur = process(tur); 
                             }
                         }

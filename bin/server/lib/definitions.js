@@ -4398,16 +4398,16 @@ exports.palisade = (() => {
 
 exports.chungus = {
     PARENT: [exports.genericTank],
-    LEVEL: 999999999,
+    LEVEL: 100,
     SKILL: [11, 11, 11, 11, 11, 11, 11, 11, 11, 11],
-    SIZE: 10000,
+    SIZE: 1000,
     BODY: {
-        SHIELD: 999999999999,
-        REGEN: 999999999999,
-        HEALTH: 99999999999,
-        DAMAGE: 999999999999,
-        DENSITY: 999999999999,
-        FOV: 50
+        SHIELD: 1000000,
+        REGEN: 1000000,
+        HEALTH: 1000000,
+        DAMAGE: 1000000,
+        DENSITY: 1000000,
+        FOV: 30
     },
     LABEL: 'BIG CHUNGUS',
     DANGER: 1000,
