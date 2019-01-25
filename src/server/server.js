@@ -17,6 +17,10 @@ const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
 
+const Collisions = require('collisions');
+const system = new Collisions();
+const result = system.createResult();
+
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
     if(index === this.length - 1){
@@ -1674,8 +1678,8 @@ class Entity {
             power: 0,
         };
         this.isInGrid = false;
-        //this.removeFromGrid = () => { if (this.isInGrid) { grid.removeObject(this); this.isInGrid = false; } };
-        //this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.addObject(this); this.isInGrid = true; } };
+        this.removeFromGrid = () => { if (this.isInGrid) { grid.removeObject(this); this.isInGrid = false; } };
+        this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.addObject(this); this.isInGrid = true; } };
         this.activation = (() => {
             let active = true;
             let timer = ran.irandom(15);
@@ -1684,13 +1688,13 @@ class Entity {
                     if (this.isDead()) return 0;
                     // Check if I'm in anybody's view
                     if (!active) { 
-                        //this.removeFromGrid();
+                        this.removeFromGrid();
                         // Remove bullets and swarm
                         if (this.settings.diesAtRange) this.kill();
                         // Still have limited update cycles but do it much more slowly.
                         if (!(timer--)) active = true;
                     } else {
-                        //this.addToGrid();
+                        this.addToGrid();
                         timer = 15;
                         active = views.some(v => v.check(this, 0.6));
                     }
@@ -1771,7 +1775,7 @@ class Entity {
                 };
                 // Update grid if needed
                 if (sizeDiff > Math.SQRT2 || sizeDiff < Math.SQRT1_2) {
-                    //this.removeFromGrid(); this.addToGrid();
+                    this.removeFromGrid(); this.addToGrid();
                     savedSize = data.size;
                 }
             };
@@ -4343,7 +4347,6 @@ const sockets = (() => {
 
 var gameloop = (() => {
     // Collision stuff
-    /*
     let collide = (() => {
         function simplecollide(my, n) {
             let diff = (1 + util.getDistance(my, n) / 2) * roomSpeed;
@@ -4676,7 +4679,6 @@ var gameloop = (() => {
             }     
         };
     })();
-    */
     // Living stuff
     function entitiesactivationloop(my) {
         // Update collisions.
