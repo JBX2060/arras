@@ -1191,7 +1191,7 @@ class Gun {
         this.motion = 0;
         if (this.canShoot) {
             this.cycle = !this.waitToCycle - this.delay;
-            this.trueRecoil = this.settings.recoil * 2;
+            this.trueRecoil = this.settings.recoil * 1.525;
         }
     }
   
