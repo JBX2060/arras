@@ -404,7 +404,10 @@ function getEntityImageFromMockup(index, color = mockups[index].color) {
             length: mockup.guns.length,
             getPositions: () => {
                 let a = [];
-                mockup.guns.forEach(() => a.push(0));
+                //mockup.guns.forEach(() => a.push(0));
+                for (let i = 0; i < mockup.guns; i++) {
+                   a.push(0); 
+                }
                 return a;
             },
             update: () => {},
@@ -1498,6 +1501,12 @@ const socketInit = (() => {
                             };
                         };
                     })();
+                  
+                    function updatePhysics(a) {
+                       for (let item of a) {
+                          
+                       }
+                    }
 
                     function Status() {
                         let state = 'normal',
@@ -1650,7 +1659,10 @@ const socketInit = (() => {
                             if (z.turrets.length !== turnumb) {
                                 throw new Error('Mismatch between data turret number and remembered turret number!');
                             }
-                            z.turrets.forEach(tur => { tur = process(tur); });
+                            //z.turrets.forEach(tur => { tur = process(tur); });
+                            for (let tur in z.turrets) {
+                               tur = process(tur); 
+                            }
                         }
                         // Return our monsterous creation
                         return z;
@@ -1672,7 +1684,12 @@ const socketInit = (() => {
                         if (e.render.status.getFade() !== 0 && isInView(e.render.x - player.renderx, e.render.y - player.rendery, e.size, true)) {
                             output.push(e);
                         } else {
-                            if (e.render.textobjs != null) e.render.textobjs.forEach(o => o.remove());
+                            if (e.render.textobjs != null) { 
+                              //e.render.textobjs.forEach(o => o.remove());
+                              for (let o of e.render.textobjs) {
+                                 o.remove(); 
+                              }
+                            }
                         }
                     };
                     // Save the new entities list
@@ -3030,7 +3047,7 @@ const gameDraw = (() => {
             let y = global.screenHeight - spacing - height;
             let ticker = 11;
             let namedata = gui.getStatNames(mockups[gui.type].statnames || -1);
-            gui.skills.forEach(function drawASkillBar(skill) { // Individual skill bars 
+            function drawASkillBar(skill) { // Individual skill bars 
                 ticker--;
                 let name = namedata[ticker - 1],
                     level = skill.amount,
@@ -3096,7 +3113,10 @@ const gameDraw = (() => {
                     // Move on 
                     y -= height + vspacing;
                 }
-            });
+            }
+            for (let skill of gui.skills) {
+               drawASkillBar(skill);
+            }
             global.clickables.hover.place(0, 0, y, 0.8 * len, 0.8 * (global.screenHeight - y));
             if (gui.points !== 0) { // Draw skillpoints to spend
                 text.skillPoints.draw('x' + gui.points, Math.round(x + len - 2) + 0.5, Math.round(y + height - 4) + 0.5, 20, color.guiwhite, 'right');
@@ -3300,7 +3320,7 @@ const gameDraw = (() => {
                 upgradeSpin += 0.01;
                 let colorIndex = 10;
                 let i = 0;
-                gui.upgrades.forEach(function drawAnUpgrade(model) {
+                function drawAnUpgrade(model) {
                     if (y > yo) yo = y;
                     xxx = x;
                     global.clickables.upgrade.place(i++, x, y, len, height);
@@ -3344,7 +3364,11 @@ const gameDraw = (() => {
                     } else {
                         y += height + internalSpacing;
                     }
-                });
+                }
+                //gui.upgrades.forEach();
+                for (var model of gui.upgrades) {
+                   drawAnUpgrade(model); 
+                }
                 // Draw box
                 let h = 14,
                     msg = "Ignore",
