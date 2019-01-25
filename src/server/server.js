@@ -891,6 +891,7 @@ const levelers = [
 ];
 class Skill {
     constructor(inital = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) { // Just skill stuff. 
+        this.changed = false;
         this.raw = inital;
         this.caps = [];
         this.setCaps([
@@ -978,6 +979,7 @@ class Skill {
         this.rgn = apply(25, attrib[skcnv.rgn]);
 
         this.brst = 0.3 * (0.5 * attrib[skcnv.atk] + 0.5 * attrib[skcnv.hlt] + attrib[skcnv.rgn]);
+        this.changed = true;
     }
 
     set(thing) {
@@ -2060,21 +2062,20 @@ class Entity {
            this.cache = [0, 0, 0, 0, 0, 0]; 
         }
         
-        if (this.defaultset === false) {
-              let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
+        if (this.defaultset === false || this.skill.changed === true) {
+        let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
 
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        this.cache[0] = this.skill.acl;
+        this.cache[0] = this.ACCELERATION;
 
         this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
-        this.cache[1] = this.skill.mob;
+        this.cache[1] = this.SPEED;
         
         this.health.set(
             (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
         );
-        this.cache[2] = this.skill.hlt;
 
         this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
 
@@ -2082,13 +2083,10 @@ class Entity {
             (((this.settings.healthWithLevel) ? 0.6 * this.skill.level : 0) + this.SHIELD) * this.skill.shi, 
             Math.max(0, ((((this.settings.healthWithLevel) ? 0.006 * this.skill.level : 0) + 1) * this.REGEN) * this.skill.rgn)
         );
-        this.cache[3] = this.skill.shi;
         
         this.damage = this.DAMAGE * this.skill.atk;
-        this.cache[4] = this.skill.atk;
 
         this.penetration = this.PENETRATION + 1.5 * (this.skill.brst + 0.8 * (this.skill.atk - 1));
-        this.cache[5] = this.skill.brst;
 
         if (!this.settings.dieAtRange || !this.range) {
             this.range = this.RANGE;
@@ -2103,7 +2101,10 @@ class Entity {
         this.pushability = this.PUSHABILITY;  
           
         this.defaultset = true;
+        this.skill.changed = false;
         }
+      
+        
         
         let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
         
@@ -2119,6 +2120,7 @@ class Entity {
         this.cache[1] = this.SPEED;
         }
         
+        /*
         if (this.HEALTH != this.cache[2]) {
         this.health.set(
             (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
@@ -2135,14 +2137,14 @@ class Entity {
         this.cache[3] = this.SHIELD;
         }
         
-        if (this.DAMAGE != this.cache[4]) {
+        if (this.skill.atk != this.cache[4]) {
         this.damage = this.DAMAGE * this.skill.atk;
-        this.cache[4] = this.DAMAGE;
+        this.cache[4] = this.skill.atk;
         }
         
-        if (this.penetration != this.cache[5]) {
+        if (this.skill.brst != this.cache[5]) {
         this.penetration = this.PENETRATION + 1.5 * (this.skill.brst + 0.8 * (this.skill.atk - 1));
-        this.cache[5] = this.penetration;
+        this.cache[5] = this.skill.brst;
         }
 
         if (!this.settings.dieAtRange || !this.range) {
@@ -2155,7 +2157,8 @@ class Entity {
         
         this.stealth = this.STEALTH;
 
-        this.pushability = this.PUSHABILITY;    
+        this.pushability = this.PUSHABILITY;   
+        */
     }    
 
     bindToMaster(position, bond) {
@@ -2258,7 +2261,7 @@ class Entity {
                 if (instance.settings.clearOnMasterUpgrade && instance.master.id === ID) {
                     instance.kill();
                 }
-            }); 
+            });
             this.skill.update();
             this.refreshBodyAttributes();
         }
