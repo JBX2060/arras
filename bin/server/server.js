@@ -2269,10 +2269,10 @@ class Entity {
                 if (gactive && l > this.size) {
                     let desiredxspeed = this.topSpeed * g.x / l,
                         desiredyspeed = this.topSpeed * g.y / l,
-                        turning = Math.sqrt((this.topSpeed / 2 * Math.max(1, this.range) + 1) / a);
+                        turning = Math.sqrt((this.topSpeed * Math.max(1, this.range) + 1) / a);
                     engine = {
-                        x: (desiredxspeed - this.velocity.x) / Math.max(5, turning),
-                        y: (desiredyspeed - this.velocity.y) / Math.max(5, turning)
+                        x: (desiredxspeed - this.velocity.x) / Math.max(5, turning) * 1.35,
+                        y: (desiredyspeed - this.velocity.y) / Math.max(5, turning) * 1.35
                     };
                 } else {
                     if (this.velocity.length < this.topSpeed) {
