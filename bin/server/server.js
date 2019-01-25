@@ -1631,16 +1631,8 @@ class Entity {
             power: 0
         };
         this.isInGrid = false;
-        this.removeFromGrid = () => {
-            if (this.isInGrid) {
-                grid.removeObject(this);this.isInGrid = false;
-            }
-        };
-        this.addToGrid = () => {
-            if (!this.isInGrid && this.bond == null) {
-                grid.addObject(this);this.isInGrid = true;
-            }
-        };
+        //this.removeFromGrid = () => { if (this.isInGrid) { grid.removeObject(this); this.isInGrid = false; } };
+        //this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.addObject(this); this.isInGrid = true; } };
         this.activation = (() => {
             let active = true;
             let timer = ran.irandom(15);
@@ -1649,13 +1641,13 @@ class Entity {
                     if (this.isDead()) return 0;
                     // Check if I'm in anybody's view
                     if (!active) {
-                        this.removeFromGrid();
+                        //this.removeFromGrid();
                         // Remove bullets and swarm
                         if (this.settings.diesAtRange) this.kill();
                         // Still have limited update cycles but do it much more slowly.
                         if (!timer--) active = true;
                     } else {
-                        this.addToGrid();
+                        //this.addToGrid();
                         timer = 15;
                         active = views.some(v => v.check(this, 0.6));
                     }
@@ -1738,7 +1730,7 @@ class Entity {
                 };
                 // Update grid if needed
                 if (sizeDiff > Math.SQRT2 || sizeDiff < Math.SQRT1_2) {
-                    this.removeFromGrid();this.addToGrid();
+                    //this.removeFromGrid(); this.addToGrid();
                     savedSize = data.size;
                 }
             };
@@ -2130,7 +2122,7 @@ class Entity {
         this.skill = this.bond.skill;
         this.label = this.bond.label + ' ' + this.label;
         // It will not be in collision calculations any more nor shall it be seen.
-        this.removeFromGrid();
+        //this.removeFromGrid();
         this.settings.drawShape = false;
         // Get my position.
         this.bound = {};
@@ -2608,7 +2600,7 @@ class Entity {
         // Remove everything bound to it
         this.turrets.forEach(t => t.destroy());
         // Remove from the collision grid
-        this.removeFromGrid();
+        //this.removeFromGrid();
         this.isGhost = true;
     }
 
@@ -4440,11 +4432,12 @@ const sockets = (() => {
 
 var gameloop = (() => {
     // Collision stuff
+    /*
     let collide = (() => {
         function simplecollide(my, n) {
             let diff = (1 + util.getDistance(my, n) / 2) * roomSpeed;
-            let a = my.intangibility ? 1 : my.pushability,
-                b = n.intangibility ? 1 : n.pushability,
+            let a = (my.intangibility) ? 1 : my.pushability,
+                b = (n.intangibility) ? 1 : n.pushability,
                 c = 0.05 * (my.x - n.x) / diff,
                 d = 0.05 * (my.y - n.y) / diff;
             my.accel.x += a / (b + 0.3) * c;
@@ -4453,8 +4446,8 @@ var gameloop = (() => {
             n.accel.y -= b / (a + 0.3) * d;
         }
         function firmcollide(my, n, buffer = 0) {
-            let item1 = { x: my.x + my.m_x, y: my.y + my.m_y };
-            let item2 = { x: n.x + n.m_x, y: n.y + n.m_y };
+            let item1 = { x: my.x + my.m_x, y: my.y + my.m_y, };
+            let item2 = { x: n.x + n.m_x, y: n.y + n.m_y, };
             let dist = util.getDistance(item1, item2);
             let s1 = Math.max(my.velocity.length, my.topSpeed);
             let s2 = Math.max(n.velocity.length, n.topSpeed);
@@ -4467,22 +4460,18 @@ var gameloop = (() => {
                 n.accel.y -= repel * (item1.y - item2.y) / dist;
             }
             while (dist <= my.realSize + n.realSize && !(strike1 && strike2)) {
-                strike1 = false;strike2 = false;
+                strike1 = false; strike2 = false;
                 if (my.velocity.length <= s1) {
                     my.velocity.x -= 0.05 * (item2.x - item1.x) / dist / roomSpeed;
                     my.velocity.y -= 0.05 * (item2.y - item1.y) / dist / roomSpeed;
-                } else {
-                    strike1 = true;
-                }
+                } else { strike1 = true; }
                 if (n.velocity.length <= s2) {
                     n.velocity.x += 0.05 * (item2.x - item1.x) / dist / roomSpeed;
                     n.velocity.y += 0.05 * (item2.y - item1.y) / dist / roomSpeed;
-                } else {
-                    strike2 = true;
-                }
-                item1 = { x: my.x + my.m_x, y: my.y + my.m_y };
-                item2 = { x: n.x + n.m_x, y: n.y + n.m_y };
-                dist = util.getDistance(item1, item2);
+                } else { strike2 = true; }
+                item1 = { x: my.x + my.m_x, y: my.y + my.m_y, };
+                item2 = { x: n.x + n.m_x, y: n.y + n.m_y, };
+                dist = util.getDistance(item1, item2); 
             }
         }
         function reflectcollide(wall, bounce) {
@@ -4501,116 +4490,105 @@ var gameloop = (() => {
             let tock = Math.min(my.stepRemaining, n.stepRemaining),
                 combinedRadius = n.size + my.size,
                 motion = {
-                _me: new Vector(my.m_x, my.m_y),
-                _n: new Vector(n.m_x, n.m_y)
-            },
-                delt = new Vector(tock * (motion._me.x - motion._n.x), tock * (motion._me.y - motion._n.y)),
+                    _me: new Vector(my.m_x, my.m_y),
+                    _n: new Vector(n.m_x, n.m_y),
+                },
+                delt = new Vector(
+                    tock * (motion._me.x - motion._n.x),
+                    tock * (motion._me.y - motion._n.y)
+                ),
                 diff = new Vector(my.x - n.x, my.y - n.y),
                 dir = new Vector((n.x - my.x) / diff.length, (n.y - my.y) / diff.length),
                 component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
-
-            if (component >= diff.length - combinedRadius) {
-                // A simple check
+             if (component >= diff.length - combinedRadius) { // A simple check
                 // A more complex check
                 let goahead = false,
                     tmin = 1 - tock,
                     tmax = 1,
                     A = Math.pow(delt.x, 2) + Math.pow(delt.y, 2),
-                    B = 2 * delt.x * diff.x + 2 * delt.y * diff.y,
+                    B = 2*delt.x*diff.x + 2*delt.y*diff.y,
                     C = Math.pow(diff.x, 2) + Math.pow(diff.y, 2) - Math.pow(combinedRadius, 2),
-                    det = B * B - 4 * A * C,
+                    det = B * B - (4 * A * C),
                     t;
-
-                if (!A || det < 0 || C < 0) {
-                    // This shall catch mathematical errors
+                 if (!A || det < 0 || C < 0) { // This shall catch mathematical errors
                     t = 0;
-                    if (C < 0) {
-                        // We have already hit without moving
+                    if (C < 0) { // We have already hit without moving
                         goahead = true;
                     }
                 } else {
-                    let t1 = (-B - Math.sqrt(det)) / (2 * A),
-                        t2 = (-B + Math.sqrt(det)) / (2 * A);
-                    if (t1 < tmin || t1 > tmax) {
-                        // 1 is out of range
-                        if (t2 < tmin || t2 > tmax) {
-                            // 2 is out of range;
+                    let t1 = (-B - Math.sqrt(det)) / (2*A),
+                        t2 = (-B + Math.sqrt(det)) / (2*A);                
+                    if (t1 < tmin || t1 > tmax) { // 1 is out of range
+                        if (t2 < tmin || t2 > tmax) { // 2 is out of range;
                             t = false;
-                        } else {
-                            // 1 is out of range but 2 isn't
-                            t = t2;goahead = true;
+                        } else { // 1 is out of range but 2 isn't
+                            t = t2; goahead = true;
                         }
-                    } else {
-                        // 1 is in range
-                        if (t2 >= tmin && t2 <= tmax) {
-                            // They're both in range!
-                            t = Math.min(t1, t2);goahead = true; // That means it passed in and then out again.  Let's use when it's going in
-                        } else {
-                            // Only 1 is in range
-                            t = t1;goahead = true;
+                    } else { // 1 is in range
+                        if (t2 >= tmin && t2 <= tmax) { // They're both in range!
+                            t = Math.min(t1, t2); goahead = true; // That means it passed in and then out again.  Let's use when it's going in
+                        } else { // Only 1 is in range
+                            t = t1; goahead = true;
                         }
                     }
                 }
-                /********* PROCEED ********/
                 if (goahead) {
                     // Add to record
                     my.collisionArray.push(n);
                     n.collisionArray.push(my);
-                    if (t) {
-                        // Only if we still need to find the collision
+                    if (t) { // Only if we still need to find the collision
                         // Step to where the collision occured
                         my.x += motion._me.x * t;
                         my.y += motion._me.y * t;
                         n.x += motion._n.x * t;
                         n.y += motion._n.y * t;
-
-                        my.stepRemaining -= t;
+                         my.stepRemaining -= t;
                         n.stepRemaining -= t;
-
-                        // Update things
+                         // Update things
                         diff = new Vector(my.x - n.x, my.y - n.y);
-                        dir = new Vector((n.x - my.x) / diff.length, (n.y - my.y) / diff.length);
+                        dir = new Vector((n.x - my.x) / diff.length, (n.y - my.y) / diff.length);            
                         component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
                     }
                     let componentNorm = component / delt.length;
-                    /************ APPLY COLLISION ***********/
                     // Prepare some things
                     let reductionFactor = 1,
                         deathFactor = {
-                        _me: 1,
-                        _n: 1
-                    },
-                        accelerationFactor = delt.length ? combinedRadius / 4 / (Math.floor(combinedRadius / delt.length) + 1) : 0.001,
-                        depth = {
-                        _me: util.clamp((combinedRadius - diff.length) / (2 * my.size), 0, 1), //1: I am totally within it
-                        _n: util.clamp((combinedRadius - diff.length) / (2 * n.size), 0, 1) //1: It is totally within me
-                    },
-                        combinedDepth = {
-                        up: depth._me * depth._n,
-                        down: (1 - depth._me) * (1 - depth._n)
-                    },
-                        pen = {
-                        _me: {
-                            sqr: Math.pow(my.penetration, 2),
-                            sqrt: Math.sqrt(my.penetration)
+                            _me: 1,
+                            _n: 1,
                         },
-                        _n: {
-                            sqr: Math.pow(n.penetration, 2),
-                            sqrt: Math.sqrt(n.penetration)
-                        }
-                    },
+                        accelerationFactor = (delt.length) ? (
+                            (combinedRadius / 4) / (Math.floor(combinedRadius / delt.length) + 1) 
+                        ) : (
+                            0.001
+                        ),
+                        depth = {
+                            _me: util.clamp((combinedRadius - diff.length) / (2 * my.size), 0, 1), //1: I am totally within it
+                            _n: util.clamp((combinedRadius - diff.length) / (2 * n.size), 0, 1), //1: It is totally within me
+                        },
+                        combinedDepth = {
+                            up: depth._me * depth._n,
+                            down: (1-depth._me) * (1-depth._n),
+                        },
+                        pen = {
+                            _me: {
+                                sqr: Math.pow(my.penetration, 2),
+                                sqrt: Math.sqrt(my.penetration),
+                            },
+                            _n: {
+                                sqr: Math.pow(n.penetration, 2),
+                                sqrt: Math.sqrt(n.penetration),
+                            },
+                        },
                         savedHealthRatio = {
-                        _me: my.health.ratio,
-                        _n: n.health.ratio
-                    };
+                            _me: my.health.ratio,
+                            _n: n.health.ratio,
+                        };
                     if (doDamage) {
                         let speedFactor = { // Avoid NaNs and infinities
-                            _me: my.maxSpeed ? Math.pow(motion._me.length / my.maxSpeed, 0.25) : 1,
-                            _n: n.maxSpeed ? Math.pow(motion._n.length / n.maxSpeed, 0.25) : 1
+                            _me: (my.maxSpeed) ? ( Math.pow(motion._me.length/my.maxSpeed, 0.25)  ) : ( 1 ),
+                            _n: (n.maxSpeed) ? ( Math.pow(motion._n.length/n.maxSpeed, 0.25) ) : ( 1 ),
                         };
-
-                        /********** DO DAMAGE *********/
-                        let bail = false;
+                         let bail = false;
                         if (my.shape === n.shape && my.settings.isNecromancer && n.type === 'food') {
                             //bail = my.necro(n);
                         } else if (my.shape === n.shape && n.settings.isNecromancer && my.type === 'food') {
@@ -4620,9 +4598,23 @@ var gameloop = (() => {
                             // Calculate base damage
                             let resistDiff = my.health.resist - n.health.resist,
                                 damage = {
-                                _me: c.DAMAGE_CONSTANT * my.damage * (1 + resistDiff) * (1 + n.heteroMultiplier * (my.settings.damageClass === n.settings.damageClass)) * (my.settings.buffVsFood && n.settings.damageType === 1 ? 3 : 1) * my.damageMultiplier() * Math.min(2, Math.max(speedFactor._me, 1) * speedFactor._me),
-                                _n: c.DAMAGE_CONSTANT * n.damage * (1 - resistDiff) * (1 + my.heteroMultiplier * (my.settings.damageClass === n.settings.damageClass)) * (n.settings.buffVsFood && my.settings.damageType === 1 ? 3 : 1) * n.damageMultiplier() * Math.min(2, Math.max(speedFactor._n, 1) * speedFactor._n)
-                            };
+                                    _me: 
+                                        c.DAMAGE_CONSTANT * 
+                                        my.damage * 
+                                        (1 + resistDiff) * 
+                                        (1 + n.heteroMultiplier * (my.settings.damageClass === n.settings.damageClass)) *
+                                        ((my.settings.buffVsFood && n.settings.damageType === 1) ? 3 : 1 ) *
+                                        my.damageMultiplier() *
+                                        Math.min(2, Math.max(speedFactor._me, 1) * speedFactor._me),
+                                    _n: 
+                                        c.DAMAGE_CONSTANT * 
+                                        n.damage * 
+                                        (1 - resistDiff) * 
+                                        (1 + my.heteroMultiplier * (my.settings.damageClass === n.settings.damageClass)) *
+                                        ((n.settings.buffVsFood && my.settings.damageType === 1) ? 3 : 1) *
+                                        n.damageMultiplier() *
+                                        Math.min(2, Math.max(speedFactor._n, 1) * speedFactor._n),
+                                };
                             // Advanced damage calculations
                             if (my.settings.ratioEffects) {
                                 damage._me *= Math.min(1, Math.pow(Math.max(my.health.ratio, my.shield.ratio), 1 / my.penetration));
@@ -4631,35 +4623,38 @@ var gameloop = (() => {
                                 damage._n *= Math.min(1, Math.pow(Math.max(n.health.ratio, n.shield.ratio), 1 / n.penetration));
                             }
                             if (my.settings.damageEffects) {
-                                damage._me *= accelerationFactor * (1 + (componentNorm - 1) * (1 - depth._n) / my.penetration) * (1 + pen._n.sqrt * depth._n - depth._n) / pen._n.sqrt;
+                                damage._me *=
+                                    accelerationFactor *
+                                    (1 + (componentNorm - 1) * (1 - depth._n) / my.penetration) *
+                                    (1 + pen._n.sqrt * depth._n - depth._n) / pen._n.sqrt; 
                             }
                             if (n.settings.damageEffects) {
-                                damage._n *= accelerationFactor * (1 + (componentNorm - 1) * (1 - depth._me) / n.penetration) * (1 + pen._me.sqrt * depth._me - depth._me) / pen._me.sqrt;
+                                damage._n *=
+                                    accelerationFactor *
+                                    (1 + (componentNorm - 1) * (1 - depth._me) / n.penetration) *
+                                    (1 + pen._me.sqrt * depth._me - depth._me) / pen._me.sqrt; 
                             }
                             // Find out if you'll die in this cycle, and if so how much damage you are able to do to the other target
                             let damageToApply = {
                                 _me: damage._me,
-                                _n: damage._n
+                                _n: damage._n,
                             };
-                            if (n.shield.max) {
+                            if (n.shield.max) { 
                                 damageToApply._me -= n.shield.getDamage(damageToApply._me);
                             }
-                            if (my.shield.max) {
+                            if (my.shield.max) { 
                                 damageToApply._n -= my.shield.getDamage(damageToApply._n);
                             }
                             let stuff = my.health.getDamage(damageToApply._n, false);
-                            deathFactor._me = stuff > my.health.amount ? my.health.amount / stuff : 1;
+                            deathFactor._me = (stuff > my.health.amount) ? my.health.amount / stuff : 1;
                             stuff = n.health.getDamage(damageToApply._me, false);
-                            deathFactor._n = stuff > n.health.amount ? n.health.amount / stuff : 1;
-
-                            reductionFactor = Math.min(deathFactor._me, deathFactor._n);
-
-                            // Now apply it
+                            deathFactor._n = (stuff > n.health.amount) ? n.health.amount / stuff : 1;
+                                 reductionFactor = Math.min(deathFactor._me, deathFactor._n);
+                             // Now apply it
                             my.damageRecieved += damage._n * deathFactor._n;
                             n.damageRecieved += damage._me * deathFactor._me;
                         }
                     }
-                    /************* DO MOTION ***********/
                     if (nIsFirmCollide < 0) {
                         nIsFirmCollide *= -0.5;
                         my.accel.x -= nIsFirmCollide * component * dir.x;
@@ -4670,25 +4665,29 @@ var gameloop = (() => {
                         n.accel.x += nIsFirmCollide * (component * dir.x + combinedDepth.up);
                         n.accel.y += nIsFirmCollide * (component * dir.y + combinedDepth.up);
                     } else {
-                        // Calculate the impulse of the collision
-                        let elasticity = 2 - 4 * Math.atan(my.penetration * n.penetration) / Math.PI;
+                         // Calculate the impulse of the collision
+                        let elasticity = 2 - 4 * Math.atan(my.penetration * n.penetration) / Math.PI; 
                         if (doInelastic && my.settings.motionEffects && n.settings.motionEffects) {
                             elasticity *= savedHealthRatio._me / pen._me.sqrt + savedHealthRatio._n / pen._n.sqrt;
                         } else {
                             elasticity *= 2;
                         }
                         let spring = 2 * Math.sqrt(savedHealthRatio._me * savedHealthRatio._n) / roomSpeed,
-                            elasticImpulse = Math.pow(combinedDepth.down, 2) * elasticity * component * my.mass * n.mass / (my.mass + n.mass),
-                            springImpulse = c.KNOCKBACK_CONSTANT * spring * combinedDepth.up,
+                            elasticImpulse = 
+                                Math.pow(combinedDepth.down, 2) * 
+                                elasticity * component * 
+                                my.mass * n.mass / (my.mass + n.mass),
+                            springImpulse = 
+                                c.KNOCKBACK_CONSTANT * spring * combinedDepth.up,   
                             impulse = -(elasticImpulse + springImpulse) * (1 - my.intangibility) * (1 - n.intangibility),
                             force = {
-                            x: impulse * dir.x,
-                            y: impulse * dir.y
-                        },
+                                x: impulse * dir.x,
+                                y: impulse * dir.y,
+                            },
                             modifiers = {
-                            _me: c.KNOCKBACK_CONSTANT * my.pushability / my.mass * deathFactor._n,
-                            _n: c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me
-                        };
+                                _me: c.KNOCKBACK_CONSTANT * my.pushability / my.mass * deathFactor._n,
+                                _n: c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
+                            };
                         // Apply impulse as force
                         my.accel.x += modifiers._me * force.x * 2;
                         my.accel.y += modifiers._me * force.y * 2;
@@ -4699,10 +4698,10 @@ var gameloop = (() => {
             }
         }
         // The actual collision resolution function
-        return collision => {
+         return collision => {
             // Pull the two objects from the collision grid      
             let instance = collision[0],
-                other = collision[1];
+                other = collision[1];   
             // Check for ghosts...
             if (other.isGhost) {
                 util.error('GHOST FOUND');
@@ -4712,7 +4711,7 @@ var gameloop = (() => {
                 util.error('health: ' + other.health.amount);
                 util.warn('Ghost removed.');
                 if (grid.checkIfInHSHG(other)) {
-                    util.warn('Ghost removed.');grid.removeObject(other);
+                    util.warn('Ghost removed.'); grid.removeObject(other);
                 }
                 return 0;
             }
@@ -4723,45 +4722,43 @@ var gameloop = (() => {
                 util.error(instance.collisionArray);
                 util.error('health: ' + instance.health.amount);
                 if (grid.checkIfInHSHG(instance)) {
-                    util.warn('Ghost removed.');grid.removeObject(instance);
+                    util.warn('Ghost removed.'); grid.removeObject(instance);
                 }
                 return 0;
             }
-            if (!instance.activation.check() && !other.activation.check()) {
-                util.warn('Tried to collide with an inactive instance.');return 0;
-            }
+            if (!instance.activation.check() && !other.activation.check()) { util.warn('Tried to collide with an inactive instance.'); return 0; }
             // Handle walls
             if (instance.type === 'wall' || other.type === 'wall') {
-                let a = instance.type === 'bullet' || other.type === 'bullet' ? 1 + 10 / (Math.max(instance.velocity.length, other.velocity.length) + 10) : 1;
-                if (instance.type === 'wall') advancedcollide(instance, other, false, false, a);else advancedcollide(other, instance, false, false, a);
+                let a = (instance.type === 'bullet' || other.type === 'bullet') ? 
+                    1 + 10 / (Math.max(instance.velocity.length, other.velocity.length) + 10) : 
+                    1;
+                if (instance.type === 'wall') advancedcollide(instance, other, false, false, a);
+                else advancedcollide(other, instance, false, false, a);
             } else
-                // If they can firm collide, do that
-                if (instance.type === 'crasher' && other.type === 'food' || other.type === 'crasher' && instance.type === 'food') {
-                    firmcollide(instance, other);
-                } else
-                    // Otherwise, collide normally if they're from different teams
-                    if (instance.team !== other.team) {
-                        advancedcollide(instance, other, true, true);
-                    } else
-                        // Ignore them if either has asked to be
-                        if (instance.settings.hitsOwnType == 'never' || other.settings.hitsOwnType == 'never') {
-                            // Do jack                    
-                        } else
-                            // Standard collision resolution
-                            if (instance.settings.hitsOwnType === other.settings.hitsOwnType) {
-                                switch (instance.settings.hitsOwnType) {
-                                    case 'push':
-                                        advancedcollide(instance, other, false, false);break;
-                                    case 'hard':
-                                        firmcollide(instance, other);break;
-                                    case 'hardWithBuffer':
-                                        firmcollide(instance, other, 30);break;
-                                    case 'repel':
-                                        simplecollide(instance, other);break;
-                                }
-                            }
+            // If they can firm collide, do that
+            if ((instance.type === 'crasher' && other.type === 'food') || (other.type === 'crasher' && instance.type === 'food')) {
+                firmcollide(instance, other);
+            } else
+            // Otherwise, collide normally if they're from different teams
+            if (instance.team !== other.team) {
+                advancedcollide(instance, other, true, true);
+            } else 
+            // Ignore them if either has asked to be
+            if (instance.settings.hitsOwnType == 'never' || other.settings.hitsOwnType == 'never') {
+                // Do jack                    
+            } else 
+            // Standard collision resolution
+            if (instance.settings.hitsOwnType === other.settings.hitsOwnType) {
+                switch (instance.settings.hitsOwnType) {
+                case 'push': advancedcollide(instance, other, false, false); break;
+                case 'hard': firmcollide(instance, other); break;
+                case 'hardWithBuffer': firmcollide(instance, other, 30); break;
+                case 'repel': simplecollide(instance, other); break;
+                }
+            }     
         };
     })();
+    */
     // Living stuff
     function entitiesactivationloop(my) {
         // Update collisions.
@@ -4815,11 +4812,11 @@ var gameloop = (() => {
         // Do collisions
         logs.collide.set();
 
-        if (entities.length > 1) {
-            // Load the grid
-            grid.update();
-            grid.queryForCollisionPairs().forEach(collision => collide(collision));
-        }
+        //if (entities.length > 1) {
+        // Load the grid
+        //grid.update();
+        //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+        //}
         logs.collide.mark();
         // Do entities life
         logs.entities.set();

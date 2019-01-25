@@ -1674,8 +1674,8 @@ class Entity {
             power: 0,
         };
         this.isInGrid = false;
-        this.removeFromGrid = () => { if (this.isInGrid) { grid.removeObject(this); this.isInGrid = false; } };
-        this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.addObject(this); this.isInGrid = true; } };
+        //this.removeFromGrid = () => { if (this.isInGrid) { grid.removeObject(this); this.isInGrid = false; } };
+        //this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.addObject(this); this.isInGrid = true; } };
         this.activation = (() => {
             let active = true;
             let timer = ran.irandom(15);
@@ -1684,13 +1684,13 @@ class Entity {
                     if (this.isDead()) return 0;
                     // Check if I'm in anybody's view
                     if (!active) { 
-                        this.removeFromGrid();
+                        //this.removeFromGrid();
                         // Remove bullets and swarm
                         if (this.settings.diesAtRange) this.kill();
                         // Still have limited update cycles but do it much more slowly.
                         if (!(timer--)) active = true;
                     } else {
-                        this.addToGrid();
+                        //this.addToGrid();
                         timer = 15;
                         active = views.some(v => v.check(this, 0.6));
                     }
@@ -1771,7 +1771,7 @@ class Entity {
                 };
                 // Update grid if needed
                 if (sizeDiff > Math.SQRT2 || sizeDiff < Math.SQRT1_2) {
-                    this.removeFromGrid(); this.addToGrid();
+                    //this.removeFromGrid(); this.addToGrid();
                     savedSize = data.size;
                 }
             };
@@ -2169,7 +2169,7 @@ class Entity {
         this.skill = this.bond.skill;
         this.label = this.bond.label + ' ' + this.label;
         // It will not be in collision calculations any more nor shall it be seen.
-        this.removeFromGrid();
+        //this.removeFromGrid();
         this.settings.drawShape = false;
         // Get my position.
         this.bound = {};
@@ -2653,7 +2653,7 @@ class Entity {
         // Remove everything bound to it
         this.turrets.forEach(t => t.destroy());
         // Remove from the collision grid
-        this.removeFromGrid();
+        //this.removeFromGrid();
         this.isGhost = true;
     }    
     
@@ -4343,6 +4343,7 @@ const sockets = (() => {
 
 var gameloop = (() => {
     // Collision stuff
+    /*
     let collide = (() => {
         function simplecollide(my, n) {
             let diff = (1 + util.getDistance(my, n) / 2) * roomSpeed;
@@ -4444,7 +4445,6 @@ var gameloop = (() => {
                         }
                     }
                 }
-                /********* PROCEED ********/
                 if (goahead) {
                     // Add to record
                     my.collisionArray.push(n);
@@ -4465,7 +4465,6 @@ var gameloop = (() => {
                         component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
                     }
                     let componentNorm = component / delt.length;
-                    /************ APPLY COLLISION ***********/
                     // Prepare some things
                     let reductionFactor = 1,
                         deathFactor = {
@@ -4505,7 +4504,6 @@ var gameloop = (() => {
                             _n: (n.maxSpeed) ? ( Math.pow(motion._n.length/n.maxSpeed, 0.25) ) : ( 1 ),
                         };
 
-                        /********** DO DAMAGE *********/
                         let bail = false;
                         if (my.shape === n.shape && my.settings.isNecromancer && n.type === 'food') {
                             //bail = my.necro(n);
@@ -4575,7 +4573,6 @@ var gameloop = (() => {
                             n.damageRecieved += damage._me * deathFactor._me;
                         }
                     }
-                    /************* DO MOTION ***********/    
                     if (nIsFirmCollide < 0) {
                         nIsFirmCollide *= -0.5;
                         my.accel.x -= nIsFirmCollide * component * dir.x;
@@ -4679,6 +4676,7 @@ var gameloop = (() => {
             }     
         };
     })();
+    */
     // Living stuff
     function entitiesactivationloop(my) {
         // Update collisions.
@@ -4733,11 +4731,11 @@ var gameloop = (() => {
         // Do collisions
         logs.collide.set();
         
-        if (entities.length > 1) {
+        //if (entities.length > 1) {
             // Load the grid
-            grid.update();
-            grid.queryForCollisionPairs().forEach(collision => collide(collision));
-        }
+            //grid.update();
+            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+        //}
         logs.collide.mark();
         // Do entities life
         logs.entities.set();   
