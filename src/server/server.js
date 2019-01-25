@@ -1505,7 +1505,7 @@ var minimap = [];
 var views = [];
 var entitiesToAvoid = [];
 const dirtyCheck = (p, r) => { return entitiesToAvoid.some(e => { return Math.abs(p.x - e.x) < r + e.size && Math.abs(p.y - e.y) < r + e.size; }); };
-const grid = new hb(4, 1, c.WIDTH, c.HEIGHT);
+const grid = new hshg.HSHG();
 var entitiesIdLog = 0;
 var entities = [];
 const purgeEntities = () => { entities = entities.filter(e => { return !e.isGhost; }); };
@@ -1676,12 +1676,12 @@ class Entity {
         };
         this.isInGrid = false;
         this.removeFromGrid = () => { if (this.isInGrid) { grid.removeObject(this); this.isInGrid = false; } };
-        //this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.insert( this.isInGrid = true; } };
-        let node = this;
-        let bounds = {
-          x: this.x,
-          y: this.y,
-        }
+        this.addToGrid = () => { 
+          if (!this.isInGrid && this.bond == null) { 
+            grid.addObject(this); this.isInGrid = true;
+          }
+        };
+
         this.activation = (() => {
             let active = true;
             let timer = ran.irandom(15);
@@ -4687,7 +4687,7 @@ var gameloop = (() => {
         my.collisionArray = []; 
         // Activation
         my.activation.update();
-        my.updateAABB(my.activation.check()); 
+        //my.updateAABB(my.activation.check()); 
     }
     function entitiesliveloop (my) {
         // Consider death.  
