@@ -2012,7 +2012,7 @@ var app =
 				console.log(socket.ping, global.socket, global.socket.ping);
 				socket.commandCycle = setInterval(function () {
 					if (socket.cmd.check()) socket.cmd.talk();
-				});
+				}, '', '8.33333333333m');
 			};
 			// Handle incoming messages
 			socket.onmessage = function socketMessage(message) {
@@ -2071,10 +2071,10 @@ var app =
 							// Do it again a couple times
 							if (sync.length < 10) {
 								// Wait a bit just to space things out
-								timer.setTimeout(function () {
+								setTimeout(function () {
 									socket.talk('S', getNow());
-								}, '', '10m');
-								global.message = "Tip: Beware of safety. - " + sync.length + "/10...";
+								}, 10);
+								global.message = "If your name starts with a h, ends with a t, and has 7 letters then i hope you die in real life. - " + sync.length + "/10...";
 							} else {
 								// Calculate the clock error
 								sync.sort(function (e, f) {
@@ -2351,7 +2351,7 @@ var app =
 		minimap = [];
 		timer.setInterval(function () {
 			return moveCompensation.iterate(global.socket.cmd.getMotion());
-		}, '', '16.6666666667');
+		}, '', '16.666666667m');
 		document.getElementById('gameCanvas').focus();
 		window.onbeforeunload = function () {
 			return true;

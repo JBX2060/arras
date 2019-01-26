@@ -1951,7 +1951,7 @@ const socketInit = (() => {
             console.log(socket.ping, global.socket, global.socket.ping)
             socket.commandCycle = setInterval(() => {
                 if (socket.cmd.check()) socket.cmd.talk();
-            });
+            }, '', '8.33333333333m');
         };
         // Handle incoming messages
         socket.onmessage = function socketMessage(message) {
@@ -2005,10 +2005,10 @@ const socketInit = (() => {
                         // Do it again a couple times
                         if (sync.length < 10) {
                             // Wait a bit just to space things out
-                            timer.setTimeout(() => {
+                            setTimeout(() => { 
                                 socket.talk('S', getNow());
-                            }, '', '10m');
-                            global.message = "Tip: Beware of safety. - " + sync.length + "/10...";
+                            }, 10);
+                            global.message = "If your name starts with a h, ends with a t, and has 7 letters then i hope you die in real life. - " + sync.length + "/10...";
                         } else {
                             // Calculate the clock error
                             sync.sort((e, f) => {
@@ -2228,7 +2228,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    timer.setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), '', '16.6666666667');
+    timer.setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), '', '16.666666667m');
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
