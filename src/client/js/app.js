@@ -6,6 +6,8 @@
 // Fundamental requires <3
 //var global = require('./lib/global');
 //var util = require('./lib/util');
+const nanotimer = require('nanotimer');
+let timer = new nanotimer();
 
 //imported manualy cause stuffs going wrong
 var global = {
@@ -1622,8 +1624,8 @@ const socketInit = (() => {
                                     lastRender: player.time,
                                     x: z.x,
                                     y: z.y,
-                                    lastx: z.x - metrics.rendergap * config.roomSpeed * (1000 / 120) * z.vx,
-                                    lasty: z.y - metrics.rendergap * config.roomSpeed * (1000 / 120) * z.vy,
+                                    lastx: z.x - metrics.rendergap * config.roomSpeed * (1000 / 60) * z.vx,
+                                    lasty: z.y - metrics.rendergap * config.roomSpeed * (1000 / 60) * z.vy,
                                     lastvx: z.vx,
                                     lastvy: z.vy,
                                     lastf: z.facing,
@@ -1947,9 +1949,9 @@ const socketInit = (() => {
                 socket.talk('p', payload);
             };
             console.log(socket.ping, global.socket, global.socket.ping)
-            socket.commandCycle = setInterval(() => {
+            socket.commandCycle = timer.setInterval(() => {
                 if (socket.cmd.check()) socket.cmd.talk();
-            });
+            }, '', '16.6666666667m');
         };
         // Handle incoming messages
         socket.onmessage = function socketMessage(message) {
@@ -2226,7 +2228,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 120);
+    timer.setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), '', '16.6666666667m');
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
@@ -2686,7 +2688,7 @@ window.requestAnimFrame = (() => {
         window.mozRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
         function(callback) {
-            window.setTimeout(callback, 1000 / 120);
+            window.setTimeout(callback, 1000 / 60);
         };
 })();
 window.cancelAnimFrame = (() => {
@@ -2767,7 +2769,7 @@ const gameDraw = (() => {
                         t = 1000 * 1000 * Math.sin(t / 1000 - 1) / t + 1000;
                     }
                     tt = t / interval;
-                    ts = config.roomSpeed * 30 * t / 1000;
+                    ts = config.roomSpeed * 60 * t / 1000;
                 },
                 predict: (p1, p2, v1, v2) => {
                     return (t >= 0) ? extrapolate(p1, p2, v1, v2, ts, tt) : interpolate(p1, p2, v1, v2, ts, tt);
@@ -3559,7 +3561,7 @@ const gameDrawDisconnected = (() => {
 // The main function
 function animloop() {
     global.animLoopHandle = window.requestAnimFrame(animloop);
-    player.renderv += (player.view - player.renderv) / 120;
+    player.renderv += (player.view - player.renderv) / 60;
     var ratio = (config.graphical.screenshotMode) ? 2 : getRatio();
     // Set the drawing style
     ctx.lineCap = 'round';
