@@ -2608,8 +2608,9 @@ class Entity {
             
             let i = 0;
             const length = this.collisionArray.length;
-            for (; i < length; i++) {
-                let instance = this.collisionArray[i];
+            //for (; i < length; i++) {
+            for (let instance of this.collisionArray) {
+                //let instance = this.collisionArray[i];
                 if (instance.type === 'wall') return 0;
                 if (instance.master.settings.acceptsScore) { // If it's not food, give its master the score
                     if (instance.master.type === 'tank' || instance.master.type === 'miniboss') notJustFood = true;
@@ -3694,16 +3695,16 @@ const sockets = (() => {
                         case "tdm": {
                             // Count how many others there are
                             let census = [1, 1, 1, 1, 1, 1], scoreCensus = [1, 1, 1, 1, 1, 1];
-                            //players.forEach(p => { 
-                            //    census[p.team - 1]++; 
-                            //    if (p.body != null) { scoreCensus[p.team - 1] += p.body.skill.score; }
-                            //});
-                            let i = 0;
-                            const length = players.length;
-                            for (; i < length; i++) {
-                                census[players[i].team - 1]++; 
-                                if (players[i].body != null) { scoreCensus[players[i].team - 1] += players[i].body.skill.score; }
-                            }
+                            players.forEach(p => { 
+                                census[p.team - 1]++; 
+                                if (p.body != null) { scoreCensus[p.team - 1] += p.body.skill.score; }
+                            });
+                            //let i = 0;
+                            //const length = players.length;
+                            //for (; i < length; i++) {
+                            //    census[players[i].team - 1]++; 
+                            //    if (players[i].body != null) { scoreCensus[players[i].team - 1] += players[i].body.skill.score; }
+                            //}
                             let possiblities = [];
                             for (let i=0, m=0; i<6; i++) {
                                 let v = Math.round(1000000 * (room['bas'+(i+1)].length + 1) / (census[i] + 1) / scoreCensus[i]);
@@ -4338,10 +4339,10 @@ const sockets = (() => {
                         // Sort everything
                         let i = 0;
                         const length = entities.length;
-                        for (; i < length; i++) {
-                           listify(entities[i]);
-                        }
-                        //entities.forEach(listify);
+                        //for (; i < length; i++) {
+                        //   listify(entities[i]);
+                        //}
+                        entities.forEach(listify);
                         // Get the top ten
                         let topTen = [];
                         for (let i=0; i<10; i++) {
@@ -4378,6 +4379,7 @@ const sockets = (() => {
                     }
                 } 
                 // Start it
+                slowloop();
                 timer.setInterval(slowloop, '', '1000m');
                 // Give the broadcast method
                 return socket => {
@@ -5501,7 +5503,9 @@ var gameexecution = function () {
 
 // Bring it to life
 gameexecution();
-timer.setInterval(maintainloop, '', '20m');
+maintainloop();
+timer.setInterval(maintainloop, '', '200m');
+speedcheckloop();
 timer.setInterval(speedcheckloop, '', '1000m');
 
 // Graceful shutdown
