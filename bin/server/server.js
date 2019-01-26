@@ -3492,16 +3492,16 @@ const sockets = (() => {
                                 * excessive updates long after the first and only 
                                 * needed one as it slowly hits each updated value
                                 */
-                                vars.forEach(e => {
+                                for (let e of vars) {
                                     if (e.publish() != null) needsupdate = true;
-                                });
+                                }
                                 if (needsupdate) {
                                     // Update everything
-                                    statnames.forEach(a => {
+                                    for (let a of statnames) {
                                         out.push(skills.title(a));
                                         out.push(skills.cap(a));
                                         out.push(skills.cap(a, true));
-                                    });
+                                    }
                                 }
                             },
                             /* The reason these are seperate is because if we can 
@@ -3541,7 +3541,7 @@ const sockets = (() => {
                         if (!b) return 0;
                         gui.bodyid = b.id;
                         // Update most things
-                        gui.fps.update(Math.min(1, global.fps / roomSpeed / 1000 * 30));
+                        gui.fps.update(Math.min(1, global.fps / roomSpeed / 1000 * 60));
                         gui.color.update(gui.master.teamColor);
                         gui.label.update(b.index);
                         gui.score.update(b.skill.score);
@@ -4066,7 +4066,7 @@ const sockets = (() => {
                     // a reader for the map (will change based on team)
                     return () => {
                         // Update the minimap
-                        entities.forEach(my => {
+                        for (let my of entities) {
                             if (my.settings.drawShape && ran.dice(my.stealth * c.STEALTH)) {
                                 let i = minimap.findIndex(entry => {
                                     return entry[0] === my.id;
@@ -4079,7 +4079,7 @@ const sockets = (() => {
                                     minimap.push([my.id, my.x, my.y, my.color, my.type, my.team]);
                                 }
                             }
-                        });
+                        }
                         // Clean the map and return the reader
                         return cleanmapreader();
                     };
