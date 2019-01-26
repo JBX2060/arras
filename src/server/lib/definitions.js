@@ -1494,11 +1494,11 @@ exports.basic = {
     PARENT: [exports.genericTank],
     LABEL: 'Basic',
     CUSTOMSHAPE: [
+      [-50, 0],
       [-50, 50],
       [50, 50],
       [50, -50],
       [-50, -50],
-      [0, 0],
     ],
     //CONTROLLERS: ['nearestDifferentMaster'],
     GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */

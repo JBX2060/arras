@@ -4438,7 +4438,19 @@ var gameloop = (() => {
                 ),
                 diff = new Vector(my.x - n.x, my.y - n.y),
                 dir = new Vector((n.x - my.x) / diff.length, (n.y - my.y) / diff.length),
-                component = Math.max(0, dir.x * delt.x + dir.y * delt.y);        
+                component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
+          
+            if (n.customshapes !== undefined) {
+                if (n.customshapes.length > 0) {
+                   let centerX = n.x;
+                   let centerY = n.y;
+                   let points = [];
+                   for (let point in n.customshapes) {
+                      points.push(point); 
+                   }
+                   
+                }
+            }
             if (component >= diff.length - combinedRadius) { // A simple check
                 // A more complex check
                 let goahead = false,

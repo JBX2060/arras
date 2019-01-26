@@ -2419,7 +2419,7 @@ const drawEntity = (() => {
             for (let point of sides) {
               boundingbox.push(point);
             }
-            
+                        
         } else if (!sides) { // Circle
             context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         } else if (sides < 0) { // Star
