@@ -6,8 +6,6 @@
 // Fundamental requires <3
 //var global = require('./lib/global');
 //var util = require('./lib/util');
-const nanotimer = require('nanotimer');
-let timer = new nanotimer();
 
 //imported manualy cause stuffs going wrong
 var global = {
@@ -1951,7 +1949,7 @@ const socketInit = (() => {
             console.log(socket.ping, global.socket, global.socket.ping)
             socket.commandCycle = timer.setInterval(() => {
                 if (socket.cmd.check()) socket.cmd.talk();
-            }, '', '8.33333333333m');
+            });
         };
         // Handle incoming messages
         socket.onmessage = function socketMessage(message) {
@@ -2688,7 +2686,7 @@ window.requestAnimFrame = (() => {
         window.mozRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
         function(callback) {
-            window.setTimeout(callback, 1000 / 60);
+            window.setTimeout(callback, 1000 / 120);
             //timer.setTimeout(callback, '', '8.33333333333m');
         };
 })();
