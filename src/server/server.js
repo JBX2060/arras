@@ -4925,11 +4925,6 @@ var gameloop = (() => {
     let time;
     // Return the loop function
     return () => {
-        var curTime = now();
-        timestep = 0.00525 * (curTime - lastTime);
-        if (timestep <= 0 || timestep > 1.0) {
-            timestep = 0.00525;
-        }
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
@@ -4959,7 +4954,7 @@ var gameloop = (() => {
         logs.master.mark();
           // Remove dead entities
         purgeEntities();  
-        lastTime = curTime;
+        //lastTime = curTime;
         room.lastCycle = util.time();    
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5468,27 +5463,34 @@ var websockets = (() => {
     return new WebSocket.Server(config);
 })().on('connection', sockets.connect); 
 
-var tickLengthMs = 1000 / 60;
+var tickLengthMs = 1000 / 30;
 var previousTick = now();
 var actualTicks = 0;  
-var gameloopexecution = function () {
+var gameexecution = function () {
   var current = now();
 
   actualTicks++;
   if (previousTick + tickLengthMs <= current) {
-    var delta = (current - previousTick) / 1000;
+    //var delta = (current - previousTick) / 1000;
+    var curTime = now();
+    timestep = 0.01050 * (curTime - lastTime);
+    if (timestep <= 0 || timestep > 1.0) {
+        timestep = 0.01050;
+    }
     
     previousTick = current;
-
+    
     gameloop();
+    //maintainloop();
     
     actualTicks = 0;
+    lastTime = curTime;
   }
 
-  if (Date.now() - previousTick < tickLengthMs - 16) {
-    setTimeout(gameloopexecution);
+  if (now() - previousTick < tickLengthMs - 16) {
+    setTimeout(gameexecution);
   } else {
-    setImmediate(gameloopexecution);
+    setImmediate(gameexecution);
   }
 }
 
@@ -5500,7 +5502,7 @@ var gameloopexecution = function () {
 //timer.setInterval(speedcheckloop, '', '1000m');
 //var cycleMs = room.cycleSpeed + 'm';
 //var timer = new nanotimer();
-gameloopexecution();
+gameexecution();
 setInterval(maintainloop, 200);
 setInterval(speedcheckloop, 1000);
 //setInterval(speedcheckloop, 1000);
