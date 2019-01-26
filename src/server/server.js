@@ -2438,16 +2438,6 @@ class Entity {
         this.photo = (this.settings.drawShape) ? this.camera() : this.photo = undefined;
     }
     
-    accelerate(acceleration, angle, force) {
-        acceleration = util.clamp(force, -this.topSpeed, this.topSpeed);
-        this.acceleration.x = Math.cos(angle) * acceleration;
-        this.acceleration.y = Math.sin(angle) * acceleration;
-    }
-  
-    lerp(v0, v1, t) {
-      return v0*(1-t)+v1*t
-    }
-
     physics() {
         if (this.accel.x == null || this.velocity.x == null) {
             util.error('Void Error!');
@@ -4682,7 +4672,7 @@ var gameloop = (() => {
          return collision => {
             // Pull the two objects from the collision grid      
             let instance = collision[0],
-                other = collision[1];   
+                other = collision[1];
             // Check for ghosts...
             if (other.isGhost) {
                 util.error('GHOST FOUND');
@@ -4708,6 +4698,7 @@ var gameloop = (() => {
                 return 0;
             }
             if (!instance.activation.check() && !other.activation.check()) { util.warn('Tried to collide with an inactive instance.'); return 0; }
+            
             // Handle walls
             if (instance.type === 'wall' || other.type === 'wall') {
                 let a = (instance.type === 'bullet' || other.type === 'bullet') ? 

@@ -2392,16 +2392,6 @@ class Entity {
         this.photo = this.settings.drawShape ? this.camera() : this.photo = undefined;
     }
 
-    accelerate(acceleration, angle, force) {
-        acceleration = util.clamp(force, -this.topSpeed, this.topSpeed);
-        this.acceleration.x = Math.cos(angle) * acceleration;
-        this.acceleration.y = Math.sin(angle) * acceleration;
-    }
-
-    lerp(v0, v1, t) {
-        return v0 * (1 - t) + v1 * t;
-    }
-
     physics() {
         if (this.accel.x == null || this.velocity.x == null) {
             util.error('Void Error!');
@@ -4786,6 +4776,7 @@ var gameloop = (() => {
             if (!instance.activation.check() && !other.activation.check()) {
                 util.warn('Tried to collide with an inactive instance.');return 0;
             }
+
             // Handle walls
             if (instance.type === 'wall' || other.type === 'wall') {
                 let a = instance.type === 'bullet' || other.type === 'bullet' ? 1 + 10 / (Math.max(instance.velocity.length, other.velocity.length) + 10) : 1;
