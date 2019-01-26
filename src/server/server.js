@@ -79,17 +79,23 @@ const room = {
 };
     room.findType = type => {
         let output = [];
-        let j = 0;
-        room.setup.forEach(row => { 
+        let j = 0;      
+        let x = 0;
+        const lengthrow = room.setup.length;
+        //room.setup.forEach(row => { 
+        for (; x < lengthrow; x++) {
             let i = 0;
-            row.forEach(cell => {
-                if (cell === type) { 
+            let y = 0;
+            const lengthcell = room.setup[x].length;
+            //row.forEach(cell => {
+            for (; y < lengthcell; y++) {
+                if (room.setup[x][y] === type) { 
                     output.push({ x: (i + 0.5) * room.width / room.xgrid, y: (j + 0.5) * room.height / room.ygrid, });
                 }
                 i++;
-            });
+            }
             j++;
-        });
+        }
         room[type] = output;
     };
     room.findType('nest');
@@ -1162,7 +1168,8 @@ class Gun {
                 let i = 0;
                 const length = info.PROPERTIES_GUN_CONTROLLERS.length;
                 for (; i < length; i++) {
-                    toAdd.push(eval('new ' + info.PROPERTIES.GUN_CONTROLLERS[i] + '(self)'));
+                    toAdd.push(new info.PROPERTIES._GUN_CONTROLLERS[i](this));
+                    //toAdd.push(eval('new ' + info.PROPERTIES.GUN_CONTROLLERS[i] + '(self)'));
                 }
                 this.controllers = toAdd.concat(this.controllers);
             }
@@ -4309,7 +4316,12 @@ const sockets = (() => {
                             // Find the stuff to remove
                             let removed = indices.cull();
                             // Make sure we sync the leaderboard
-                            removed.forEach(id => { delete leaderboard['_' + id]; });
+                            let i = 0;
+                            const length = removed.length;
+                            for (; i < length; i++) {
+                                delete leaderboard['_' + removed[i]];
+                            }
+                            //removed.forEach(id => { delete leaderboard['_' + id]; });
                             return {
                                 updates: [removed.length, ...removed, orders.length, ...flatorders],
                                 full: [-1, refresh.length, ...flatrefresh], // The -1 tells the client it'll be a full refresh
@@ -5328,7 +5340,14 @@ var maintainloop = (() => {
             let foodAmount = census.sum;
             let nestFoodAmount = censusNest.sum;
             /*********** ROT OLD SPAWNERS **********/
-            foodSpawners.forEach(spawner => { if (ran.chance(1 - foodAmount/maxFood)) spawner.rot(); });
+            //foodSpawners.forEach(spawner => { if (ran.chance(1 - foodAmount/maxFood)) spawner.rot(); });
+            let i = 0;
+            const length = foodSpawners.length;
+            for (; i < length; i++) {
+               if (ran.chance(1 - foodAmount / maxFood)) {
+                  foodSpawners[i].rot(); 
+               }
+            }
             /************** MAKE FOOD **************/
             while (ran.chance(0.8 * (1 - foodAmount * foodAmount / maxFood / maxFood))) {
                 switch (ran.chooseChance(10, 2, 1)) {
