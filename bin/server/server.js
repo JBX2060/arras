@@ -1743,12 +1743,12 @@ class Entity {
         })();
         this.updateAABB(true);
         entities.push(this); // everything else
-        //views.forEach(v => v.add(this));
-        let i = 0;
-        const length = views.length;
-        for (; i < length; i++) {
-            views[i].add(this);
-        }
+        views.forEach(v => v.add(this));
+        //let i = 0;
+        //const length = views.length;
+        //for (; i < length; i++) {
+        //   views[i].add(this); 
+        //}
     }
 
     life() {
@@ -2648,12 +2648,12 @@ class Entity {
         });
         if (i != -1) util.remove(minimap, i);
         // Remove this from views
-        //views.forEach(v => v.remove(this));
-        let v = 0;
-        const length = views.length;
-        for (; v < length; v++) {
-            views[v].remove(this);
-        }
+        views.forEach(v => v.remove(this));
+        //let v = 0;
+        //const length = views.length;
+        //for (; v < length; v++) {
+        //    views[v].remove(this); 
+        //}
         // Remove from parent lists if needed
         if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
         // Kill all of its children
@@ -4528,8 +4528,8 @@ const sockets = (() => {
                 // Set up loops
                 socket.loops = (() => {
                     let nextUpdateCall = null; // has to be started manually
-                    let trafficMonitoring = timer.setInterval(() => traffic(socket), '', '1500m');
-                    let broadcastingGuiStuff = timer.setInterval(() => broadcast(socket), '', '1000m');
+                    let trafficMonitoring = timer.setInterval(() => traffic(socket), '', '1000m');
+                    let broadcastingGuiStuff = timer.setInterval(() => broadcast(socket), '', '1500m');
                     // Return the loop methods
                     return {
                         setUpdate: timeout => {
@@ -5031,7 +5031,6 @@ var gameloop = (() => {
         logs.master.mark();
         // Remove dead entities
         purgeEntities();
-        //lastTime = curTime;
         room.lastCycle = util.time();
     };
     //let expected = 1000 / c.gameSpeed / 30;
@@ -5624,7 +5623,7 @@ var gameexecution = function () {
 
 // Bring it to life
 gameexecution();
-setInterval(maintainloop, 200);
+timer.setInterval(maintainloop, '', '20m');
 timer.setInterval(speedcheckloop, '', '1000m');
 
 // Graceful shutdown
