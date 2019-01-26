@@ -1358,7 +1358,12 @@ class Gun {
 
     bulletInit(o) {
         // Define it by its natural properties
-        this.bulletTypes.forEach(type => o.define(type));
+        //this.bulletTypes.forEach(type => o.define(type));
+        const length = this.bulletTypes.length;
+        let i = 0;
+        for (; i < length; i++) {
+           o.define(this.bulletTypes[i]); 
+        }
         // Pass the gun attributes
         o.define({ 
             BODY: this.interpret(), 
@@ -1755,7 +1760,12 @@ class Entity {
         })();
         this.updateAABB(true);   
         entities.push(this); // everything else
-        views.forEach(v => v.add(this));
+        //views.forEach(v => v.add(this));
+        let i = 0;
+        const length = views.length;
+        for (; i < length; i++) {
+           views[i].add(this); 
+        }
     }
     
     life() { bringToLife(this); }
@@ -4776,12 +4786,12 @@ var gameloop = (() => {
         for (var e of entities) {
            entitiesliveloop(e);
         }
-          logs.entities.mark();
-          logs.master.mark();
+        logs.entities.mark();
+        logs.master.mark();
           // Remove dead entities
-          purgeEntities();  
-          lastTime = curTime;
-          room.lastCycle = util.time();    
+        purgeEntities();  
+        lastTime = curTime;
+        room.lastCycle = util.time();    
     };
     //let expected = 1000 / c.gameSpeed / 30;
     //let alphaFactor = (delta > expected) ? expected / delta : 1;
