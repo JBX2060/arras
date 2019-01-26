@@ -2982,9 +2982,9 @@ const sockets = (() => {
         bannedNames = ['FREE_FOOD_LUCARIO', 'FREE FOOD'];
     return {
         broadcast: message => {
-            clients.forEach(socket => {
+            for (let socket of clients) {
                 socket.talk('m', message);
-            });
+            };
         },
         connect: (() => {
             // Define shared functions
@@ -4273,10 +4273,10 @@ const sockets = (() => {
                     logs.minimap.mark();
                     // Check sockets
                     let time = util.time();
-                    clients.forEach(socket => {
+                    for (let socket of clients) {
                         if (socket.timeout.check(time)) socket.kick('Kicked for inactivity.');
                         if (time - socket.statuslastHeartbeat > c.maxHeartbeatInterval) socket.kick('Lost heartbeat.');
-                    });
+                    }
                 }
                 // Start it
                 setInterval(slowloop, 1000);
