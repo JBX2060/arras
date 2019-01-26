@@ -1819,6 +1819,10 @@ class Entity {
         if (set.SHAPE != null) {
             this.shape = set.SHAPE;
         }
+        if (set.CUSTOMSHAPE != null && set.CUSTOMSHAPE.length > 0) {
+           this.customshape = set.CUSTOMSHAPE;
+           console.log(this.customshape);
+        }
         if (set.COLOR != null) { 
             this.color = set.COLOR; 
         }   
@@ -2762,6 +2766,7 @@ var logs = (() => {
                 y: rounder(e.y),
                 color: e.color,
                 shape: e.shape,
+                customshape: e.customshape,
                 size: rounder(e.size),
                 realSize: rounder(e.realSize),
                 facing: rounder(e.facing),
