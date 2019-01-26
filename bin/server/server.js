@@ -3638,11 +3638,19 @@ const sockets = (() => {
                         gui.points.update(b.skill.points);
                         // Update the upgrades
                         let upgrades = [];
-                        b.upgrades.forEach(function (e) {
-                            if (b.skill.level >= e.level) {
-                                upgrades.push(e.index);
+                        //b.upgrades.forEach(function(e) {
+                        //    if (b.skill.level >= e.level) { 
+                        //        upgrades.push(e.index);
+                        //    }
+                        //});
+                        let i = 0;
+                        const length = b.upgrades.length;
+                        for (; i < length; i++) {
+                            if (b.skill.level >= b.upgrades[i].level) {
+                                upgrades.push(b.upgrades[i].index);
                             }
-                        });
+                        }
+
                         gui.upgrades.update(upgrades);
                         // Update the stats and skills
                         gui.stats.update();
@@ -4094,19 +4102,21 @@ const sockets = (() => {
                                         return [Math.round(255 * util.clamp(d[0] / room.width, 0, 1)), Math.round(255 * util.clamp(d[1] / room.height, 0, 1)), d[2]];
                                     });
                                     // Add new data and stabilze existing data, then emove old data
-                                    data.forEach(d => {
+                                    let j = 0;
+                                    const length = data.length;
+                                    for (; j < length; j++) {
                                         // Find if it's already there
                                         let i = internalmap.findIndex(e => {
-                                            return challenge(e, d);
+                                            return challenge(e);
                                         });
                                         if (i === -1) {
                                             // if not add it
-                                            internalmap.push([1, ...d]);
+                                            internalmap.push([1, ...data[j]]);
                                         } else {
                                             // if so, flag it as stable
                                             internalmap[i][0] = 0;
                                         }
-                                    });
+                                    }
                                     // Export all new and old data
                                     let ex = internalmap.filter(e => e[0] !== 0);
                                     // Remove outdated data
@@ -4216,9 +4226,14 @@ const sockets = (() => {
                             // Provide the index manager methods
                             return {
                                 flag: () => {
-                                    data.forEach(index => {
-                                        index.status = -1;
-                                    });
+                                    //data.forEach(index => {
+                                    //    index.status = -1;
+                                    //}); 
+                                    let i = 0;
+                                    const length = data.length;
+                                    for (; i < length; i++) {
+                                        data[i].status = -1;
+                                    }
                                     if (data == null) {
                                         data = [];
                                     }
@@ -4319,8 +4334,18 @@ const sockets = (() => {
                             }),
                                 flatorders = [],
                                 flatrefresh = [];
-                            orders.forEach(e => flatorders.push(...e));
-                            refresh.forEach(e => flatrefresh.push(...e));
+                            let lengtho = orders.length;
+                            let lengthr = refresh.length;
+                            let o = 0;
+                            let r = 0;
+                            for (; o < lengtho; o++) {
+                                flatorders.push(...data[o]);
+                            }
+                            for (; r < lengthr; o++) {
+                                flatrefresh.push(...data[r]);
+                            }
+                            //orders.forEach(e => flatorders.push(...e));
+                            //refresh.forEach(e => flatrefresh.push(...e));
                             // Find the stuff to remove
                             let removed = indices.cull();
                             // Make sure we sync the leaderboard
@@ -4337,7 +4362,12 @@ const sockets = (() => {
                     return () => {
                         list.clear();
                         // Sort everything
-                        entities.forEach(listify);
+                        let i = 0;
+                        const length = entities.length;
+                        for (; i < length; i++) {
+                            listify(entities[i]);
+                        }
+                        //entities.forEach(listify);
                         // Get the top ten
                         let topTen = [];
                         for (let i = 0; i < 10; i++) {
@@ -5740,12 +5770,21 @@ bot.on('messageCreate', msg => {
             if (msg.content == 'k!players') {
                 let output = '';
                 let outWillFail = true;
-                entities.forEach(function (element) {
-                    if (typeof element.sendMessage == "function" && element.name != '') {
-                        output += String(element.name + '  -  ' + element.id + '\n');
+                //entities.forEach(function(element) {
+                //if (typeof element.sendMessage == "function" && element.name != '') {
+                //    output += String(element.name + '  -  ' + element.id + '\n')
+                //    outWillFail = false
+                //}
+                //})
+
+                let i = 0;
+                const length = entities.length;
+                for (; i < length; i++) {
+                    if (typeof entities[i].sendMessage == "function" && entities[i].name != '') {
+                        output += String(entities[i].name + '  -  ' + entities[i].id + '\n');
                         outWillFail = false;
                     }
-                });
+                }
                 if (!outWillFail) {
                     bot.createMessage(msg.channel.id, output);
                 } else {
