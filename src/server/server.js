@@ -2204,7 +2204,11 @@ class Entity {
     }
 
     get realSize() {
-        return this.size * ((Math.abs(this.shape) > lazyRealSizes.length) ? 1 : lazyRealSizes[Math.abs(this.shape)]);
+        if (Array.isArray(this.shape)) {
+          return this.size * ((Math.abs(1) > lazyRealSizes.length) ? 1 : lazyRealSizes[Math.abs(1)]);
+        } else {
+          return this.size * ((Math.abs(this.shape) > lazyRealSizes.length) ? 1 : lazyRealSizes[Math.abs(this.shape)]);
+        }
     }
 
     get m_x() {
