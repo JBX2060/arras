@@ -2411,10 +2411,9 @@ const drawEntity = (() => {
         context.beginPath();
         if (Array.isArray(sides)) {
             context.moveTo(centerX, centerY);
-            context.lineTo(centerX - 100, centerY);
-            context.lineTo(centerX, centerY + 100);
-            context.lineTo(centerX + 100, centerY);    
-            context.lineTo(centerX, centerY);            
+            for (let point of sides) {
+                context.lineTo(centerX + point.x, centerY + point.y); 
+            }         
         } else if (!sides) { // Circle
             context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         } else if (sides < 0) { // Star
