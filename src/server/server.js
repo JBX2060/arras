@@ -4445,7 +4445,8 @@ var gameloop = (() => {
                    let centerX = n.x;
                    let centerY = n.y;
                    let points = [];
-                   let edgevalues = [];
+                   let edgevaluesx = [];
+                   let edgevaluesy = [];
                    for (let point in n.customshapes) {
                       points.push(point); 
                    }
@@ -4455,7 +4456,20 @@ var gameloop = (() => {
                       if (i + 1 <= points.length) {
                         xDifference = Math.abs(points[i][0] - points[i + 1][0]);
                         yDifference = Math.abs(points[i][1] - points[i + 1][1]);
-                        for (let dif = points
+                        let changeX = 1;
+                        let changeY = 1;
+                        if (points[i + 1][0] < points[i][0]) {
+                           changeX = -1; 
+                        }
+                        if (points[i + 1][1] < points[i][1]) {
+                           changeY = -1;
+                        }
+                        for (let i = 0; i < xDifference; i++) {
+                            edgevaluesx.push(points[i][0] + (i * changeX));
+                        }    
+                        for (let i = 0; i < yDifference; i++) {
+                            edgevaluesy.push(points[i][0] + (i * changeY));
+                        }
                       }
                    }
                 }
