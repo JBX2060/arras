@@ -2640,7 +2640,8 @@ class Entity {
         if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
         // Kill all of its children
         let ID = this.id;
-        entities.forEach(instance => {
+        let instance = entities.find(o => o.source.id === this.id);
+        if (instance !== undefined) {
             if (instance.source.id === this.id) {
                 if (instance.settings.persistsAfterDeath) {
                     instance.source = instance;
@@ -2655,9 +2656,13 @@ class Entity {
                 instance.kill();
                 instance.master = instance;
             }
-        });
+        }
         // Remove everything bound to it
-        this.turrets.forEach(t => t.destroy());
+        if (this.turrets.length > 0) {
+            for (let t of this.turrets) {
+               t.destroy(); 
+            }
+        }
         // Remove from the collision grid
         this.removeFromGrid();
         this.isGhost = true;
@@ -2799,7 +2804,7 @@ var logs = (() => {
                         endpoints.push({x: focus.x + scale * z * Math.cos(theta), y: focus.y + scale * z * Math.sin(theta)});
                     }
                 }
-                model.guns.forEach(function(gun) {
+                function makeGunModel(gun) {
                     let h = (gun.aspect > 0) ? scale * gun.width / 2 * gun.aspect : scale * gun.width / 2;
                     let r = Math.atan2(h, scale * gun.length) + rot;
                     let l = Math.sqrt(scale * scale * gun.length * gun.length + h * h);
@@ -2821,14 +2826,22 @@ var logs = (() => {
                         x: x + l * Math.cos(gun.angle - r),
                         y: y + l * Math.sin(gun.angle - r),
                     });
-                });
-                model.turrets.forEach(function(turret) {
+                }
+                //model.guns.forEach();
+                for (let gun of model.guns) {
+                    makeGunModel(gun);
+                }
+              
+                function makeTurretModel(turret) {
                     pushEndpoints(
                         turret, turret.bound.size, 
                         { x: turret.bound.offset * Math.cos(turret.bound.angle), y: turret.bound.offset * Math.sin(turret.bound.angle) }, 
                         turret.bound.angle
                     );
-                });
+                }
+                for (let turret of model.turrets) {
+                   makeTurretModel(turret); 
+                }
             };
             pushEndpoints(entities, 1);
             // 2) Find their mass center
@@ -3433,34 +3446,39 @@ const sockets = (() => {
                             out = [],
                             statnames = ['atk', 'hlt', 'spd', 'str', 'pen', 'dam', 'rld', 'mob', 'rgn', 'shi'];
                         // Load everything (b/c I'm too lazy to do it manually)
-                        statnames.forEach(a => {
+                        for (let a of statnames) {
                             vars.push(floppy());
                             vars.push(floppy());
                             vars.push(floppy());
-                        });
+                        };
                         return {
                             update: () => {
                                 let needsupdate = false, i = 0;
                                 // Update the things
-                                statnames.forEach(a => {
+                                for (let a of statnames) {
                                     vars[i++].update(skills.title(a));
                                     vars[i++].update(skills.cap(a));
                                     vars[i++].update(skills.cap(a, true));
-                                });
-                                /* This is a forEach and not a find because we need
+                                }
+                                /* This is a for of and not a find because we need
                                 * each floppy cyles or if there's multiple changes 
                                 * (there will be), we'll end up pushing a bunch of 
                                 * excessive updates long after the first and only 
                                 * needed one as it slowly hits each updated value
                                 */
-                                vars.forEach(e => { if (e.publish() != null) needsupdate = true; }); 
+                                //vars.forEach(e => { if (e.publish() != null) needsupdate = true; }); 
+                                for (let e of vars) {
+                                  if (e.publish() != null) {
+                                     needsupdate = true; 
+                                  }
+                                }
                                 if (needsupdate) {
                                     // Update everything
-                                    statnames.forEach(a => {
+                                    for (let a of statnames) {
                                         out.push(skills.title(a));
                                         out.push(skills.cap(a));
                                         out.push(skills.cap(a, true));
-                                    });
+                                    }
                                 }
                             },
                             /* The reason these are seperate is because if we can 
@@ -3505,11 +3523,14 @@ const sockets = (() => {
                         gui.points.update(b.skill.points);
                         // Update the upgrades
                         let upgrades = [];
-                        b.upgrades.forEach(function(e) {
+                        function pushUpgrade(e) {
                             if (b.skill.level >= e.level) { 
                                 upgrades.push(e.index);
                             }
-                        });
+                        }
+                        for (let upgrade of b.upgrades) {
+                           pushUpgrade(upgrade); 
+                        }
                         gui.upgrades.update(upgrades);
                         // Update the stats and skills
                         gui.stats.update();
@@ -3586,10 +3607,10 @@ const sockets = (() => {
                         case "tdm": {
                             // Count how many others there are
                             let census = [1, 1, 1, 1, 1, 1], scoreCensus = [1, 1, 1, 1, 1, 1];
-                            players.forEach(p => { 
+                            for (let p of players) { 
                                 census[p.team - 1]++; 
                                 if (p.body != null) { scoreCensus[p.team - 1] += p.body.skill.score; }
-                            });
+                            }
                             let possiblities = [];
                             for (let i=0, m=0; i<6; i++) {
                                 let v = Math.round(1000000 * (room['bas'+(i+1)].length + 1) / (census[i] + 1) / scoreCensus[i]);
@@ -3739,13 +3760,16 @@ const sockets = (() => {
                     }
                     // Add the gun data to the array
                     let gundata = [data.guns.length];
-                    data.guns.forEach(lastShot => {
+                    for (let lastShot of data.guns) {
                         gundata.push(lastShot.time, lastShot.power);
-                    });
+                    }
                     output.push(...gundata);
                     // For each turret, add their own output
                     let turdata = [data.turrets.length];
-                    data.turrets.forEach(turret => { turdata.push(...flatten(turret)); });
+                    //data.turrets.forEach(turret => { turdata.push(...flatten(turret)); });
+                    for (let turret of data.turrets) {
+                       turdata.push(...flatten(turret)); 
+                    }
                     // Push all that to the array
                     output.push(...turdata);
                     // Return it
@@ -3850,7 +3874,10 @@ const sockets = (() => {
                             // Spread it for upload
                             let numberInView = visible.length,
                                 view = [];
-                            visible.forEach(e => { view.push(...e); });     
+                            //visible.forEach(e => { view.push(...e); }); 
+                            for (let e of visible) {
+                              view.push(...e);
+                            }
                             // Update the gui
                             player.gui.update();
                             // Send it to the player
@@ -3902,7 +3929,10 @@ const sockets = (() => {
                                 if (data == null) data = [];
                                 let out = [data.length];
                                 // Push it flat
-                                data.forEach(d => out.push(...d));
+                                //data.forEach(d => out.push(...d));
+                                for (let d of data) {
+                                   out.push(...d); 
+                                }
                                 return out;
                             }
                             // Make a test function
@@ -3915,7 +3945,8 @@ const sockets = (() => {
                             return {
                                 update: (data) => {
                                     // Flag all old data as to be removed
-                                    internalmap.forEach(e => e[0] = -1);
+                                    //internalmap.forEach(e => e[0] = -1);
+                                    for (let e of internalmap) { e[0] = -1; }
                                     // Round all the old data
                                     data = data.map(d => { 
                                         return [
@@ -3925,7 +3956,7 @@ const sockets = (() => {
                                         ];
                                     });
                                     // Add new data and stabilze existing data, then emove old data
-                                    data.forEach(d => {
+                                    for (let d of data) {
                                         // Find if it's already there
                                         let i = internalmap.findIndex(e => { return challenge(e, d); });
                                         if (i === -1) { // if not add it
@@ -3933,7 +3964,7 @@ const sockets = (() => {
                                         } else { // if so, flag it as stable
                                             internalmap[i][0] = 0;
                                         }
-                                    });
+                                    }
                                     // Export all new and old data
                                     let ex = internalmap.filter(e => e[0] !== 0);
                                     // Remove outdated data
