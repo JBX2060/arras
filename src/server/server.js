@@ -1169,8 +1169,6 @@ class Gun {
                 let i = 0;
                 const length = info.PROPERTIES_GUN_CONTROLLERS.length;
                 for (; i < length; i++) {
-                    //toAdd.push(new info.PROPERTIES._GUN_CONTROLLERS[i](this));
-                    //let item = new window[info.PROPERTIES.GUN_CONTROLLERS](this);
                     toAdd.push(eval('new ' + info.PROPERTIES.GUN_CONTROLLERS[i] + '(self)'));
                 }
                 this.controllers = toAdd.concat(this.controllers);
@@ -2499,7 +2497,9 @@ class Entity {
         this.velocity.x += this.accel.x * timestep;
         this.velocity.y += this.accel.y * timestep;
         // Reset acceleration
-        nullVector(this.accel);
+        if (this.accel > 0) {
+          nullVector(this.accel);
+        }
         // Apply motion
         this.stepRemaining = 1;
         this.x += this.stepRemaining * this.velocity.x / roomSpeed;
