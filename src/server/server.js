@@ -1135,8 +1135,6 @@ class Gun {
             }
             // Pre-load bullet definitions so we don't have to recalculate them every shot
             let natural = {};
-            let z = 0;
-            const length = this.bulletTypes.length;
             function setNatural(type) {    
                 if (type.PARENT != null) { // Make sure we load from the parents first
                     for (let i=0; i<type.PARENT.length; i++) {
@@ -1149,15 +1147,23 @@ class Gun {
                     }
                 }
             }
-            this.bulletTypes.forEach();
-            for (; i < 
+            let z = 0;
+            const length = this.bulletTypes.length;
+            for (; z < length; z++) {
+                setNatural(this.bulletTypes[z]);
+            }
             this.natural = natural; // Save it
             if (info.PROPERTIES.GUN_CONTROLLERS != null) { 
                 let toAdd = [];
                 let self = this;
-                info.PROPERTIES.GUN_CONTROLLERS.forEach(function(ioName) {
-                    toAdd.push(eval('new ' + ioName + '(self)'));
-                });
+                //info.PROPERTIES.GUN_CONTROLLERS.forEach(function(ioName) {
+                //    toAdd.push(eval('new ' + ioName + '(self)'));
+                //});
+                let i = 0;
+                const length = info.PROPERTIES_GUN_CONTROLLERS.length;
+                for (; i < length; i++) {
+                    toAdd.push(eval('new ' + info.PROPERTIES.GUN_CONTROLLERS[i] + '(self)'));
+                }
                 this.controllers = toAdd.concat(this.controllers);
             }
             this.autofire = (info.PROPERTIES.AUTOFIRE == null) ?
@@ -1295,13 +1301,15 @@ class Gun {
     syncChildren() {
         if (this.syncsSkills) {
             let self = this;
-            this.children.forEach(function(o) {
-                o.define({
+            let i = 0;
+            const length = this.children.length;
+            for (; i < length; i++) {
+                this.children[i].define({
                     BODY: self.interpret(), 
                     SKILL: self.getSkillRaw(),
                 });
-                o.refreshBodyAttributes();
-            });
+                this.children[i].refreshBodyAttributes();
+            }
         }
     }
 
@@ -1814,9 +1822,14 @@ class Entity {
         }   
         if (set.CONTROLLERS != null) { 
             let toAdd = [];
-            set.CONTROLLERS.forEach((ioName) => {
-                toAdd.push(eval('new io_' + ioName + '(this)'));
-            });
+            //set.CONTROLLERS.forEach((ioName) => {
+            //    toAdd.push(eval('new io_' + ioName + '(this)'));
+            //});
+            let i = 0;
+            const length = set.CONTROLLERS.length;
+            for (; i < length; i++) {
+              toAdd.push(eval('new io_' + set.CONTROLLERS[i] + '(this)'));
+            }
             this.addController(toAdd);
         }
         if (set.MOTION_TYPE != null) { 
@@ -4028,7 +4041,12 @@ const sockets = (() => {
                             return {
                                 update: (data) => {
                                     // Flag all old data as to be removed
-                                    internalmap.forEach(e => e[0] = -1);
+                                    //internalmap.forEach(e => e[0] = -1);
+                                    let y = 0;
+                                    const rlength = internalmap.length;
+                                    for (; y < rlength; y++) {
+                                       internalmap[y][0] = -1; 
+                                    }
                                     // Round all the old data
                                     data = data.map(d => { 
                                         return [
