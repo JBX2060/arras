@@ -478,9 +478,14 @@ global.clickables = (() => {
                     data[index].set(...a);
                 },
                 hide: () => {
-                    for (var r of data) { 
-                        r.hide();
+                    let i = 0;
+                    const length = data.length;
+                    for (; i < length; i++) {
+                       data[i].hide(); 
                     }
+                    //for (var r of data) { 
+                    //    r.hide();
+                    //}
                 },
                 check: x => {
                     return data.findIndex(r => {
@@ -1485,10 +1490,10 @@ const socketInit = (() => {
                             }
                         }
                         function updatePhysics(a) {
-                       let i = 0;
-                       const length = a.length;
-                       for (; i < length; i++) {
-                           physics(a[i]);
+                           let i = 0;
+                           const length = a.length;
+                           for (; i < length; i++) {
+                             physics(a[i]);
                            } 
                         }
                         return (n) => {
@@ -1504,7 +1509,8 @@ const socketInit = (() => {
                                 getPositions: () => a.map(g => {
                                     return g.position;
                                 }),
-                                update: () => a.forEach(physics),
+                                //update: () => a.forEach(physics),
+                                update: () => updatePhysics(a),
                                 fire: (i, power) => {
                                     if (a[i].isUpdated) a[i].motion += Math.sqrt(power) / 20;
                                     a[i].isUpdated = false;
