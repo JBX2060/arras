@@ -2676,9 +2676,7 @@ class Entity {
         let v = 0;
         const length = views.length;
         for (; v < length; v++) {
-           if (views[v].includes(this)) {
-              views[v].remove(this); 
-           }
+            views[v].remove(this); 
         }
         // Remove from parent lists if needed
         if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
@@ -3492,21 +3490,39 @@ const sockets = (() => {
                             out = [],
                             statnames = ['atk', 'hlt', 'spd', 'str', 'pen', 'dam', 'rld', 'mob', 'rgn', 'shi'];
                         // Load everything (b/c I'm too lazy to do it manually)
+                        let i = 0;
+                        const length = statnames.length;
+                        
+                        for (; i < length; i++) {
+                            vars.push(floppy());
+                            vars.push(floppy());
+                            vars.push(floppy());
+                        }
+                        /*
                         statnames.forEach(a => {
                             vars.push(floppy());
                             vars.push(floppy());
                             vars.push(floppy());
                         });
+                        */
                         return {
                             update: () => {
                                 let needsupdate = false, i = 0;
                                 // Update the things
-                                statnames.forEach(a => {
-                                    vars[i++].update(skills.title(a));
-                                    vars[i++].update(skills.cap(a));
-                                    vars[i++].update(skills.cap(a, true));
-                                });
-                                /* This is a forEach and not a find because we need
+                                //statnames.forEach(a => {
+                                //    vars[i++].update(skills.title(a));
+                                //    vars[i++].update(skills.cap(a));
+                                //    vars[i++].update(skills.cap(a, true));
+                                //});
+                              
+                                let j = 0;
+                                const length = statnames.length;
+                                for (; j < length; j++) {
+                                    vars[i++].update(skills.title(statnames[j]));
+                                    vars[i++].update(skills.cap(statnames[j]));
+                                    vars[i++].update(skills.cap(statnames[j], true));
+                                }
+                                /* This is a for and not a find because we need
                                 * each floppy cyles or if there's multiple changes 
                                 * (there will be), we'll end up pushing a bunch of 
                                 * excessive updates long after the first and only 
@@ -3645,10 +3661,16 @@ const sockets = (() => {
                         case "tdm": {
                             // Count how many others there are
                             let census = [1, 1, 1, 1, 1, 1], scoreCensus = [1, 1, 1, 1, 1, 1];
-                            players.forEach(p => { 
-                                census[p.team - 1]++; 
-                                if (p.body != null) { scoreCensus[p.team - 1] += p.body.skill.score; }
-                            });
+                            //players.forEach(p => { 
+                            //    census[p.team - 1]++; 
+                            //    if (p.body != null) { scoreCensus[p.team - 1] += p.body.skill.score; }
+                            //});
+                            let i = 0;
+                            const length = players.length;
+                            for (; i < length; i++) {
+                                census[players[i].team - 1]++; 
+                                if (players[i].body != null) { scoreCensus[players[i].team - 1] += players[i].body.skill.score; }
+                            }
                             let possiblities = [];
                             for (let i=0, m=0; i<6; i++) {
                                 let v = Math.round(1000000 * (room['bas'+(i+1)].length + 1) / (census[i] + 1) / scoreCensus[i]);
@@ -3798,13 +3820,23 @@ const sockets = (() => {
                     }
                     // Add the gun data to the array
                     let gundata = [data.guns.length];
-                    data.guns.forEach(lastShot => {
-                        gundata.push(lastShot.time, lastShot.power);
-                    });
+                    //data.guns.forEach(lastShot => {
+                    //    gundata.push(lastShot.time, lastShot.power);
+                    //});
+                    let i = 0;
+                    const lengthg = data.guns.length;
+                    for (; i < lengthg; i++) {
+                        gundata.push(data.guns[i].time, data.guns[i].power);
+                    }
                     output.push(...gundata);
                     // For each turret, add their own output
                     let turdata = [data.turrets.length];
-                    data.turrets.forEach(turret => { turdata.push(...flatten(turret)); });
+                    let j = 0;
+                    const lengtht = data.turrets.length;
+                    for (; j < lengtht; j++) {
+                       turdata.push(...flatten(data.turrets[j])); 
+                    }
+                    //data.turrets.forEach(turret => { turdata.push(...flatten(turret)); });
                     // Push all that to the array
                     output.push(...turdata);
                     // Return it
@@ -3909,7 +3941,12 @@ const sockets = (() => {
                             // Spread it for upload
                             let numberInView = visible.length,
                                 view = [];
-                            visible.forEach(e => { view.push(...e); });     
+                            //visible.forEach(e => { view.push(...e); });     
+                            let i = 0;
+                            const length = visible.length;
+                            for (; i < length; i++) {
+                               view.push(...visible[i]); 
+                            }
                             // Update the gui
                             player.gui.update();
                             // Send it to the player
@@ -3961,7 +3998,12 @@ const sockets = (() => {
                                 if (data == null) data = [];
                                 let out = [data.length];
                                 // Push it flat
-                                data.forEach(d => out.push(...d));
+                                //data.forEach(d => out.push(...d));
+                                let i = 0;
+                                let length = data.length;
+                                for (; i < length; i++) {
+                                   out.push(...data[i]); 
+                                }
                                 return out;
                             }
                             // Make a test function
