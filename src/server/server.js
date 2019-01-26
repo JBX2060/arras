@@ -4466,9 +4466,9 @@ var gameloop = (() => {
                         }
                         for (let i = 0; i < xDifference; i++) {
                             edgevaluesx.push(points[i][0] + (i * changeX));
-                        }    
-                        for (let i = 0; i < yDifference; i++) {
-                            edgevaluesy.push(points[i][0] + (i * changeY));
+                        }
+                        for (let j = 0; i < yDifference; j++) {
+                            edgevaluesy.push(points[j][0] + (j * changeY));
                         }
                       }
                    }
