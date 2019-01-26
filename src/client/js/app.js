@@ -2413,12 +2413,13 @@ const drawEntity = (() => {
             context.moveTo(centerX, centerY);
             for (let point of sides) {
                 context.lineTo(centerX + point[0], centerY + point[1]); 
-                console.log(typeof point);
-                for (let thing in point) {
-                   console.log(typeof thing); 
-                }
-                console.log(point);
-            }         
+            }       
+            // And for some experimental testing we will draw the bounding box
+            let boundingbox = [];
+            for (let point of sides) {
+              boundingbox.push(point);
+            }
+            
         } else if (!sides) { // Circle
             context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         } else if (sides < 0) { // Star
