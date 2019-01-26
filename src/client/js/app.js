@@ -1624,8 +1624,8 @@ const socketInit = (() => {
                                     lastRender: player.time,
                                     x: z.x,
                                     y: z.y,
-                                    lastx: z.x - metrics.rendergap * config.roomSpeed * (1000 / 60) * z.vx,
-                                    lasty: z.y - metrics.rendergap * config.roomSpeed * (1000 / 60) * z.vy,
+                                    lastx: z.x - metrics.rendergap * config.roomSpeed * (1000 / 120) * z.vx,
+                                    lasty: z.y - metrics.rendergap * config.roomSpeed * (1000 / 120) * z.vy,
                                     lastvx: z.vx,
                                     lastvy: z.vy,
                                     lastf: z.facing,
@@ -1949,9 +1949,9 @@ const socketInit = (() => {
                 socket.talk('p', payload);
             };
             console.log(socket.ping, global.socket, global.socket.ping)
-            socket.commandCycle = setInterval(() => {
+            socket.commandCycle = timer.setInterval(() => {
                 if (socket.cmd.check()) socket.cmd.talk();
-            }, '', '8.33333333333m');
+            });
         };
         // Handle incoming messages
         socket.onmessage = function socketMessage(message) {
@@ -2228,7 +2228,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    timer.setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), '', '16.666666667m');
+    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()));
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
@@ -2688,8 +2688,8 @@ window.requestAnimFrame = (() => {
         window.mozRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
         function(callback) {
-            window.setTimeout(callback, 1000 / 60);
-            //timer.setTimeout(callback, '', '16.6666666667m');
+            //window.setTimeout(callback, 1000 / 60);
+            timer.setTimeout(callback, '', '8.33333333333m');
         };
 })();
 window.cancelAnimFrame = (() => {
