@@ -1888,19 +1888,34 @@ class Entity {
         if (set.ALPHA != null) this.alpha = set.ALPHA;
         if (set.INVISIBLE != null) this.invisible = [set.INVISIBLE[0], set.INVISIBLE[1]];
         if (set.UPGRADES_TIER_1 != null) {
-            set.UPGRADES_TIER_1.forEach(e => {
-                this.upgrades.push({ class: e, level: c.TIER_1, index: e.index });
-            });
+            //set.UPGRADES_TIER_1.forEach((e) => {
+            //    this.upgrades.push({class: e, level: c.TIER_1, index: e.index});
+            //});
+            let i = 0;
+            const length = set.UPGRADES_TIER_1.length;
+            for (; i < length; i++) {
+                this.upgrades.push({ class: set.UPGRADES_TIER_1[i], level: c.TIER_1, index: set.UPGRADES_TIER_1[i].index });
+            }
         }
         if (set.UPGRADES_TIER_2 != null) {
-            set.UPGRADES_TIER_2.forEach(e => {
-                this.upgrades.push({ class: e, level: c.TIER_2, index: e.index });
-            });
+            //set.UPGRADES_TIER_2.forEach((e) => {
+            //    this.upgrades.push({class: e, level: c.TIER_2, index: e.index});
+            //});
+            let i = 0;
+            const length = set.UPGRADES_TIER_2.length;
+            for (; i < length; i++) {
+                this.upgrades.push({ class: set.UPGRADES_TIER_2[i], level: c.TIER_2, index: set.UPGRADES_TIER_2[i].index });
+            }
         }
         if (set.UPGRADES_TIER_3 != null) {
-            set.UPGRADES_TIER_3.forEach(e => {
-                this.upgrades.push({ class: e, level: c.TIER_3, index: e.index });
-            });
+            //set.UPGRADES_TIER_3.forEach((e) => {
+            //    this.upgrades.push({class: e, level: c.TIER_3, index: e.index});
+            //});
+            let i = 0;
+            const length = set.UPGRADES_TIER_3.length;
+            for (; i < length; i++) {
+                this.upgrades.push({ class: set.UPGRADES_TIER_3[i], level: c.TIER_3, index: set.UPGRADES_TIER_3[i].index });
+            }
         }
         if (set.SIZE != null) {
             this.SIZE = set.SIZE * this.squiggle;
@@ -1938,9 +1953,14 @@ class Entity {
         }
         if (set.GUNS != null) {
             let newGuns = [];
-            set.GUNS.forEach(gundef => {
-                newGuns.push(new Gun(this, gundef));
-            });
+            //set.GUNS.forEach((gundef) => {
+            //    newGuns.push(new Gun(this, gundef));
+            //});
+            let i = 0;
+            const length = set.GUNS.length;
+            for (; i < length; i++) {
+                newGuns.push(new Gun(this, set.GUNS[i]));
+            }
             this.guns = newGuns;
         }
         if (set.MAX_CHILDREN != null) {
@@ -2002,13 +2022,21 @@ class Entity {
         }
         if (set.TURRETS != null) {
             let o;
-            this.turrets.forEach(o => o.destroy());
+            let i = 0;
+            let j = 0;
+            const lengthi = this.turrets.length;
+            const lengthj = set.TURRETS.length;
+            //this.turrets.forEach(o => o.destroy());
+            for (; i < lengthi; i++) {
+                this.turrets[i].destroy();
+            }
             this.turrets = [];
-            set.TURRETS.forEach(def => {
+            for (; j < lengthj; j++) {
+                let def = set.TURRETS[j];
                 o = new Entity(this, this.master);
                 (Array.isArray(def.TYPE) ? def.TYPE : [def.TYPE]).forEach(type => o.define(type));
                 o.bindToMaster(def.POSITION, this);
-            });
+            }
         }
         if (set.mockup != null) {
             this.mockup = set.mockup;
@@ -2192,9 +2220,14 @@ class Entity {
         let suc = this.skill.upgrade(stat);
         if (suc) {
             this.refreshBodyAttributes();
-            this.guns.forEach(function (gun) {
-                gun.syncChildren();
-            });
+            //this.guns.forEach(function(gun) {
+            //    gun.syncChildren();
+            //});
+            let i = 0;
+            const length = this.guns.length;
+            for (; i < length; i++) {
+                this.guns[i].syncChildren();
+            }
         }
         return suc;
     }
@@ -2206,11 +2239,18 @@ class Entity {
             this.define(saveMe);
             this.sendMessage('You have upgraded to ' + this.label + '.');
             let ID = this.id;
-            entities.forEach(instance => {
-                if (instance.settings.clearOnMasterUpgrade && instance.master.id === ID) {
-                    instance.kill();
+            //entities.forEach(instance => {
+            //    if (instance.settings.clearOnMasterUpgrade && instance.master.id === ID) {
+            //        instance.kill();
+            //    }
+            //});
+            let i = 0;
+            const length = entities.length;
+            for (; i < length; i++) {
+                if (entities[i].settings.clearOnMasterUpgrade && entities[i].master.id === ID) {
+                    entities[i].kill();
                 }
-            });
+            }
             this.skill.update();
             this.skill.changed = true;
             this.refreshBodyAttributes();
@@ -2473,7 +2513,24 @@ class Entity {
             // Calculate the jackpot
             let jackpot = Math.ceil(util.getJackpot(this.skill.score) / this.collisionArray.length);
             // Now for each of the things that kill me...
+            /*
             this.collisionArray.forEach(instance => {
+                if (instance.type === 'wall') return 0;
+                if (instance.master.settings.acceptsScore) { // If it's not food, give its master the score
+                    if (instance.master.type === 'tank' || instance.master.type === 'miniboss') notJustFood = true;
+                    instance.master.skill.score += jackpot;
+                    killers.push(instance.master); // And keep track of who killed me
+                } else if (instance.settings.acceptsScore) {
+                    instance.skill.score += jackpot;
+                }
+                killTools.push(instance); // Keep track of what actually killed me
+            });
+            */
+
+            let i = 0;
+            const length = this.collisionArray.length;
+            for (; i < length; i++) {
+                let instance = this.collisionArray[i];
                 if (instance.type === 'wall') return 0;
                 if (instance.master.settings.acceptsScore) {
                     // If it's not food, give its master the score
@@ -2484,7 +2541,7 @@ class Entity {
                     instance.skill.score += jackpot;
                 }
                 killTools.push(instance); // Keep track of what actually killed me
-            });
+            }
             // Remove duplicates
             killers = killers.filter((elem, index, self) => {
                 return index == self.indexOf(elem);
@@ -2566,7 +2623,14 @@ class Entity {
         });
         if (i != -1) util.remove(minimap, i);
         // Remove this from views
-        views.forEach(v => v.remove(this));
+        //views.forEach(v => v.remove(this));
+        let v = 0;
+        const length = views.length;
+        for (; v < length; v++) {
+            if (views[v].includes(this)) {
+                views[v].remove(this);
+            }
+        }
         // Remove from parent lists if needed
         if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
         // Kill all of its children
