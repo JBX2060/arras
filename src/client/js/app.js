@@ -1949,9 +1949,9 @@ const socketInit = (() => {
                 socket.talk('p', payload);
             };
             console.log(socket.ping, global.socket, global.socket.ping)
-            socket.commandCycle = timer.setInterval(() => {
+            socket.commandCycle = setInterval(() => {
                 if (socket.cmd.check()) socket.cmd.talk();
-            }, '', '16.6666666667m');
+            });
         };
         // Handle incoming messages
         socket.onmessage = function socketMessage(message) {
@@ -2005,9 +2005,9 @@ const socketInit = (() => {
                         // Do it again a couple times
                         if (sync.length < 10) {
                             // Wait a bit just to space things out
-                            setTimeout(() => {
+                            timer.setTimeout(() => {
                                 socket.talk('S', getNow());
-                            }, 10);
+                            }, '', '10m');
                             global.message = "Tip: Beware of safety. - " + sync.length + "/10...";
                         } else {
                             // Calculate the clock error
@@ -2228,7 +2228,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    timer.setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), '', '16.6666666667m');
+    timer.setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), '', '16.6666666667');
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
@@ -2689,6 +2689,7 @@ window.requestAnimFrame = (() => {
         window.msRequestAnimationFrame ||
         function(callback) {
             window.setTimeout(callback, 1000 / 60);
+            //timer.setTimeout(callback, '', '16.6666666667m');
         };
 })();
 window.cancelAnimFrame = (() => {

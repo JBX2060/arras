@@ -2010,9 +2010,9 @@ var app =
 					socket.talk('p', payload);
 				};
 				console.log(socket.ping, global.socket, global.socket.ping);
-				socket.commandCycle = timer.setInterval(function () {
+				socket.commandCycle = setInterval(function () {
 					if (socket.cmd.check()) socket.cmd.talk();
-				}, '', '16.6666666667m');
+				});
 			};
 			// Handle incoming messages
 			socket.onmessage = function socketMessage(message) {
@@ -2071,9 +2071,9 @@ var app =
 							// Do it again a couple times
 							if (sync.length < 10) {
 								// Wait a bit just to space things out
-								setTimeout(function () {
+								timer.setTimeout(function () {
 									socket.talk('S', getNow());
-								}, 10);
+								}, '', '10m');
 								global.message = "Tip: Beware of safety. - " + sync.length + "/10...";
 							} else {
 								// Calculate the clock error
@@ -2351,7 +2351,7 @@ var app =
 		minimap = [];
 		timer.setInterval(function () {
 			return moveCompensation.iterate(global.socket.cmd.getMotion());
-		}, '', '16.6666666667m');
+		}, '', '16.6666666667');
 		document.getElementById('gameCanvas').focus();
 		window.onbeforeunload = function () {
 			return true;
@@ -2832,6 +2832,7 @@ var app =
 	window.requestAnimFrame = function () {
 		return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
 			window.setTimeout(callback, 1000 / 60);
+			//timer.setTimeout(callback, '', '16.6666666667m');
 		};
 	}();
 	window.cancelAnimFrame = function () {
