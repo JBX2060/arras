@@ -1110,7 +1110,6 @@ class Gun {
             time: 0,
             power: 0,
         };
-        this.cache = [];
         this.body = body;
         this.master = body.source;
         this.label = '';
@@ -1195,32 +1194,7 @@ class Gun {
             this.trueRecoil = this.settings.recoil * 1.675;
         }
     }
-  
-    initilize() {
-        let sk = (this.bulletStats == 'master') ? this.body.skill : this.bulletStats;
-        let maxBulletsOnScreen = Math.ceil((this.settings.range / Math.sqrt(sk.spd)) / (this.settings.reload / 2)) + 1;
-        for (let i = 0; i < maxBulletsOnScreen; i++) {
-            this.cache.push(this.generate());
-        }
-        this.initilized = true;
-    }
-  
-    generate() {
-        var o = new Entity({
-            x: 0,
-            y: 0,
-        }, this.master.master);
-        /*let jumpAhead = this.cycle - 1;
-        if (jumpAhead) {
-            o.x += s.x * this.cycle / jumpAhead;
-            o.y += s.y * this.cycle / jumpAhead;
-        }*/
-        o.velocity = new Vector(0, 0);
-        this.bulletInit(o);
-        o.coreSize = o.SIZE;
-        return o;
-    }
-    
+
     recoil() {
         if (this.motion || this.position) {
             // Simulate recoil
@@ -1371,8 +1345,7 @@ class Gun {
         this.bulletInit(o);
         o.coreSize = o.SIZE;
         */
-        let o = this.cache[0];
-        o = new Entity({
+        let o = new Entity({
             x: this.body.x + this.body.size * gx - s.x,
             y: this.body.y + this.body.size * gy - s.y,
         }, this.master.master);
@@ -4382,10 +4355,10 @@ var gameloop = (() => {
             let strike1, strike2;
             if (buffer > 0 && dist <= my.realSize + n.realSize + buffer) {
                 let repel = (my.acceleration + n.acceleration) * (my.realSize + n.realSize + buffer - dist) / buffer / roomSpeed;
-                my.accel.x += repel * (item1.x - item2.x) / dist;
-                my.accel.y += repel * (item1.y - item2.y) / dist;
-                n.accel.x -= repel * (item1.x - item2.x) / dist;
-                n.accel.y -= repel * (item1.y - item2.y) / dist;
+                my.accel.x += (repel * (item1.x - item2.x) / dist) * 1.525;
+                my.accel.y += (repel * (item1.y - item2.y) / dist) * 1.525;
+                n.accel.x -= (repel * (item1.x - item2.x) / dist) * 1.525;
+                n.accel.y -= (repel * (item1.y - item2.y) / dist) * 1.525;
             }
             while (dist <= my.realSize + n.realSize && !(strike1 && strike2)) {
                 strike1 = false; strike2 = false;
@@ -4407,8 +4380,8 @@ var gameloop = (() => {
             let dist = delt.length;
             let diff = wall.size + bounce.size - dist;
             if (diff > 0) {
-                bounce.accel.x -= diff * delt.x / dist;
-                bounce.accel.y -= diff * delt.y / dist;
+                bounce.accel.x -= (diff * delt.x / dist) * 1.525;
+                bounce.accel.y -= (diff * delt.y / dist) * 1.525;
                 return 1;
             }
             return 0;
@@ -4697,8 +4670,12 @@ var gameloop = (() => {
                 }
                 return 0;
             }
+            let delt = new Vector(instance.x - other.x, instance.y - other.y);
+            let dist = delt.length;
+            let diff = instance.size + other.size - dist;
+           
+            if (diff > 0) {
             if (!instance.activation.check() && !other.activation.check()) { util.warn('Tried to collide with an inactive instance.'); return 0; }
-            
             // Handle walls
             if (instance.type === 'wall' || other.type === 'wall') {
                 let a = (instance.type === 'bullet' || other.type === 'bullet') ? 
@@ -4728,6 +4705,7 @@ var gameloop = (() => {
                 case 'repel': simplecollide(instance, other); break;
                 }
             }     
+            }
         };
     })();
     // Living stuff
