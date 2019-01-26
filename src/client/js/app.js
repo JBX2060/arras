@@ -2956,10 +2956,14 @@ const gameDraw = (() => {
                 y += global.screenHeight / 2;
                 drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);       
             }
-          
-            for (var instance of entities) {
-                entitydrawingloop(instance);
+            
+            let i = entities.length;
+            while (i--) {
+               entitydrawingloop(entities[i]); 
             }
+            //for (var instance of entities) {
+            //    entitydrawingloop(instance);
+            //}
                      
             if (!config.graphical.screenshotMode) {
                 /*
@@ -2978,9 +2982,10 @@ const gameDraw = (() => {
                     y += global.screenHeight / 2;
                     drawHealth(x, y, instance, ratio, instance.alpha);
                 }
-              
-                for (var instance of entities) {
-                   entityhealthdrawingloop(instance); 
+                
+                let j = entities.length;
+                while (j--) {
+                   entityhealthdrawingloop(entities[j]); 
                 }
             }
         }

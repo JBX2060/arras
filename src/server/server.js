@@ -80,16 +80,19 @@ const room = {
     room.findType = type => {
         let output = [];
         let j = 0;
-        room.setup.forEach(row => { 
+        let rows = room.setup.length;
+        
+        for (let row of room.setup) { 
             let i = 0;
-            row.forEach(cell => {
+            for (let cell of row) {
                 if (cell === type) { 
                     output.push({ x: (i + 0.5) * room.width / room.xgrid, y: (j + 0.5) * room.height / room.ygrid, });
                 }
                 i++;
-            });
+            }
             j++;
-        });
+        }
+        
         room[type] = output;
     };
     room.findType('nest');
@@ -4045,7 +4048,7 @@ const sockets = (() => {
                     // a reader for the map (will change based on team)
                     return () => {
                         // Update the minimap
-                        entities.forEach((my) => {
+                        for (let my of entities) {
                             if (my.settings.drawShape && ran.dice(my.stealth * c.STEALTH)) {
                                 let i = minimap.findIndex((entry) => {
                                         return entry[0] === my.id;
@@ -4056,7 +4059,7 @@ const sockets = (() => {
                                     minimap.push([my.id, my.x, my.y, my.color, my.type, my.team]);
                                 }
                             }
-                        });
+                        }
                         // Clean the map and return the reader
                         return cleanmapreader();
                     };
@@ -4088,9 +4091,9 @@ const sockets = (() => {
                             // Provide the index manager methods
                             return { 
                                 flag: () => {
-                                    data.forEach(index => {
+                                    for (let index of data) {
                                         index.status = -1;
-                                    }); 
+                                    }
                                     if (data == null) { data = []; } 
                                 },
                                 cull: () => { 
@@ -4187,12 +4190,15 @@ const sockets = (() => {
                                 refresh = data.map(process.full).filter(e => { return e; }),
                                 flatorders = [],
                                 flatrefresh = [];
-                            orders.forEach(e => flatorders.push(...e));
-                            refresh.forEach(e => flatrefresh.push(...e));
+                            //orders.forEach(e => flatorders.push(...e));
+                            //refresh.forEach(e => flatrefresh.push(...e));
+                            for (let e of orders) { flatorders.push(...e); }
+                            for (let e of refresh) { flatrefresh.push(...e); }
                             // Find the stuff to remove
                             let removed = indices.cull();
                             // Make sure we sync the leaderboard
-                            removed.forEach(id => { delete leaderboard['_' + id]; });
+                            //removed.forEach(id => { delete leaderboard['_' + id]; });
+                            for (let id of removed) { delete leaderboard['_' + id]; }
                             return {
                                 updates: [removed.length, ...removed, orders.length, ...flatorders],
                                 full: [-1, refresh.length, ...flatrefresh], // The -1 tells the client it'll be a full refresh
@@ -4203,7 +4209,10 @@ const sockets = (() => {
                     return () => {
                         list.clear();       
                         // Sort everything
-                        entities.forEach(listify);
+                        //entities.forEach(listify);
+                        for (let entity of entities) {
+                           entity.listify();
+                        }
                         // Get the top ten
                         let topTen = [];
                         for (let i=0; i<10; i++) {
@@ -5497,12 +5506,15 @@ bot.on('messageCreate', (msg) => {
   if (msg.content == 'k!players') {
     let output = ''
     let outWillFail = true
-    entities.forEach(function(element) {
+    function msgthing(element) {
     if (typeof element.sendMessage == "function" && element.name != '') {
         output += String(element.name + '  -  ' + element.id + '\n')
         outWillFail = false
     }
-    })
+    }
+    for (let entity of entities) {
+       msgthing(entity); 
+    }
     if (!outWillFail) {
     bot.createMessage(msg.channel.id, output)}
     else {
