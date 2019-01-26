@@ -2958,12 +2958,12 @@ const gameDraw = (() => {
             }
             
             let i = entities.length;
-            //while (i--) {
-            //   entitydrawingloop(entities[i]); 
-            //}
-            for (var instance of entities) {
-                entitydrawingloop(instance);
+            while (i--) {
+               entitydrawingloop(entities[i]); 
             }
+            //for (var instance of entities) {
+            //    entitydrawingloop(instance);
+            //}
                      
             if (!config.graphical.screenshotMode) {
                 /*
@@ -2983,13 +2983,13 @@ const gameDraw = (() => {
                     drawHealth(x, y, instance, ratio, instance.alpha);
                 }
                 
-                //let j = entities.length;
-                //while (j--) {
-                //   entityhealthdrawingloop(entities[j]); 
-                //}
-                for (let instance of entities) {
-                    
+                let j = entities.length;
+                while (j--) {
+                   entityhealthdrawingloop(entities[j]); 
                 }
+                //for (let instance of entities) {
+                //   entityhealthdrawingloop(instance); 
+                //}
             }
         }
 
