@@ -171,7 +171,7 @@ exports.genericEntity = {
     DANGER: 0,
     VALUE: 0,
     SHAPE: 0,
-    CUSTOMSHAPE: [],
+    //CUSTOMSHAPE: [],
     COLOR: 16,    
     INDEPENDENT: false,
     CONTROLLERS: ['doNothing'],    
@@ -1493,13 +1493,6 @@ function makeHybrid(type, name = -1) {
 exports.basic = {
     PARENT: [exports.genericTank],
     LABEL: 'Basic',
-    CUSTOMSHAPE: [
-      [-50, 0],
-      [-50, 50],
-      [50, 50],
-      [50, -50],
-      [-50, -50],
-    ],
     //CONTROLLERS: ['nearestDifferentMaster'],
     GUNS: [ { /*** LENGTH  WIDTH   ASPECT    X       Y     ANGLE   DELAY */
         POSITION: [  18,     8,      1,      0,      0,      0,      0,   ], 

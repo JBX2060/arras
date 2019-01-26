@@ -2564,11 +2564,11 @@ const drawEntity = (() => {
         // Draw body
         context.globalAlpha = 1;
         setColor(context, mixColors(getColor(instance.color), render.status.getColor(), render.status.getBlend()));
-        if (m.customshape !== undefined) {
-        drawPoly(context, xx, yy, drawSize / m.size * m.realSize, m.customshape, rot);
-        } else {
+        //if (m.customshape !== undefined) {
+        //drawPoly(context, xx, yy, drawSize / m.size * m.realSize, m.customshape, rot);
+        //} else {
         drawPoly(context, xx, yy, drawSize / m.size * m.realSize, m.shape, rot);
-        }
+        //}
         // Draw turrets above us
         if (source.turrets.length === m.turrets.length) {
             for (let i = 0; i < m.turrets.length; i++) {

@@ -1543,7 +1543,7 @@ var bringToLife = (() => {
             my.range -= 1;
         }
         // So we start with my master's thoughts and then we filter them down through our control stack
-        my.controllers.forEach(AI => {
+        for (let AI of my.controllers) {
             let a = AI.think(b);
             let passValue = passer(a, b, AI.acceptsFromTop);
             passValue('target');
@@ -1552,7 +1552,7 @@ var bringToLife = (() => {
             passValue('main');
             passValue('alt');
             passValue('power');
-        });        
+        }      
         my.control.target = (b.target == null) ? my.control.target : b.target;
         my.control.goal = b.goal;
         my.control.fire = b.fire;
@@ -1565,9 +1565,6 @@ var bringToLife = (() => {
         // Handle guns and turrets if we've got them
         for (let gun of my.guns) {
            gun.live();
-           //if (gun.initilized === false) {
-           //   gun.initilize(); 
-           //}
         }
         for (let turret of my.turrets) {
            turret.life(); 
@@ -1819,10 +1816,12 @@ class Entity {
         if (set.SHAPE != null) {
             this.shape = set.SHAPE;
         }
+        /*
         if (set.CUSTOMSHAPE != null && set.CUSTOMSHAPE.length > 0) {
            this.customshape = set.CUSTOMSHAPE;
            console.log(this.customshape);
         }
+        */
         if (set.COLOR != null) { 
             this.color = set.COLOR; 
         }   
@@ -2766,7 +2765,7 @@ var logs = (() => {
                 y: rounder(e.y),
                 color: e.color,
                 shape: e.shape,
-                customshape: e.customshape,
+                //customshape: e.customshape,
                 size: rounder(e.size),
                 realSize: rounder(e.realSize),
                 facing: rounder(e.facing),
@@ -4439,7 +4438,8 @@ var gameloop = (() => {
                 diff = new Vector(my.x - n.x, my.y - n.y),
                 dir = new Vector((n.x - my.x) / diff.length, (n.y - my.y) / diff.length),
                 component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
-          
+            
+            /*
             if (n.customshapes !== undefined) {
                 if (n.customshapes.length > 0) {
                    let centerX = n.x;
@@ -4474,6 +4474,7 @@ var gameloop = (() => {
                    }
                 }
             }
+            */
             if (component >= diff.length - combinedRadius) { // A simple check
                 // A more complex check
                 let goahead = false,
