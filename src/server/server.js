@@ -249,6 +249,7 @@ function timeOfImpact(p, v, s) {
 
     return t*0.9;
 }
+
 class IO {
     constructor(body) {
         this.body = body;
@@ -1168,8 +1169,9 @@ class Gun {
                 let i = 0;
                 const length = info.PROPERTIES_GUN_CONTROLLERS.length;
                 for (; i < length; i++) {
-                    toAdd.push(new info.PROPERTIES._GUN_CONTROLLERS[i](this));
-                    //toAdd.push(eval('new ' + info.PROPERTIES.GUN_CONTROLLERS[i] + '(self)'));
+                    //toAdd.push(new info.PROPERTIES._GUN_CONTROLLERS[i](this));
+                    //let item = new window[info.PROPERTIES.GUN_CONTROLLERS](this);
+                    toAdd.push(eval('new ' + info.PROPERTIES.GUN_CONTROLLERS[i] + '(self)'));
                 }
                 this.controllers = toAdd.concat(this.controllers);
             }
