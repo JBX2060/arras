@@ -3165,12 +3165,33 @@ var app =
 				};
 
 				var _i13 = entities.length;
-				while (_i13--) {
-					entitydrawingloop(entities[_i13]);
-				}
-				//for (var instance of entities) {
-				//    entitydrawingloop(instance);
+				//while (i--) {
+				//   entitydrawingloop(entities[i]); 
 				//}
+				var _iteratorNormalCompletion12 = true;
+				var _didIteratorError12 = false;
+				var _iteratorError12 = undefined;
+
+				try {
+					for (var _iterator12 = entities[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+						var instance = _step12.value;
+
+						entitydrawingloop(instance);
+					}
+				} catch (err) {
+					_didIteratorError12 = true;
+					_iteratorError12 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion12 && _iterator12.return) {
+							_iterator12.return();
+						}
+					} finally {
+						if (_didIteratorError12) {
+							throw _iteratorError12;
+						}
+					}
+				}
 
 				if (!config.graphical.screenshotMode) {
 					/*
@@ -3190,9 +3211,33 @@ var app =
 						drawHealth(x, y, instance, ratio, instance.alpha);
 					};
 
-					var _j = entities.length;
-					while (_j--) {
-						entityhealthdrawingloop(entities[_j]);
+					//let j = entities.length;
+					//while (j--) {
+					//   entityhealthdrawingloop(entities[j]); 
+					//}
+
+
+					var _iteratorNormalCompletion13 = true;
+					var _didIteratorError13 = false;
+					var _iteratorError13 = undefined;
+
+					try {
+						for (var _iterator13 = entities[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+							var _instance = _step13.value;
+						}
+					} catch (err) {
+						_didIteratorError13 = true;
+						_iteratorError13 = err;
+					} finally {
+						try {
+							if (!_iteratorNormalCompletion13 && _iterator13.return) {
+								_iterator13.return();
+							}
+						} finally {
+							if (_didIteratorError13) {
+								throw _iteratorError13;
+							}
+						}
 					}
 				}
 			}
@@ -3270,15 +3315,15 @@ var app =
 						if (blocking) {
 							ctx.lineWidth = 1;
 							ctx.strokeStyle = color.grey;
-							for (var _j2 = cap + 1; _j2 < _max; _j2++) {
-								drawGuiLine(_x29 + (_len7 - gap) * ska(_j2), _y2 + 1.5, _x29 + (_len7 - gap) * ska(_j2), _y2 - 3 + _height);
+							for (var _j = cap + 1; _j < _max; _j++) {
+								drawGuiLine(_x29 + (_len7 - gap) * ska(_j), _y2 + 1.5, _x29 + (_len7 - gap) * ska(_j), _y2 - 3 + _height);
 							}
 						}
 						// Vertical dividers
 						ctx.strokeStyle = color.black;
 						ctx.lineWidth = 1;
-						for (var _j3 = 1; _j3 < level + 1; _j3++) {
-							drawGuiLine(_x29 + (_len7 - gap) * ska(_j3), _y2 + 1.5, _x29 + (_len7 - gap) * ska(_j3), _y2 - 3 + _height);
+						for (var _j2 = 1; _j2 < level + 1; _j2++) {
+							drawGuiLine(_x29 + (_len7 - gap) * ska(_j2), _y2 + 1.5, _x29 + (_len7 - gap) * ska(_j2), _y2 - 3 + _height);
 						}
 						// Skill name
 						_len7 = save * ska(_max);
@@ -3313,27 +3358,27 @@ var app =
 				var _y2 = global.screenHeight - spacing - _height;
 				var ticker = 11;
 				var namedata = _gui.getStatNames(mockups[_gui.type].statnames || -1);
-				var _iteratorNormalCompletion12 = true;
-				var _didIteratorError12 = false;
-				var _iteratorError12 = undefined;
+				var _iteratorNormalCompletion14 = true;
+				var _didIteratorError14 = false;
+				var _iteratorError14 = undefined;
 
 				try {
-					for (var _iterator12 = _gui.skills[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-						var skill = _step12.value;
+					for (var _iterator14 = _gui.skills[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
+						var skill = _step14.value;
 
 						drawASkillBar(skill);
 					}
 				} catch (err) {
-					_didIteratorError12 = true;
-					_iteratorError12 = err;
+					_didIteratorError14 = true;
+					_iteratorError14 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion12 && _iterator12.return) {
-							_iterator12.return();
+						if (!_iteratorNormalCompletion14 && _iterator14.return) {
+							_iterator14.return();
 						}
 					} finally {
-						if (_didIteratorError12) {
-							throw _iteratorError12;
+						if (_didIteratorError14) {
+							throw _iteratorError14;
 						}
 					}
 				}
@@ -3385,37 +3430,37 @@ var app =
 				var _W = roomSetup[0].length,
 				    _H = roomSetup.length,
 				    _i15 = 0;
-				var _iteratorNormalCompletion13 = true;
-				var _didIteratorError13 = false;
-				var _iteratorError13 = undefined;
+				var _iteratorNormalCompletion15 = true;
+				var _didIteratorError15 = false;
+				var _iteratorError15 = undefined;
 
 				try {
-					for (var _iterator13 = roomSetup[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-						var row = _step13.value;
+					for (var _iterator15 = roomSetup[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
+						var row = _step15.value;
 
-						var _j4 = 0;
-						var _iteratorNormalCompletion15 = true;
-						var _didIteratorError15 = false;
-						var _iteratorError15 = undefined;
+						var _j3 = 0;
+						var _iteratorNormalCompletion17 = true;
+						var _didIteratorError17 = false;
+						var _iteratorError17 = undefined;
 
 						try {
-							for (var _iterator15 = row[Symbol.iterator](), _step15; !(_iteratorNormalCompletion15 = (_step15 = _iterator15.next()).done); _iteratorNormalCompletion15 = true) {
-								var cell = _step15.value;
+							for (var _iterator17 = row[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
+								var cell = _step17.value;
 
 								ctx.fillStyle = getZoneColor(cell, false);
-								drawGuiRect(_x31 + _j4++ * _len9 / _W, _y4 + _i15 * _height3 / _H, _len9 / _W, _height3 / _H);
+								drawGuiRect(_x31 + _j3++ * _len9 / _W, _y4 + _i15 * _height3 / _H, _len9 / _W, _height3 / _H);
 							}
 						} catch (err) {
-							_didIteratorError15 = true;
-							_iteratorError15 = err;
+							_didIteratorError17 = true;
+							_iteratorError17 = err;
 						} finally {
 							try {
-								if (!_iteratorNormalCompletion15 && _iterator15.return) {
-									_iterator15.return();
+								if (!_iteratorNormalCompletion17 && _iterator17.return) {
+									_iterator17.return();
 								}
 							} finally {
-								if (_didIteratorError15) {
-									throw _iteratorError15;
+								if (_didIteratorError17) {
+									throw _iteratorError17;
 								}
 							}
 						}
@@ -3424,16 +3469,16 @@ var app =
 						_i15++;
 					}
 				} catch (err) {
-					_didIteratorError13 = true;
-					_iteratorError13 = err;
+					_didIteratorError15 = true;
+					_iteratorError15 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion13 && _iterator13.return) {
-							_iterator13.return();
+						if (!_iteratorNormalCompletion15 && _iterator15.return) {
+							_iterator15.return();
 						}
 					} finally {
-						if (_didIteratorError13) {
-							throw _iteratorError13;
+						if (_didIteratorError15) {
+							throw _iteratorError15;
 						}
 					}
 				}
@@ -3441,13 +3486,13 @@ var app =
 				;
 				ctx.fillStyle = color.grey;
 				drawGuiRect(_x31, _y4, _len9, _height3);
-				var _iteratorNormalCompletion14 = true;
-				var _didIteratorError14 = false;
-				var _iteratorError14 = undefined;
+				var _iteratorNormalCompletion16 = true;
+				var _didIteratorError16 = false;
+				var _iteratorError16 = undefined;
 
 				try {
-					for (var _iterator14 = minimap[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-						var o = _step14.value;
+					for (var _iterator16 = minimap[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
+						var o = _step16.value;
 
 						if (o[2] === 17) {
 							ctx.fillStyle = mixColors(getColor(o[2]), color.black, 0.5);
@@ -3462,16 +3507,16 @@ var app =
 						}
 					}
 				} catch (err) {
-					_didIteratorError14 = true;
-					_iteratorError14 = err;
+					_didIteratorError16 = true;
+					_iteratorError16 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion14 && _iterator14.return) {
-							_iterator14.return();
+						if (!_iteratorNormalCompletion16 && _iterator16.return) {
+							_iterator16.return();
 						}
 					} finally {
-						if (_didIteratorError14) {
-							throw _iteratorError14;
+						if (_didIteratorError16) {
+							throw _iteratorError16;
 						}
 					}
 				}
@@ -3508,13 +3553,13 @@ var app =
 				var _y5 = spacing + _height4 + 7;
 				text.lbtitle.draw('Leaderboard:', Math.round(_x32 + _len10 / 2) + 0.5, Math.round(_y5 - 6) + 0.5, _height4 + 4, color.guiwhite, 'center');
 				var _i16 = 0;
-				var _iteratorNormalCompletion16 = true;
-				var _didIteratorError16 = false;
-				var _iteratorError16 = undefined;
+				var _iteratorNormalCompletion18 = true;
+				var _didIteratorError18 = false;
+				var _iteratorError18 = undefined;
 
 				try {
-					for (var _iterator16 = lb.data[Symbol.iterator](), _step16; !(_iteratorNormalCompletion16 = (_step16 = _iterator16.next()).done); _iteratorNormalCompletion16 = true) {
-						var entry = _step16.value;
+					for (var _iterator18 = lb.data[Symbol.iterator](), _step18; !(_iteratorNormalCompletion18 = (_step18 = _iterator18.next()).done); _iteratorNormalCompletion18 = true) {
+						var entry = _step18.value;
 
 						drawBar(_x32, _x32 + _len10, _y5 + _height4 / 2, _height4 - 3 + config.graphical.barChunk, color.black);
 						drawBar(_x32, _x32 + _len10, _y5 + _height4 / 2, _height4 - 3, color.grey);
@@ -3531,16 +3576,16 @@ var app =
 						_y5 += _vspacing3 + _height4;
 					}
 				} catch (err) {
-					_didIteratorError16 = true;
-					_iteratorError16 = err;
+					_didIteratorError18 = true;
+					_iteratorError18 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion16 && _iterator16.return) {
-							_iterator16.return();
+						if (!_iteratorNormalCompletion18 && _iterator18.return) {
+							_iterator18.return();
 						}
 					} finally {
-						if (_didIteratorError16) {
-							throw _iteratorError16;
+						if (_didIteratorError18) {
+							throw _iteratorError18;
 						}
 					}
 				}
@@ -3627,28 +3672,28 @@ var app =
 					upgradeSpin += 0.01;
 					var colorIndex = 10;
 					var _i17 = 0;
-					var _iteratorNormalCompletion17 = true;
-					var _didIteratorError17 = false;
-					var _iteratorError17 = undefined;
+					var _iteratorNormalCompletion19 = true;
+					var _didIteratorError19 = false;
+					var _iteratorError19 = undefined;
 
 					try {
-						for (var _iterator17 = _gui.upgrades[Symbol.iterator](), _step17; !(_iteratorNormalCompletion17 = (_step17 = _iterator17.next()).done); _iteratorNormalCompletion17 = true) {
-							var model = _step17.value;
+						for (var _iterator19 = _gui.upgrades[Symbol.iterator](), _step19; !(_iteratorNormalCompletion19 = (_step19 = _iterator19.next()).done); _iteratorNormalCompletion19 = true) {
+							var model = _step19.value;
 
 							drawAnUpgrade(model);
 						}
 						// Draw box
 					} catch (err) {
-						_didIteratorError17 = true;
-						_iteratorError17 = err;
+						_didIteratorError19 = true;
+						_iteratorError19 = err;
 					} finally {
 						try {
-							if (!_iteratorNormalCompletion17 && _iterator17.return) {
-								_iterator17.return();
+							if (!_iteratorNormalCompletion19 && _iterator19.return) {
+								_iterator19.return();
 							}
 						} finally {
-							if (_didIteratorError17) {
-								throw _iteratorError17;
+							if (_didIteratorError19) {
+								throw _iteratorError19;
 							}
 						}
 					}
