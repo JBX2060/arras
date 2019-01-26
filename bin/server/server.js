@@ -2451,9 +2451,9 @@ class Entity {
         this.velocity.x += this.accel.x * timestep;
         this.velocity.y += this.accel.y * timestep;
         // Reset acceleration
-        if (this.accel > 0) {
-            nullVector(this.accel);
-        }
+        //if (!this.accel <= 0) {
+        nullVector(this.accel);
+        //}
         // Apply motion
         this.stepRemaining = 1;
         this.x += this.stepRemaining * this.velocity.x / roomSpeed;
