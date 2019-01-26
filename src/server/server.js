@@ -16,7 +16,9 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
-const hb = require('hashbounds');
+const nanotimer = require('nanotimer');
+
+let timer = new nanotimer();
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -4373,7 +4375,7 @@ const sockets = (() => {
                     }
                 } 
                 // Start it
-                setInterval(slowloop, 1000);
+                timer.setInterval(slowloop, '', '1000m');
                 // Give the broadcast method
                 return socket => {
                     // Make sure it's spawned first
@@ -4446,7 +4448,7 @@ const sockets = (() => {
                 // Set up loops
                 socket.loops = (() => {
                     let nextUpdateCall = null; // has to be started manually
-                    let trafficMonitoring = setInterval(() => traffic(socket), 1500);
+                    let trafficMonitoring = timer.setInterval(() => traffic(socket), '', '1500m');
                     let broadcastingGuiStuff = setInterval(() => broadcast(socket), 1000);
                     // Return the loop methods
                     return {
@@ -5463,7 +5465,7 @@ var websockets = (() => {
     return new WebSocket.Server(config);
 })().on('connection', sockets.connect); 
 
-var tickLengthMs = 1000 / 30;
+var tickLengthMs = 1000 / 60;
 var previousTick = now();
 var actualTicks = 0;  
 var gameexecution = function () {
@@ -5473,9 +5475,9 @@ var gameexecution = function () {
   if (previousTick + tickLengthMs <= current) {
     //var delta = (current - previousTick) / 1000;
     var curTime = now();
-    timestep = 0.01050 * (curTime - lastTime);
+    timestep = 0.00525 * (curTime - lastTime);
     if (timestep <= 0 || timestep > 1.0) {
-        timestep = 0.01050;
+        timestep = 0.00525;
     }
     
     previousTick = current;
@@ -5485,12 +5487,13 @@ var gameexecution = function () {
     
     actualTicks = 0;
     lastTime = curTime;
+  
   }
-
+  
   if (now() - previousTick < tickLengthMs - 16) {
-    setTimeout(gameexecution);
+      timer.setTimeout(gameexecution, '', '16.6666666667m');
   } else {
-    setImmediate(gameexecution);
+      setImmediate(gameexecution);
   }
 }
 
@@ -5503,10 +5506,12 @@ var gameexecution = function () {
 //var cycleMs = room.cycleSpeed + 'm';
 //var timer = new nanotimer();
 gameexecution();
-setInterval(maintainloop, 200);
-setInterval(speedcheckloop, 1000);
+//setInterval(maintainloop, 200);
+//setInterval(speedcheckloop, 1000);
 //setInterval(speedcheckloop, 1000);
 //parallelLoops();
+timer.setInterval(maintainloop, '', '200m');
+timer.setInterval(speedcheckloop, '', '1000m');
 
 // Graceful shutdown
 let shutdownWarning = false;

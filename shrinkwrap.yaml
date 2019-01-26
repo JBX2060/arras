@@ -18,11 +18,11 @@ dependencies:
   gulp-todo: 4.1.0
   gulp-uglify: 1.5.4
   gulp-util: 3.0.8
-  hashbounds: 4.5.8
   jshint: 2.9.7
   keypress: 0.2.1
   mocha: 2.5.3
   mysql: 2.16.0
+  nanotimer: 0.3.15
   nodemon: 1.18.9
   paper: 0.11.8
   performance-now: 2.1.0
@@ -2638,10 +2638,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-lbC2P+whRmGab+V/51Yo1aOe/k8=
-  /hashbounds/4.5.8:
-    dev: false
-    resolution:
-      integrity: sha512-tAS61TZpQrJDv71mRT7b8yjNDrPvlXSKKO1vkmxJNV931ILU1H5VvGnTj8v2e3YnSzN0U7e6Fk2Ui1wq2BAjTg==
   /home-or-tmp/2.0.0:
     dependencies:
       os-homedir: 1.0.2
@@ -3926,6 +3922,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==
+  /nanotimer/0.3.15:
+    dev: false
+    resolution:
+      integrity: sha1-KA0nfbkUbspvilcLVyq68qmsx1Q=
   /natives/1.1.6:
     dev: false
     resolution:
@@ -6128,11 +6128,11 @@ specifiers:
   gulp-todo: ^4.1.0
   gulp-uglify: ^1.5.4
   gulp-util: ^3.0.7
-  hashbounds: ^4.5.8
   jshint: ^2.9.2
   keypress: ^0.2.1
   mocha: ^2.5.3
   mysql: ^2.5.5
+  nanotimer: ^0.3.15
   nodemon: ^1.9.2
   paper: ^0.11.5
   performance-now: ^2.1.0
