@@ -1743,12 +1743,12 @@ class Entity {
         })();
         this.updateAABB(true);
         entities.push(this); // everything else
-        views.forEach(v => v.add(this));
-        //let i = 0;
-        //const length = views.length;
-        //for (; i < length; i++) {
-        //   views[i].add(this); 
-        //}
+        //views.forEach(v => v.add(this));
+        let i = 0;
+        const length = views.length;
+        for (; i < length; i++) {
+            views[i].add(this);
+        }
     }
 
     life() {
@@ -2554,9 +2554,9 @@ class Entity {
 
             let i = 0;
             const length = this.collisionArray.length;
-            //for (; i < length; i++) {
-            for (let instance of this.collisionArray) {
-                //let instance = this.collisionArray[i];
+            for (; i < length; i++) {
+                //for (let instance of this.collisionArray) {
+                let instance = this.collisionArray[i];
                 if (instance.type === 'wall') return 0;
                 if (instance.master.settings.acceptsScore) {
                     // If it's not food, give its master the score
@@ -4444,7 +4444,7 @@ const sockets = (() => {
                 }
                 // Start it
                 slowloop();
-                timer.setInterval(slowloop, '', '1000m');
+                timer.setInterval(slowloop, 1000);
                 // Give the broadcast method
                 return socket => {
                     // Make sure it's spawned first
@@ -4530,8 +4530,8 @@ const sockets = (() => {
                 // Set up loops
                 socket.loops = (() => {
                     let nextUpdateCall = null; // has to be started manually
-                    let trafficMonitoring = timer.setInterval(() => traffic(socket), '', '1000m');
-                    let broadcastingGuiStuff = timer.setInterval(() => broadcast(socket), '', '1500m');
+                    let trafficMonitoring = timer.setInterval(() => traffic(socket), 1000);
+                    let broadcastingGuiStuff = timer.setInterval(() => broadcast(socket), 1500);
                     // Return the loop methods
                     return {
                         setUpdate: timeout => {
@@ -5617,7 +5617,7 @@ var gameexecution = function () {
     }
 
     if (now() - previousTick < tickLengthMs - 16) {
-        timer.setTimeout(gameexecution, '', '16.6666666667m');
+        setTimeout(gameexecution);
     } else {
         setImmediate(gameexecution);
     }
@@ -5625,10 +5625,8 @@ var gameexecution = function () {
 
 // Bring it to life
 gameexecution();
-maintainloop();
-timer.setInterval(maintainloop, '', '200m');
-speedcheckloop();
-timer.setInterval(speedcheckloop, '', '1000m');
+setInterval(maintainloop, 200);
+setInterval(speedcheckloop, 1000);
 
 // Graceful shutdown
 let shutdownWarning = false;
