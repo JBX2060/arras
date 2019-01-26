@@ -901,7 +901,7 @@ const levelers = [
 ];
 class Skill {
     constructor(inital = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) { // Just skill stuff. 
-        this.changed = false;
+        this.changed = true;
         this.raw = inital;
         this.caps = [];
         this.setCaps([
@@ -4155,7 +4155,10 @@ const sockets = (() => {
                     // a reader for the map (will change based on team)
                     return () => {
                         // Update the minimap
-                        for (let my of entities) {
+                        let i = 0;
+                        const length = entities.length;
+                        for (; i < length; i++) {
+                            let my = entities[i];
                             if (my.settings.drawShape && ran.dice(my.stealth * c.STEALTH)) {
                                 let i = minimap.findIndex((entry) => {
                                         return entry[0] === my.id;

@@ -3231,9 +3231,9 @@ const gameDraw = (() => {
             let W = roomSetup[0].length,
                 H = roomSetup.length,
                 i = 0;
-            for (var row of roomSetup) {
+            for (let row of roomSetup) {
                 let j = 0;
-                for (var cell of row) {
+                for (let cell of row) {
                     ctx.fillStyle = getZoneColor(cell, false);
                     drawGuiRect(x + (j++) * len / W, y + i * height / H, len / W, height / H);
                 };
@@ -3241,7 +3241,7 @@ const gameDraw = (() => {
             };
             ctx.fillStyle = color.grey;
             drawGuiRect(x, y, len, height);
-            for (var o of minimap) {
+            for (let o of minimap) {
                 if (o[2] === 17) {
                     ctx.fillStyle = mixColors(getColor(o[2]), color.black, 0.5);
                     ctx.globalAlpha = 0.8;
