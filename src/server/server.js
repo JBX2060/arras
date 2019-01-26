@@ -4449,7 +4449,7 @@ const sockets = (() => {
                 socket.loops = (() => {
                     let nextUpdateCall = null; // has to be started manually
                     let trafficMonitoring = timer.setInterval(() => traffic(socket), '', '1500m');
-                    let broadcastingGuiStuff = setInterval(() => broadcast(socket), 1000);
+                    let broadcastingGuiStuff = timer.setInterval(() => broadcast(socket), '', '1000m');
                     // Return the loop methods
                     return {
                         setUpdate: timeout => {
@@ -5498,18 +5498,7 @@ var gameexecution = function () {
 }
 
 // Bring it to life
-//setInterval(funloop, room.cycleSpeed * 5) 
-//setInterval(updatedelta, global.fps);
-//timer.setInterval(gameloop, '', room.cycleSpeed + 'm');
-//timer.setInterval(maintainloop, '', '200m');
-//timer.setInterval(speedcheckloop, '', '1000m');
-//var cycleMs = room.cycleSpeed + 'm';
-//var timer = new nanotimer();
 gameexecution();
-//setInterval(maintainloop, 200);
-//setInterval(speedcheckloop, 1000);
-//setInterval(speedcheckloop, 1000);
-//parallelLoops();
 timer.setInterval(maintainloop, '', '200m');
 timer.setInterval(speedcheckloop, '', '1000m');
 

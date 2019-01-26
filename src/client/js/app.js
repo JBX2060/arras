@@ -405,9 +405,14 @@ function getEntityImageFromMockup(index, color = mockups[index].color) {
             getPositions: () => {
                 let a = [];
                 //mockup.guns.forEach(() => a.push(0));
-                for (let i = 0; i < mockup.guns.length; i++) {
+                let i = 0;
+                const length = mockup.guns.length;
+                for (; i < length; i++) {
                    a.push(0); 
                 }
+                //for (let i = 0; i < mockup.guns.length; i++) {
+                //   a.push(0); 
+                //}
                 return a;
             },
             update: () => {},
@@ -1479,6 +1484,13 @@ const socketInit = (() => {
                                 }
                             }
                         }
+                        function updatePhysics(a) {
+                       let i = 0;
+                       const length = a.length;
+                       for (; i < length; i++) {
+                           physics(a[i]);
+                           } 
+                        }
                         return (n) => {
                             let a = [];
                             for (let i = 0; i < n; i++) {
@@ -1502,11 +1514,7 @@ const socketInit = (() => {
                         };
                     })();
                   
-                    function updatePhysics(a) {
-                       for (let item of a) {
-                          
-                       }
-                    }
+                 
 
                     function Status() {
                         let state = 'normal',
@@ -1660,9 +1668,14 @@ const socketInit = (() => {
                                 throw new Error('Mismatch between data turret number and remembered turret number!');
                             }
                             //z.turrets.forEach(tur => { tur = process(tur); });
-                            for (let tur of z.turrets) {
-                               tur = process(tur); 
+                            let i = 0;
+                            const length = z.turrets.length;
+                            for (; i < length; i++) {
+                               z.turrets[i] = process(z.turrets[i]); 
                             }
+                            //for (let tur of z.turrets) {
+                            //   tur = process(tur); 
+                            //}
                         }
                         // Return our monsterous creation
                         return z;
@@ -1677,8 +1690,12 @@ const socketInit = (() => {
                         output.push(process());
                     }
                     // Handle the dead/leftover entities
-                    for (var e of entities) {
+                    let f = 0;
+                    const flength = entities.length;
+                    //for (var e of entities) {
+                    for (; f < flength; f++) {
                         // Kill them
+                        let e = entities[f];
                         e.render.status.set((e.health === 1) ? 'dying' : 'killed');
                         // And only push them if they're not entirely dead and still visible
                         if (e.render.status.getFade() !== 0 && isInView(e.render.x - player.renderx, e.render.y - player.rendery, e.size, true)) {
@@ -1686,9 +1703,14 @@ const socketInit = (() => {
                         } else {
                             if (e.render.textobjs != null) { 
                               //e.render.textobjs.forEach(o => o.remove());
-                              for (let o of e.render.textobjs) {
-                                 o.remove(); 
+                              let i = 0;
+                              const length = e.render.textobjs.length;
+                              for (; i < length; i++) {
+                                 e.render.textobjs.remove(); 
                               }
+                              //for (let o of e.render.textobjs) {
+                              //   o.remove(); 
+                              //}
                             }
                         }
                     };
@@ -2976,8 +2998,10 @@ const gameDraw = (() => {
             //while (i--) {
             //   entitydrawingloop(entities[i]); 
             //}
-            for (var instance of entities) {
-                entitydrawingloop(instance);
+            let i = 0;
+            const length = entities.length;
+            for (; i < length; i++) {
+               entitydrawingloop(entities[i]); 
             }
                      
             if (!config.graphical.screenshotMode) {
@@ -3002,8 +3026,10 @@ const gameDraw = (() => {
                 //while (j--) {
                 //   entityhealthdrawingloop(entities[j]); 
                 //}
-                for (let instance of entities) {
-                   entityhealthdrawingloop(instance); 
+                let j = 0;
+                const length = entities.length;
+                for (; j < length; j++) {
+                   entitydrawingloop(entities[j]); 
                 }
             }
         }
@@ -3389,9 +3415,14 @@ const gameDraw = (() => {
                     }
                 }
                 //gui.upgrades.forEach();
-                for (var model of gui.upgrades) {
-                   drawAnUpgrade(model); 
+                let z = 0;
+                const length = gui.upgrades.length;
+                for (; z < length; z++) {
+                   drawAnUpgrade(gui.upgrades[z]); 
                 }
+                //for (var model of gui.upgrades) {
+                //   drawAnUpgrade(model); 
+                //}
                 // Draw box
                 let h = 14,
                     msg = "Ignore",
