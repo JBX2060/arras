@@ -4445,10 +4445,19 @@ var gameloop = (() => {
                    let centerX = n.x;
                    let centerY = n.y;
                    let points = [];
+                   let edgevalues = [];
                    for (let point in n.customshapes) {
                       points.push(point); 
                    }
-                   
+                   for (let i = 0; i < points.length; i++) {
+                      let xDifference;
+                      let yDifference;
+                      if (i + 1 <= points.length) {
+                        xDifference = Math.abs(points[i][0] - points[i + 1][0]);
+                        yDifference = Math.abs(points[i][1] - points[i + 1][1]);
+                        for (let dif = points
+                      }
+                   }
                 }
             }
             if (component >= diff.length - combinedRadius) { // A simple check
