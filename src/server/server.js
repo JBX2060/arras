@@ -5499,7 +5499,7 @@ var gameexecution = function () {
 
 // Bring it to life
 gameexecution();
-timer.setInterval(maintainloop, '', '40m');
+setInterval(maintainloop, 200);
 timer.setInterval(speedcheckloop, '', '1000m');
 
 // Graceful shutdown

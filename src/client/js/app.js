@@ -1951,7 +1951,7 @@ const socketInit = (() => {
             console.log(socket.ping, global.socket, global.socket.ping)
             socket.commandCycle = timer.setInterval(() => {
                 if (socket.cmd.check()) socket.cmd.talk();
-            });
+            }, '', '8.33333333333m');
         };
         // Handle incoming messages
         socket.onmessage = function socketMessage(message) {
@@ -2688,8 +2688,8 @@ window.requestAnimFrame = (() => {
         window.mozRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
         function(callback) {
-            //window.setTimeout(callback, 1000 / 60);
-            timer.setTimeout(callback, '', '8.33333333333m');
+            window.setTimeout(callback, 1000 / 60);
+            //timer.setTimeout(callback, '', '8.33333333333m');
         };
 })();
 window.cancelAnimFrame = (() => {
@@ -3038,7 +3038,7 @@ const gameDraw = (() => {
                 let j = 0;
                 const length = entities.length;
                 for (; j < length; j++) {
-                   entitydrawingloop(entities[j]); 
+                  entityhealthdrawingloop(entities[j]); 
                 }
             }
         }
