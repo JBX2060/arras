@@ -2409,7 +2409,13 @@ const drawEntity = (() => {
         angle += (sides % 2) ? 0 : Math.PI / sides;
         // Start drawing
         context.beginPath();
-        if (!sides) { // Circle
+        if (Array.isArray(sides)) {
+            context.moveTo(centerX, centerY);
+            context.lineTo(centerX - 100, centerY);
+            context.lineTo(centerX, centerY + 100);
+            context.lineTo(centerX + 100, centerY);    
+            context.lineTo(centerX, centerY);            
+        } else if (!sides) { // Circle
             context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         } else if (sides < 0) { // Star
             if (config.graphical.pointy) context.lineJoin = 'miter';
