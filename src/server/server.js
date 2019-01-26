@@ -1135,7 +1135,9 @@ class Gun {
             }
             // Pre-load bullet definitions so we don't have to recalculate them every shot
             let natural = {};
-            this.bulletTypes.forEach(function setNatural(type) {    
+            let z = 0;
+            const length = this.bulletTypes.length;
+            function setNatural(type) {    
                 if (type.PARENT != null) { // Make sure we load from the parents first
                     for (let i=0; i<type.PARENT.length; i++) {
                         setNatural(type.PARENT[i]);
@@ -1146,7 +1148,9 @@ class Gun {
                         natural[index] = type.BODY[index];
                     }
                 }
-            });
+            }
+            this.bulletTypes.forEach();
+            for (; i < 
             this.natural = natural; // Save it
             if (info.PROPERTIES.GUN_CONTROLLERS != null) { 
                 let toAdd = [];
@@ -4038,7 +4042,7 @@ const sockets = (() => {
                                     const length = data.length;
                                     for (; j < length; j++) {
                                         // Find if it's already there
-                                        let i = internalmap.findIndex(e => { return challenge(e, ); });
+                                        let i = internalmap.findIndex(e => { return challenge(e, data[j]); });
                                         if (i === -1) { // if not add it
                                             internalmap.push([1, ...data[j]]);
                                         } else { // if so, flag it as stable
@@ -4277,10 +4281,10 @@ const sockets = (() => {
                             let o = 0;
                             let r = 0;
                             for (; o < lengtho; o++) {
-                               flatorders.push(...data[o]); 
+                               flatorders.push(...orders[o]);
                             }
-                            for (; r < lengthr; o++) {
-                               flatrefresh.push(...data[r]); 
+                            for (; r < lengthr; r++) {
+                               flatrefresh.push(...refresh[r]); 
                             }
                             //orders.forEach(e => flatorders.push(...e));
                             //refresh.forEach(e => flatrefresh.push(...e));
