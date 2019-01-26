@@ -1653,9 +1653,6 @@ class Entity {
         this.isGhost = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
         this.creationTime = (new Date()).getTime();
-      // Fun stuff :P
-        this.rainbow = false
-        this.rainbow_back = false
         // Inheritance
         this.master = master;
         this.source = this;
@@ -5399,12 +5396,15 @@ var maintainloop = (() => {
         makenpcs();      
         makefood(); 
         // Regen health and update the grid
-        for (var instance of entities) {
-            if (instance.shield.max) {
-                instance.shield.regenerate();
+        let i = 0;
+        const length = entities.length;
+        //for (var instance of entities) {
+        for (; i < length; i++) {
+            if (entities[i].shield.max) {
+                entities[i].shield.regenerate();
             }
-            if (instance.health.amount) {
-                instance.health.regenerate(instance.shield.max && instance.shield.max === instance.shield.amount);
+            if (entities[i].health.amount) {
+                entities[i].health.regenerate(entities[i].shield.max && entities[i].shield.max === entities[i].shield.amount);
             }
         };
     };
@@ -5471,7 +5471,7 @@ var websockets = (() => {
 var tickLengthMs = 1000 / 60;
 var previousTick = now();
 var actualTicks = 0;  
-var gameexecution = function () {
+var gameloopexecution = function () {
   var current = now();
 
   actualTicks++;
@@ -5486,9 +5486,9 @@ var gameexecution = function () {
   }
 
   if (Date.now() - previousTick < tickLengthMs - 16) {
-    setTimeout(gameexecution);
+    setTimeout(gameloopexecution);
   } else {
-    setImmediate(gameexecution);
+    setImmediate(gameloopexecution);
   }
 }
 
@@ -5500,7 +5500,7 @@ var gameexecution = function () {
 //timer.setInterval(speedcheckloop, '', '1000m');
 //var cycleMs = room.cycleSpeed + 'm';
 //var timer = new nanotimer();
-gameexecution();
+gameloopexecution();
 setInterval(maintainloop, 200);
 setInterval(speedcheckloop, 1000);
 //setInterval(speedcheckloop, 1000);

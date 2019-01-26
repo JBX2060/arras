@@ -86,9 +86,12 @@ exports.chooseN = (arr, n) => {
 
 exports.chooseChance = (...arg) => {
     let totalProb = 0;
-    arg.forEach(function (value) {
-        totalProb += value;
-    });
+    //arg.forEach(function(value) { totalProb += value; });
+    let i = 0;
+    const length = arg.length;
+    for (; i < length; i++) {
+        totalProb += arg[i];
+    }
     let answer = exports.random(totalProb);
     for (let i = 0; i < arg.length; i++) {
         if (answer < arg[i]) return i;
