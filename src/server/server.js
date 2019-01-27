@@ -7,16 +7,16 @@
 require('google-closure-library');
 goog.require('goog.structs.PriorityQueue');
 goog.require('goog.structs.QuadTree');
-
+ 
 // Import game settings.
 const c = require('../../config.json');
 
 // Import utilities.
 const util = require('./lib/util');
 const ran = require('./lib/random');
-const hshg = require('./lib/hshg');
-const now = require('performance-now');
+const hshg = require('./lib/hshg'); 
 
+let serverStartTime = Date.now();
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -29,33 +29,12 @@ Array.prototype.remove = index => {
     }
 };
 
-var placedDodecagon = false;
-
-// Define player keys
-
-var keys = [
-         'ttoken1',
-         'ttoken2',
-         'ttoken3',
-         'ttoken4',
-         'ttoken5',
-         'syncinussecrettoken',
-         'atlantissecrettoken',
-];
-
-
-
+// Set up room.
 global.fps = "Unknown";
 var roomSpeed = c.gameSpeed;
-
-let lastTime = now();
-let timestep = 1;
-
-var previousTick = now();
-
 const room = {
     lastCycle: undefined,
-    cycleSpeed: 1000 / roomSpeed / 60,
+    cycleSpeed: 1000 / roomSpeed / 30,
     width: c.WIDTH,
     height: c.HEIGHT,
     setup: c.ROOM_SETUP,
@@ -66,8 +45,8 @@ const room = {
     scale: {
         square: c.WIDTH * c.HEIGHT / 100000000,
         linear: Math.sqrt(c.WIDTH * c.HEIGHT / 100000000),
-    },
-    maxFood: c.WIDTH * c.HEIGHT / 100000 * c.FOOD_AMOUNT,
+    }, 
+    maxFood: c.WIDTH * c.HEIGHT / 20000 * c.FOOD_AMOUNT,
     isInRoom: location => {
         return (location.x < 0 || location.x > c.WIDTH || location.y < 0 || location.y > c.HEIGHT) ? (
             false
@@ -79,33 +58,33 @@ const room = {
 };
     room.findType = type => {
         let output = [];
-        let j = 0;      
-        let x = 0;
-        const lengthrow = room.setup.length;
-        //room.setup.forEach(row => { 
-        for (; x < lengthrow; x++) {
+        let j = 0;
+        room.setup.forEach(row => { 
             let i = 0;
-            let y = 0;
-            const lengthcell = room.setup[x].length;
-            //row.forEach(cell => {
-            for (; y < lengthcell; y++) {
-                if (room.setup[x][y] === type) { 
+            row.forEach(cell => {
+                if (cell === type) { 
                     output.push({ x: (i + 0.5) * room.width / room.xgrid, y: (j + 0.5) * room.height / room.ygrid, });
                 }
                 i++;
-            }
+            });
             j++;
-        }
+        });
         room[type] = output;
     };
     room.findType('nest');
+    room.findType('mbas');
+    room.findType('wall');
+    room.findType('bad1');
+    room.findType('bad2');
+    room.findType('bad3');
+    room.findType('bots');
+    room.findType('boss');
+    room.findType('blue');
     room.findType('norm');
     room.findType('bas1');
     room.findType('bas2');
     room.findType('bas3');
     room.findType('bas4');
-    room.findType('bas5');
-    room.findType('bas6');
     room.findType('roid');
     room.findType('rock');
     room.nestFoodAmount = 1.5 * Math.sqrt(room.nest.length) / room.xgrid / room.ygrid;
@@ -249,7 +228,6 @@ function timeOfImpact(p, v, s) {
 
     return t*0.9;
 }
-
 class IO {
     constructor(body) {
         this.body = body;
@@ -494,7 +472,7 @@ class io_nearestDifferentMaster extends IO {
         this.targetLock = undefined;
         this.tick = ran.irandom(30);
         this.lead = 0;
-        this.validTargets = this.buildList(body.fov);
+        this.validTargets = this.buildList(body.fov / 2);
         this.oldHealth = body.health.display();
     }
 
@@ -510,13 +488,12 @@ class io_nearestDifferentMaster extends IO {
             // Only look at those within our view, and our parent's view, not dead, not our kind, not a bullet/trap/block etc
             if (e.health.amount > 0) {
             if (!e.invuln) {
-            if (e.alpha > 0.015) {
             if (e.master.master.team !== this.body.master.master.team) {
             if (e.master.master.team !== -101) {
             if (e.type === 'tank' || e.type === 'crasher' || (!this.body.aiSettings.shapefriend && e.type === 'food')) {
             if (Math.abs(e.x - m.x) < range && Math.abs(e.y - m.y) < range) {
             if (!this.body.aiSettings.blind || (Math.abs(e.x - mm.x) < range && Math.abs(e.y - mm.y) < range)) return e;
-            } } } } } } }
+            } } } } } }
         }).filter((e) => { return e; });
         
         if (!out.length) return [];
@@ -552,7 +529,7 @@ class io_nearestDifferentMaster extends IO {
         } 
         // Otherwise, consider how fast we can either move to ram it or shoot at a potiential target.
         let tracking = this.body.topSpeed,
-            range = this.body.fov;
+            range = this.body.fov / 2;
         // Use whether we have functional guns to decide
         for (let i=0; i<this.body.guns.length; i++) {
             if (this.body.guns[i].canShoot && !this.body.aiSettings.skynet) {
@@ -800,27 +777,6 @@ class io_fastspin extends IO {
         };        
     }
 }
-class io_testspin extends IO {
-    constructor(b) {
-        super(b);
-        this.a = 0;
-    }
-    
-    think(input) {
-        this.a += 0.04;
-        let offset = Math.sin(this.a);
-        if (this.body.bond != null) {
-            offset = this.body.bound.angle;
-        }
-        return {                
-            target: {
-                x: Math.cos(this.a + offset),
-                y: Math.sin(this.a + offset),
-            },  
-            main: true,
-        };        
-    }
-}
 class io_reversespin extends IO {
     constructor(b) {
         super(b);
@@ -899,7 +855,6 @@ const levelers = [
 ];
 class Skill {
     constructor(inital = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]) { // Just skill stuff. 
-        this.changed = true;
         this.raw = inital;
         this.caps = [];
         this.setCaps([
@@ -973,7 +928,7 @@ class Skill {
         this.pen = apply(2.5, attrib[skcnv.pen]);
         this.str = apply(2, attrib[skcnv.str]);
         this.dam = apply(3, attrib[skcnv.dam]);
-        this.spd = (0.5 + apply(1.5, attrib[skcnv.spd])) / 3;
+        this.spd = 0.5 + apply(1.5, attrib[skcnv.spd]);
 
         this.acl = apply(0.5, attrib[skcnv.rld]);
         
@@ -987,7 +942,6 @@ class Skill {
         this.rgn = apply(25, attrib[skcnv.rgn]);
 
         this.brst = 0.3 * (0.5 * attrib[skcnv.atk] + 0.5 * attrib[skcnv.hlt] + attrib[skcnv.rgn]);
-        this.changed = true;
     }
 
     set(thing) {
@@ -1142,7 +1096,7 @@ class Gun {
             }
             // Pre-load bullet definitions so we don't have to recalculate them every shot
             let natural = {};
-            function setNatural(type) {    
+            this.bulletTypes.forEach(function setNatural(type) {    
                 if (type.PARENT != null) { // Make sure we load from the parents first
                     for (let i=0; i<type.PARENT.length; i++) {
                         setNatural(type.PARENT[i]);
@@ -1153,24 +1107,14 @@ class Gun {
                         natural[index] = type.BODY[index];
                     }
                 }
-            }
-            let z = 0;
-            const length = this.bulletTypes.length;
-            for (; z < length; z++) {
-                setNatural(this.bulletTypes[z]);
-            }
+            });
             this.natural = natural; // Save it
             if (info.PROPERTIES.GUN_CONTROLLERS != null) { 
                 let toAdd = [];
                 let self = this;
-                //info.PROPERTIES.GUN_CONTROLLERS.forEach(function(ioName) {
-                //    toAdd.push(eval('new ' + ioName + '(self)'));
-                //});
-                let i = 0;
-                const length = info.PROPERTIES_GUN_CONTROLLERS.length;
-                for (; i < length; i++) {
-                    toAdd.push(eval('new ' + info.PROPERTIES.GUN_CONTROLLERS[i] + '(self)'));
-                }
+                info.PROPERTIES.GUN_CONTROLLERS.forEach(function(ioName) {
+                    toAdd.push(eval('new ' + ioName + '(self)'));
+                });
                 this.controllers = toAdd.concat(this.controllers);
             }
             this.autofire = (info.PROPERTIES.AUTOFIRE == null) ?
@@ -1208,10 +1152,10 @@ class Gun {
         this.motion = 0;
         if (this.canShoot) {
             this.cycle = !this.waitToCycle - this.delay;
-            this.trueRecoil = this.settings.recoil * 1.675;
+            this.trueRecoil = this.settings.recoil;
         }
     }
-
+    
     recoil() {
         if (this.motion || this.position) {
             // Simulate recoil
@@ -1273,7 +1217,7 @@ class Gun {
             // Cycle up if we should
             if (shootPermission || !this.waitToCycle) {
                 if (this.cycle < 1) {
-                    this.cycle += 1 / (this.settings.reload * 2) / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
+                    this.cycle += 1 / this.settings.reload / roomSpeed / ((this.calculator == 'necro' || this.calculator == 'fixed reload') ? 1 : sk.rld);
                 } 
             } 
             // Firing routines
@@ -1308,17 +1252,13 @@ class Gun {
     syncChildren() {
         if (this.syncsSkills) {
             let self = this;
-            let i = 0;
-            const length = this.children.length;
-            for (; i < length; i++) {
-            //for (let instance of this.children) {
-                let instance = this.children[i];
-                instance.define({
+            this.children.forEach(function(o) {
+                o.define({
                     BODY: self.interpret(), 
                     SKILL: self.getSkillRaw(),
                 });
-                instance.refreshBodyAttributes();
-            }
+                o.refreshBodyAttributes();
+            });
         }
     }
 
@@ -1341,7 +1281,7 @@ class Gun {
             ((this.negRecoil) ? -1 : 1) * this.settings.speed * c.runSpeed * sk.spd * (1 + ss) * Math.cos(this.angle + this.body.facing + sd),
             ((this.negRecoil) ? -1 : 1) * this.settings.speed * c.runSpeed * sk.spd * (1 + ss) * Math.sin(this.angle + this.body.facing + sd)
         );     
-        // Boost it if we should
+        // Boost it if we shouldw
         if (this.body.velocity.length) { 
             let extraBoost = 
                 Math.max(0, s.x * this.body.velocity.x + s.y * this.body.velocity.y) / this.body.velocity.length / s.length;
@@ -1352,39 +1292,23 @@ class Gun {
             }                     
         }
         // Create the bullet
-        /*
         var o = new Entity({
             x: this.body.x + this.body.size * gx - s.x,
             y: this.body.y + this.body.size * gy - s.y,
         }, this.master.master);
-        let jumpAhead = this.cycle - 1;
+        /*let jumpAhead = this.cycle - 1;
         if (jumpAhead) {
             o.x += s.x * this.cycle / jumpAhead;
             o.y += s.y * this.cycle / jumpAhead;
-        }
+        }*/
         o.velocity = s;
         this.bulletInit(o);
         o.coreSize = o.SIZE;
-        */
-        let o = new Entity({
-            x: this.body.x + this.body.size * gx - s.x,
-            y: this.body.y + this.body.size * gy - s.y,
-        }, this.master.master);
-        this.bulletInit(o);
-        o.x = this.body.x + this.body.size * gx - s.x;
-        o.y = this.body.y + this.body.size * gy - s.y;
-        o.coreSize = o.SIZE;
-        o.velocity = s;
     }
 
     bulletInit(o) {
         // Define it by its natural properties
-        //this.bulletTypes.forEach(type => o.define(type));
-        const length = this.bulletTypes.length;
-        let i = 0;
-        for (; i < length; i++) {
-           o.define(this.bulletTypes[i]); 
-        }
+        this.bulletTypes.forEach(type => o.define(type));
         // Pass the gun attributes
         o.define({ 
             BODY: this.interpret(), 
@@ -1405,34 +1329,32 @@ class Gun {
         o.source = this.body;
         o.facing = o.velocity.direction;
         // Necromancers.
-        if (this.calculator == 'necro') {
-            let oo = o;
-            o.necro = host => {
-                let shootPermission = (this.countsOwnKids) ?
-                    this.countsOwnKids > this.children.length * 
-                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
-                : (this.body.maxChildren) ?
-                    this.body.maxChildren > this.body.children.length * 
-                    ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
-                : true;   
-                if (shootPermission) {
-                    let save = {
-                        facing: host.facing,
-                        size: host.SIZE,
-                    };
-                    host.define(Class.genericEntity);
-                    this.bulletInit(host);
-                    host.team = oo.master.master.team;
-                    host.master = oo.master;
-                    host.color = oo.color;
-                    host.facing = save.facing;
-                    host.SIZE = save.size;
-                    host.health.amount = host.health.max;
-                    return true;
-                }
-                return false;
-            };
-        }
+        let oo = o;
+        o.necro = host => {
+            let shootPermission = (this.countsOwnKids) ?
+                this.countsOwnKids > this.children.length * 
+                ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
+            : (this.body.maxChildren) ?
+                this.body.maxChildren > this.body.children.length * 
+                ((this.bulletStats === 'master') ? this.body.skill.rld : this.bulletStats.rld)
+            : true;   
+            if (shootPermission) {
+                let save = {
+                    facing: host.facing,
+                    size: host.SIZE,
+                };
+                host.define(Class.genericEntity);
+                this.bulletInit(host);
+                host.team = oo.master.master.team;
+                host.master = oo.master;
+                host.color = oo.color;
+                host.facing = save.facing;
+                host.SIZE = save.size;
+                host.health.amount = host.health.max;
+                return true;
+            }
+            return false;
+        };
         // Otherwise
         o.refreshBodyAttributes();
         o.life();
@@ -1526,7 +1448,7 @@ var bringToLife = (() => {
     };
     return my => {
         // Size
-        if (my.SIZE !== my.coreSize) my.coreSize = my.SIZE;
+        if (my.SIZE - my.coreSize) my.coreSize += (my.SIZE - my.coreSize) / 100;
         // Think 
         let faucet = (my.settings.independent || my.source == null || my.source === my) ? {} : my.source.control;
         let b = {
@@ -1542,7 +1464,7 @@ var bringToLife = (() => {
             my.range -= 1;
         }
         // So we start with my master's thoughts and then we filter them down through our control stack
-        for (let AI of my.controllers) {
+        my.controllers.forEach(AI => {
             let a = AI.think(b);
             let passValue = passer(a, b, AI.acceptsFromTop);
             passValue('target');
@@ -1551,7 +1473,7 @@ var bringToLife = (() => {
             passValue('main');
             passValue('alt');
             passValue('power');
-        }      
+        });        
         my.control.target = (b.target == null) ? my.control.target : b.target;
         my.control.goal = b.goal;
         my.control.fire = b.fire;
@@ -1562,18 +1484,9 @@ var bringToLife = (() => {
         my.move(); 
         my.face();
         // Handle guns and turrets if we've got them
-        for (let gun of my.guns) {
-           gun.live();
-        }
-        for (let turret of my.turrets) {
-           turret.life(); 
-        }
+        my.guns.forEach(gun => gun.live());
+        my.turrets.forEach(turret => turret.life());
         if (my.skill.maintain()) my.refreshBodyAttributes();
-        //if (my.invisible[1]) {
-		  	//    my.alpha = Math.max(0.01, my.alpha - my.invisible[1]);
-		  	//    if (!(my.velocity.x * my.velocity.x + my.velocity.y * my.velocity.y < 0.15 * 0.15) || my.damageRecieved)
-		  	//      	my.alpha = Math.min(1, my.alpha + my.invisible[0]);
-		    //} else my.alpha = 1;
     }; 
 })();
 
@@ -1650,9 +1563,9 @@ class HealthType {
 
 class Entity {
     constructor(position, master = this) {
-        this.cache = [0, 0, 0, 0, 0, 0];
-        this.defaultset = false;
         this.isGhost = false;
+        this.explosive = false;
+        this.fragmentive = false;
         this.killCount = { solo: 0, assists: 0, bosses: 0, killers: [], };
         this.creationTime = (new Date()).getTime();
         // Inheritance
@@ -1669,12 +1582,7 @@ class Entity {
         };
         this.isInGrid = false;
         this.removeFromGrid = () => { if (this.isInGrid) { grid.removeObject(this); this.isInGrid = false; } };
-        this.addToGrid = () => { 
-          if (!this.isInGrid && this.bond == null) { 
-            grid.addObject(this); this.isInGrid = true;
-          }
-        };
-
+        this.addToGrid = () => { if (!this.isInGrid && this.bond == null) { grid.addObject(this); this.isInGrid = true; } };
         this.activation = (() => {
             let active = true;
             let timer = ran.irandom(15);
@@ -1717,25 +1625,19 @@ class Entity {
         this.SIZE = 1;
         this.define(Class.genericEntity);
         // Initalize physics and collision
+        this.maxSpeed = 0;
         this.facing = 0;
-        this.vfacing = 0;
+        this.vfacing = 0;  // gohere
         this.range = 0;
         this.damageRecieved = 0;
         this.stepRemaining = 1;
-        this.collisionArray = [];
-        this.invuln = false;
-        this.alpha = 1;
-        // Physics 2.0 stuff
         this.x = position.x;
         this.y = position.y;
         this.velocity = new Vector(0, 0);
         this.accel = new Vector(0, 0);
-        this.impulse = new Vector(0, 0);
-        this.maxSpeed = 0;
-        this.maxAccel = 0;
-        this.resistance = 0.13;
-        this.impulseZero = 0.01;
-        this.knockbackLimit = 125;
+        this.damp = 0.05;
+        this.collisionArray = [];
+        this.invuln = false;
         // Get a new unique id
         this.id = entitiesIdLog++;
         this.team = this.id;
@@ -1778,12 +1680,7 @@ class Entity {
         })();
         this.updateAABB(true);   
         entities.push(this); // everything else
-        //views.forEach(v => v.add(this));
-        let i = 0;
-        const length = views.length;
-        for (; i < length; i++) {
-           views[i].add(this); 
-        }
+        views.forEach(v => v.add(this));
     }
     
     life() { bringToLife(this); }
@@ -1802,6 +1699,12 @@ class Entity {
                 this.define(set.PARENT[i]);
             }
         }
+        if (set.EXPLOSIVE != null) {
+    this.explosive = set.EXPLOSIVE
+        }
+        if (set.FRAGMENTIVE != null) {
+    this.fragmentive = set.FRAGMENTIVE
+        }
         if (set.index != null) {
             this.index = set.index;
         }
@@ -1814,28 +1717,18 @@ class Entity {
         if (set.TYPE != null) { 
             this.type = set.TYPE; 
         }
-        if (set.SHAPE != null) {
-            this.shape = set.SHAPE;
-        }
-        /*
-        if (set.CUSTOMSHAPE != null && set.CUSTOMSHAPE.length > 0) {
-           this.customshape = set.CUSTOMSHAPE;
-           console.log(this.customshape);
-        }
-        */
+if (set.SHAPE != null) {
+    this.shape = typeof set.SHAPE === 'number' ? set.SHAPE : 0
+    this.shapeData = set.SHAPE;
+}
         if (set.COLOR != null) { 
             this.color = set.COLOR; 
         }   
         if (set.CONTROLLERS != null) { 
             let toAdd = [];
-            //set.CONTROLLERS.forEach((ioName) => {
-            //    toAdd.push(eval('new io_' + ioName + '(this)'));
-            //});
-            let i = 0;
-            const length = set.CONTROLLERS.length;
-            for (; i < length; i++) {
-              toAdd.push(eval('new io_' + set.CONTROLLERS[i] + '(this)'));
-            }
+            set.CONTROLLERS.forEach((ioName) => {
+                toAdd.push(eval('new io_' + ioName + '(this)'));
+            });
             this.addController(toAdd);
         }
         if (set.MOTION_TYPE != null) { 
@@ -1941,41 +1834,27 @@ class Entity {
         if (set.RESET_UPGRADES) {
             this.upgrades = [];
         }
-        if (set.ALPHA != null) this.alpha = set.ALPHA;
-        if (set.INVISIBLE != null) this.invisible = [
-			  	  set.INVISIBLE[0],
-			  	  set.INVISIBLE[1]
-			  ];
         if (set.UPGRADES_TIER_1 != null) { 
-            //set.UPGRADES_TIER_1.forEach((e) => {
-            //    this.upgrades.push({class: e, level: c.TIER_1, index: e.index});
-            //});
-            let i = 0;
-            const length = set.UPGRADES_TIER_1.length;
-            for (; i < length; i++) {
-                this.upgrades.push({class: set.UPGRADES_TIER_1[i], level: c.TIER_1, index: set.UPGRADES_TIER_1[i].index});
-            }
+            set.UPGRADES_TIER_1.forEach((e) => {
+                this.upgrades.push({ class: e, level: c.TIER_1, index: e.index,});
+            });
         }
         if (set.UPGRADES_TIER_2 != null) { 
-            //set.UPGRADES_TIER_2.forEach((e) => {
-            //    this.upgrades.push({class: e, level: c.TIER_2, index: e.index});
-            //});
-            let i = 0;
-            const length = set.UPGRADES_TIER_2.length;
-            for (; i < length; i++) {
-                this.upgrades.push({class: set.UPGRADES_TIER_2[i], level: c.TIER_2, index: set.UPGRADES_TIER_2[i].index});
-            }
+            set.UPGRADES_TIER_2.forEach((e) => {
+                this.upgrades.push({ class: e, level: c.TIER_2, index: e.index,});
+            });
         }
         if (set.UPGRADES_TIER_3 != null) { 
-            //set.UPGRADES_TIER_3.forEach((e) => {
-            //    this.upgrades.push({class: e, level: c.TIER_3, index: e.index});
-            //});
-            let i = 0;
-            const length = set.UPGRADES_TIER_3.length;
-            for (; i < length; i++) {
-                this.upgrades.push({class: set.UPGRADES_TIER_3[i], level: c.TIER_3, index: set.UPGRADES_TIER_3[i].index});
-            }
+            set.UPGRADES_TIER_3.forEach((e) => {
+                this.upgrades.push({ class: e, level: c.TIER_3, index: e.index,});
+            });
         }
+ /*       if (set.buildHammerMenu.active == true) { //ard
+            set.buildHammerMenu.forEach((e) => {
+                this.upgrades.push({class: e, level: c.TIER_2, index: e.index});
+            }); // buildhammer
+        }
+        */
         if (set.SIZE != null) {
             this.SIZE = set.SIZE * this.squiggle;
             if (this.coreSize == null) { this.coreSize = this.SIZE; }
@@ -2010,14 +1889,9 @@ class Entity {
         }
         if (set.GUNS != null) { 
             let newGuns = [];
-            //set.GUNS.forEach((gundef) => {
-            //    newGuns.push(new Gun(this, gundef));
-            //});
-            let i = 0;
-            const length = set.GUNS.length;
-            for (; i < length; i++) {
-               newGuns.push(new Gun(this, set.GUNS[i])); 
-            }
+            set.GUNS.forEach((gundef) => {
+                newGuns.push(new Gun(this, gundef));
+            });
             this.guns = newGuns;
         }
         if (set.MAX_CHILDREN != null) { 
@@ -2079,21 +1953,13 @@ class Entity {
         }
         if (set.TURRETS != null) {
             let o;
-            let i = 0;
-            let j = 0;
-            const lengthi = this.turrets.length;
-            const lengthj = set.TURRETS.length;
-            //this.turrets.forEach(o => o.destroy());
-            for(; i < lengthi; i++) {
-               this.turrets[i].destroy(); 
-            }
+            this.turrets.forEach(o => o.destroy());
             this.turrets = [];
-            for (; j < lengthj; j++) {
-                let def = set.TURRETS[j];
+            set.TURRETS.forEach(def => {
                 o = new Entity(this, this.master);
                     ((Array.isArray(def.TYPE)) ? def.TYPE : [def.TYPE]).forEach(type => o.define(type));
                     o.bindToMaster(def.POSITION, this);
-            }
+            });
         }
         if (set.mockup != null) {
             this.mockup = set.mockup;
@@ -2101,20 +1967,13 @@ class Entity {
     }
 
     refreshBodyAttributes() {
-        if (this.cache === undefined) {
-           this.cache = [0, 0, 0, 0, 0, 0]; 
-        }
-        
-        if (this.defaultset === false || this.skill.changed === true) {
         let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
 
         this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
         if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        this.cache[0] = this.ACCELERATION;
 
-        this.topSpeed = (c.runSpeed * this.SPEED * this.skill.mob / speedReduce) * 2.58853046592;
+        this.topSpeed = c.runSpeed * this.SPEED * this.skill.mob / speedReduce;
         if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
-        this.cache[1] = this.SPEED;
         
         this.health.set(
             (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
@@ -2134,75 +1993,14 @@ class Entity {
         if (!this.settings.dieAtRange || !this.range) {
             this.range = this.RANGE;
         }
-      
+
         this.fov = this.FOV * 250 * Math.sqrt(this.size) * (1 + 0.003 * this.skill.level);
         
         this.density = (1 + 0.08 * this.skill.level) * this.DENSITY; 
-        
+
         this.stealth = this.STEALTH;
 
-        this.pushability = this.PUSHABILITY;  
-          
-        this.defaultset = true;
-        this.skill.changed = false;
-        }
-      
-        
-        /*
-        let speedReduce = Math.pow(this.size / (this.coreSize || this.SIZE), 1);
-        
-        if (this.ACCELERATION != this.cache[0]) {
-        this.acceleration = c.runSpeed * this.ACCELERATION / speedReduce;
-        if (this.settings.reloadToAcceleration) this.acceleration *= this.skill.acl;
-        this.cache[0] = this.ACCELERATION;
-        }
-        
-        if (this.SPEED != this.cache[1]) {
-        this.topSpeed = (c.runSpeed * this.SPEED * this.skill.mob / speedReduce) * 1.14866039425;
-        if (this.settings.reloadToAcceleration) this.topSpeed /= Math.sqrt(this.skill.acl);
-        this.cache[1] = this.SPEED;
-        }
-        */
-        
-        /*
-        if (this.HEALTH != this.cache[2]) {
-        this.health.set(
-            (((this.settings.healthWithLevel) ? 2 * this.skill.level : 0) + this.HEALTH) * this.skill.hlt
-        );
-        this.health.resist = 1 - 1 / Math.max(1, this.RESIST + this.skill.brst);
-        this.cache[2] = this.HEALTH;
-        }
-
-        if (this.SHIELD != this.cache[3]) {
-        this.shield.set(
-            (((this.settings.healthWithLevel) ? 0.6 * this.skill.level : 0) + this.SHIELD) * this.skill.shi, 
-            Math.max(0, ((((this.settings.healthWithLevel) ? 0.006 * this.skill.level : 0) + 1) * this.REGEN) * this.skill.rgn)
-        );
-        this.cache[3] = this.SHIELD;
-        }
-        
-        if (this.skill.atk != this.cache[4]) {
-        this.damage = this.DAMAGE * this.skill.atk;
-        this.cache[4] = this.skill.atk;
-        }
-        
-        if (this.skill.brst != this.cache[5]) {
-        this.penetration = this.PENETRATION + 1.5 * (this.skill.brst + 0.8 * (this.skill.atk - 1));
-        this.cache[5] = this.skill.brst;
-        }
-
-        if (!this.settings.dieAtRange || !this.range) {
-            this.range = this.RANGE;
-        }
-        
-        this.fov = this.FOV * 250 * Math.sqrt(this.size) * (1 + 0.003 * this.skill.level);
-        
-        this.density = (1 + 0.08 * this.skill.level) * this.DENSITY; 
-        
-        this.stealth = this.STEALTH;
-
-        this.pushability = this.PUSHABILITY;   
-        */
+        this.pushability = this.PUSHABILITY;        
     }    
 
     bindToMaster(position, bond) {
@@ -2241,11 +2039,7 @@ class Entity {
     }
 
     get realSize() {
-        if (Array.isArray(this.shape)) {
-          return this.size * ((Math.abs(1) > lazyRealSizes.length) ? 1 : lazyRealSizes[Math.abs(1)]);
-        } else {
-          return this.size * ((Math.abs(this.shape) > lazyRealSizes.length) ? 1 : lazyRealSizes[Math.abs(this.shape)]);
-        }
+        return this.size * ((Math.abs(this.shape) > lazyRealSizes.length) ? 1 : lazyRealSizes[Math.abs(this.shape)]);
     }
 
     get m_x() {
@@ -2283,7 +2077,6 @@ class Entity {
             score: this.skill.score,
             guns: this.guns.map(gun => gun.getLastShot()),
             turrets: this.turrets.map(turret => turret.camera(true)),
-            alpha: this.alpha
         };
     }   
     
@@ -2291,14 +2084,9 @@ class Entity {
         let suc = this.skill.upgrade(stat);
         if (suc) {
             this.refreshBodyAttributes();
-            //this.guns.forEach(function(gun) {
-            //    gun.syncChildren();
-            //});
-            let i = 0;
-            const length = this.guns.length;
-            for (; i < length; i++) {
-               this.guns[i].syncChildren(); 
-            }
+            this.guns.forEach(function(gun) {
+                gun.syncChildren();
+            });
         }
         return suc;
     }
@@ -2310,20 +2098,12 @@ class Entity {
             this.define(saveMe);
             this.sendMessage('You have upgraded to ' + this.label + '.');
             let ID = this.id;
-            //entities.forEach(instance => {
-            //    if (instance.settings.clearOnMasterUpgrade && instance.master.id === ID) {
-            //        instance.kill();
-            //    }
-            //});
-            let i = 0;
-            const length = entities.length;
-            for (; i < length; i++) {
-               if (entities[i].settings.clearOnMasterUpgrade && entities[i].master.id === ID) {
-                    entities[i].kill();
-              }
-            }
+            entities.forEach(instance => {
+                if (instance.settings.clearOnMasterUpgrade && instance.master.id === ID) {
+                    instance.kill();
+                }
+            }); 
             this.skill.update();
-            this.skill.changed = true;
             this.refreshBodyAttributes();
         }
     }
@@ -2369,18 +2149,18 @@ class Entity {
             this.maxSpeed = this.topSpeed;
             let l = util.getDistance({ x: 0, y: 0, }, g) + 1;
             if (gactive && l > this.size) {
-                let desiredxspeed = (this.topSpeed) * g.x / l,
-                    desiredyspeed = (this.topSpeed) * g.y / l,
-                    turning = Math.sqrt(((this.topSpeed) * Math.max(1, this.range) + 1) / a);
+                let desiredxspeed = this.topSpeed * g.x / l,
+                    desiredyspeed = this.topSpeed * g.y / l,
+                    turning = Math.sqrt((this.topSpeed * Math.max(1, this.range) + 1) / a);
                 engine = {
-                    x: ((desiredxspeed - this.velocity.x) / Math.max(5, turning)) * 1.2145,
-                    y: ((desiredyspeed - this.velocity.y) / Math.max(5, turning)) * 1.2145,  
+                    x: (desiredxspeed - this.velocity.x) / Math.max(5, turning),
+                    y: (desiredyspeed - this.velocity.y) / Math.max(5, turning),  
                 };
             } else {
                 if (this.velocity.length < this.topSpeed) {
                     engine = {
-                        x: this.velocity.x * a / 40,
-                        y: this.velocity.y * a / 40,
+                        x: this.velocity.x * a / 20,
+                        y: this.velocity.y * a / 20,
                     };
                 }
             }
@@ -2453,7 +2233,7 @@ class Entity {
         case 'looseWithTarget':
         case 'looseToTarget':
         case 'smoothToTarget':
-            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 1 / roomSpeed); 
+            this.facing += util.loopSmooth(this.facing, Math.atan2(t.y, t.x), 4 / roomSpeed); 
             break;        
         case 'bound':
             let givenangle;
@@ -2483,7 +2263,7 @@ class Entity {
         this.flattenedPhoto = null;
         this.photo = (this.settings.drawShape) ? this.camera() : this.photo = undefined;
     }
-    
+
     physics() {
         if (this.accel.x == null || this.velocity.x == null) {
             util.error('Void Error!');
@@ -2493,24 +2273,25 @@ class Entity {
             nullVector(this.accel); nullVector(this.velocity);
         }
         // Apply acceleration
-        this.velocity.x += this.accel.x * timestep;
-        this.velocity.y += this.accel.y * timestep;
+        this.velocity.x += this.accel.x;
+        this.velocity.y += this.accel.y;
         // Reset acceleration
-        //if (!this.accel <= 0) {
-        nullVector(this.accel);
-        //}
+        nullVector(this.accel); 
         // Apply motion
         this.stepRemaining = 1;
         this.x += this.stepRemaining * this.velocity.x / roomSpeed;
-        this.y += this.stepRemaining * this.velocity.y / roomSpeed;  
+        this.y += this.stepRemaining * this.velocity.y / roomSpeed;        
     }
 
-    friction() {        
-        var motion = this.velocity.length, excess = motion - this.maxSpeed;
+    friction() {
+        var motion = this.velocity.length,
+            excess = motion - this.maxSpeed;
         if (excess > 0 && this.damp) {
-          var k = this.damp * timestep * 0.97, drag = excess / (k + 1), finalVelocity = this.maxSpeed + drag;
-          this.velocity.x = ((finalVelocity * this.velocity.x / motion)) * 0.97;
-          this.velocity.y = ((finalVelocity * this.velocity.y / motion)) * 0.97;
+            var k = this.damp / roomSpeed,
+                drag = excess / (k + 1),
+                finalvelocity = this.maxSpeed + drag;
+            this.velocity.x = finalvelocity * this.velocity.x / motion;
+            this.velocity.y = finalvelocity * this.velocity.y / motion;
         }
     }
 
@@ -2524,7 +2305,7 @@ class Entity {
             return 0;
         }
         if (!this.settings.canGoOutsideRoom) {
-            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed; //roomSpeed for next 3
+            this.accel.x -= Math.min(this.x - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.x -= Math.max(this.x + this.realSize - room.width - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.min(this.y - this.realSize + 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
             this.accel.y -= Math.max(this.y + this.realSize - room.height - 50, 0) * c.ROOM_BOUND_FORCE / roomSpeed;
@@ -2532,27 +2313,81 @@ class Entity {
         if (room.gameMode === 'tdm' && this.type !== 'food') { 
             let loc = { x: this.x, y: this.y, };
             if (
-                (this.team !== -1 && room.isIn('bas1', loc)) ||
+                //(this.team !== -1 && room.isIn('bas1', loc)) ||
                 (this.team !== -2 && room.isIn('bas2', loc)) ||
                 (this.team !== -3 && room.isIn('bas3', loc)) ||
-                (this.team !== -4 && room.isIn('bas4', loc)) ||
-                (this.team !== -5 && room.isIn('bas5', loc)) ||
-                (this.team !== -6 && room.isIn('bas6', loc))
-              
+                (this.team !== -4 && room.isIn('bas4', loc))
             ) { this.kill(); }
         }
-    }
+    } 
 
     contemplationOfMortality() {
-        if (this.invuln) {
+        if (this.invuln && this.type == 'tank') {
             this.damageRecieved = 0;
             return 0;
         }
         // Life-limiting effects
         if (this.settings.diesAtRange) {
-            this.range -= 1 / roomSpeed;
-            if (this.range < 0) {
+            this.range -= 1 / roomSpeed; // hello me from yesterday change it from range to health ok thanks bye :)
+            if (this.range < 0 /*&& this.health < 60*/) {
                 this.kill();
+              if (this.explosive) {
+                  let damRadius = this.size * 13
+                  var explo_me = this
+                  entities.forEach(function(newelement) {
+                    let distancex = Math.abs(newelement.x - explo_me.x)
+                    let distancey = Math.abs(newelement.y - explo_me.y)
+                    let abs_distance = Math.sqrt((distancex * distancex) + (distancey * distancey))
+                    if (abs_distance <= damRadius && abs_distance > 0 && newelement.team != explo_me.team && !newelement.invuln) {
+                      newelement.health.amount -= explo_me.damage
+                      if (newelement.health.amount <= 0) {
+                        explo_me.master.skill.score += Math.ceil(util.getJackpot(newelement.skill.score));
+                        if (newelement.settings.givesKillMessage) {
+                          explo_me.master.sendMessage('You killed ' + newelement.name + ' with an explosion.');
+                          newelement.sendMessage('You have been killed by ' + explo_me.master.name + ' with an explosive.')
+                        }
+                      } 
+                    }
+                  })
+                  let visual = new Entity({x: this.x, y: this.y});
+                  visual.define(Class.artilleryexplosion);
+                  visual.range = 4
+                  visual.SIZE = this.size * 13
+                  visual.color = this.color
+                  visual.team = this.team
+                  visual.intangibility = true
+                  visual.invuln = true
+                }
+            }
+              if (this.range < 0 /*&& this.health < 60*/) {
+                this.kill();
+              if (this.fragmentive) {
+                  let damRadius = this.size * 1
+                  var explo_me = this
+                  entities.forEach(function(newelement) {
+                    let distancex = Math.abs(newelement.x - explo_me.x)
+                    let distancey = Math.abs(newelement.y - explo_me.y)
+                    let abs_distance = Math.sqrt((distancex * distancex) + (distancey * distancey))
+                    if (abs_distance <= damRadius && abs_distance > 0 && newelement.team != explo_me.team && !newelement.invuln) {
+                      newelement.health.amount -= explo_me.damage
+                      if (newelement.health.amount <= 0) {
+                        explo_me.master.skill.score += Math.ceil(util.getJackpot(newelement.skill.score));
+                        if (newelement.settings.givesKillMessage) {
+                          explo_me.master.sendMessage('You killed ' + newelement.name + ' with a fragment.');
+                          newelement.sendMessage('You have been killed by ' + explo_me.master.name + ' with a fragment.')
+                        }
+                      } 
+                    }
+                  })
+                  let o = new Entity({x: this.x, y: this.y});
+                  o.define(Class.flak);
+                  o.range = 30
+                  o.SIZE = this.size * 1
+                  o.color = this.color
+                  o.team = this.team
+                  o.intangibility = true
+                  o.invuln = true
+                }
             }
         }
         if (this.settings.diesAtLowSpeed) {
@@ -2592,7 +2427,6 @@ class Entity {
             // Calculate the jackpot
             let jackpot = Math.ceil(util.getJackpot(this.skill.score) / this.collisionArray.length);
             // Now for each of the things that kill me...
-            /*
             this.collisionArray.forEach(instance => {
                 if (instance.type === 'wall') return 0;
                 if (instance.master.settings.acceptsScore) { // If it's not food, give its master the score
@@ -2604,23 +2438,6 @@ class Entity {
                 }
                 killTools.push(instance); // Keep track of what actually killed me
             });
-            */
-            
-            let i = 0;
-            const length = this.collisionArray.length;
-            for (; i < length; i++) {
-            //for (let instance of this.collisionArray) {
-                let instance = this.collisionArray[i];
-                if (instance.type === 'wall') return 0;
-                if (instance.master.settings.acceptsScore) { // If it's not food, give its master the score
-                    if (instance.master.type === 'tank' || instance.master.type === 'miniboss') notJustFood = true;
-                    instance.master.skill.score += jackpot;
-                    killers.push(instance.master); // And keep track of who killed me
-                } else if (instance.settings.acceptsScore) {
-                    instance.skill.score += jackpot;
-                }
-                killTools.push(instance); // Keep track of what actually killed me
-            }
             // Remove duplicates
             killers = killers.filter((elem, index, self) => { return index == self.indexOf(elem); });
             // If there's no valid killers (you were killed by food), change the message to be more passive
@@ -2694,22 +2511,17 @@ class Entity {
     destroy() {
         // Remove from the protected entities list
         if (this.isProtected) util.remove(entitiesToAvoid, entitiesToAvoid.indexOf(this)); 
+        if (this.KILL_SERVER_WHEN_DEAD) process.exit()
         // Remove from minimap
         let i = minimap.findIndex(entry => { return entry[0] === this.id; });
         if (i != -1) util.remove(minimap, i);
         // Remove this from views
-        //views.forEach(v => v.remove(this));
-        let v = 0;
-        const length = views.length;
-        for (; v < length; v++) {
-            views[v].remove(this); 
-        }
+        views.forEach(v => v.remove(this));
         // Remove from parent lists if needed
         if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
         // Kill all of its children
         let ID = this.id;
-        let instance = entities.find(o => o.source.id === this.id);
-        if (instance !== undefined) {
+        entities.forEach(instance => {
             if (instance.source.id === this.id) {
                 if (instance.settings.persistsAfterDeath) {
                     instance.source = instance;
@@ -2724,18 +2536,15 @@ class Entity {
                 instance.kill();
                 instance.master = instance;
             }
-        }
+        });
         // Remove everything bound to it
-        if (this.turrets.length > 0) {
-            for (let t of this.turrets) {
-               t.destroy(); 
-            }
-        }
+        this.turrets.forEach(t => t.destroy());
         // Remove from the collision grid
         this.removeFromGrid();
         this.isGhost = true;
     }    
     
+  
     isDead() {
         return this.health.amount <= 0; 
     }
@@ -2766,7 +2575,7 @@ var logs = (() => {
             obj.count++;
         }
         function count(obj) {
-            let o = obj.count;
+            let o = obj.count; 
             obj.count = 0;
             return o;
         }
@@ -2806,13 +2615,11 @@ var logs = (() => {
 })();
 
 // Essential server requires
-    var express = require('express'),
-    http = require('http'),
+var http = require('http'),
     url = require('url'),
     WebSocket = require('ws'),
-    app = express(),
-    fs = require('fs'),      
-     exportDefintionsToClient = (() => { 
+    fs = require('fs'),
+    mockupJsonData = (() => { 
         function rounder(val) {
             if (Math.abs(val) < 0.00001) val = 0;
             return +val.toPrecision(6);
@@ -2825,8 +2632,7 @@ var logs = (() => {
                 x: rounder(e.x),
                 y: rounder(e.y),
                 color: e.color,
-                shape: e.shape,
-                //customshape: e.customshape,
+                shape: e.shapeData,
                 size: rounder(e.size),
                 realSize: rounder(e.realSize),
                 facing: rounder(e.facing),
@@ -2873,7 +2679,7 @@ var logs = (() => {
                         endpoints.push({x: focus.x + scale * z * Math.cos(theta), y: focus.y + scale * z * Math.sin(theta)});
                     }
                 }
-                function makeGunModel(gun) {
+                model.guns.forEach(function(gun) {
                     let h = (gun.aspect > 0) ? scale * gun.width / 2 * gun.aspect : scale * gun.width / 2;
                     let r = Math.atan2(h, scale * gun.length) + rot;
                     let l = Math.sqrt(scale * scale * gun.length * gun.length + h * h);
@@ -2895,23 +2701,14 @@ var logs = (() => {
                         x: x + l * Math.cos(gun.angle - r),
                         y: y + l * Math.sin(gun.angle - r),
                     });
-                }
-                //model.guns.forEach();
-                for (let gun of model.guns) {
-                    makeGunModel(gun);
-                }
-              
-                function makeTurretModel(turret) {
+                });
+                model.turrets.forEach(function(turret) {
                     pushEndpoints(
                         turret, turret.bound.size, 
                         { x: turret.bound.offset * Math.cos(turret.bound.angle), y: turret.bound.offset * Math.sin(turret.bound.angle) }, 
                         turret.bound.angle
                     );
-                }
-                //model.turrets.forEach();
-                for (let turret of model.turrets) {
-                   makeTurretModel(turret);
-                }
+                });
             };
             pushEndpoints(entities, 1);
             // 2) Find their mass center
@@ -3070,84 +2867,23 @@ var logs = (() => {
         purgeEntities();
         // Build the function to return
         let writeData = JSON.stringify(mockupData);
-        return loc => {
-            util.log('Preparing definition export.');
-            fs.writeFileSync(loc, writeData, 'utf8', (err) => {
-                if (err) return util.error(err);
-            });
-            util.log('Mockups written to ' + loc + '!');
-        };
-    })(),
-    generateVersionControlHash = (() => {
-        let crypto = require('crypto');
-        let write = (() => {
-            let hash = [null, null];
-            return (loc, data, numb) => {
-                // The callback is executed on reading completion
-                hash[numb] = crypto.createHash('sha1').update(data).digest('hex');
-                if (hash[0] && hash[1]) {
-                    let finalHash = hash[0] + hash[1];
-                    util.log('Client hash generated. Hash is "' + finalHash + '".');
-                    // Write the hash to a place the client can read it.
-                    fs.writeFileSync(loc, finalHash, 'utf8', err => {
-                        if (err) return util.error(err);
-                    });
-                    util.log('Hash written to ' + loc + '!');
-                }
-            };
-        })();
-        return loc => {
-            let path1 = __dirname + '/../client/js/app.js';
-            let path2 = __dirname + '/lib/definitions.js';
-            util.log('Building client version hash, reading from ' + path1 + ' and ' + path2 + '...');
-            // Read the client application
-            fs.readFile(path1, 'utf8', (err, data) => {
-                if (err) return util.error(err);
-                util.log('app.js complete.');
-                write(loc, data, 0);
-            });
-            fs.readFile(path2, 'utf8', (err, data) => {
-                if (err) return util.error(err);
-                util.log('definitions.js complete.');
-                write(loc, data, 1);
-            });
-        };
+        return writeData;
     })();
-
-// Give the client upon request
-exportDefintionsToClient(__dirname + '/../client/json/mockups.json');
-generateVersionControlHash(__dirname + '/../client/api/vhash');
-if (c.servesStatic) app.use(express.static(__dirname + '/../client'));
 
 // Websocket behavior
 const sockets = (() => {
     const protocol = require('./lib/fasttalk');
-    let clients = [], players = [], bannedIPs = [], suspiciousIPs = [], connectedIPs = [],
-        bannedNames = [
-            'FREE_FOOD_LUCARIO',
-            'FREE FOOD'
-        ];
+    let clients = [], players = [];
     return {
         broadcast: message => {
-            for (let socket of clients) {
+            clients.forEach(socket => {
                 socket.talk('m', message);
-            };
+            });
         },
         connect: (() => {
             // Define shared functions
             // Closing the socket
             function close(socket) {
-                // Free the IP
-                let n = connectedIPs.findIndex(w => { return w.ip === socket.ip; });
-                if (n !== -1) {
-                    util.log(socket.ip + " disconnected.");
-                    util.remove(connectedIPs, n);
-                }
-                // Free the token
-                if (socket.key != '') { 
-                    keys.push(socket.key);
-                    util.log("Token freed.");
-                }   
                 // Figure out who the player was
                 let player = socket.player,
                     index = players.indexOf(player);
@@ -3172,27 +2908,9 @@ const sockets = (() => {
                 util.remove(clients, clients.indexOf(socket));        
                 util.log('[INFO] Socket closed. Views: ' + views.length + '. Clients: ' + clients.length + '.');
             }
-            // Banning
-            function ban(socket) {
-                if (bannedIPs.findIndex(ip => { return ip === socket.ip; }) === -1) {
-                    bannedIPs.push(socket.ip);
-                } // No need for duplicates
-                socket.terminate();
-                util.warn(socket.ip + ' banned!');
-            }
             // Being kicked 
             function kick(socket, reason = 'No reason given.') {
-                let n = suspiciousIPs.findIndex(n => { return n.ip === socket.ip; });
-                if (n === -1) {
-                    suspiciousIPs.push({ ip: socket.ip, warns: 1, });
-                    util.warn(reason + ' Kicking. 1 warning.');
-                } else {
-                    suspiciousIPs[n].warns++;
-                    util.warn(reason + ' Kicking. ' + suspiciousIPs[n].warns + ' warnings.');
-                    if (suspiciousIPs[n].warns >= c.socketWarningLimit) {
-                        ban(socket);
-                    }
-                }
+                util.warn(reason + ' Kicking.');
                 socket.lastWords('K');
             }
             // Handle incoming messages
@@ -3210,9 +2928,18 @@ const sockets = (() => {
                 // Handle the request
                 switch (m.shift()) {
                 case 'k': { // key verification
-                    //if (m.length !== 1) { socket.kick('Ill-sized key request.'); return 1; }
+                    if (m.length > 1) { socket.kick('Ill-sized key request.'); return 1; }
+                    if (socket.status.verified) { socket.kick('Duplicate player spawn attempt.'); return 1; }
+                    socket.talk('w', true)
+                    if (m.length === 1) {
+                        let key = m[0];
+                        socket.key = key;
+                        util.log('[INFO] A socket was verified with the token: '); util.log(key);
+                    }
+                    socket.verified = true;
+                    util.log('Clients: ' + clients.length);
+                    /*if (m.length !== 1) { socket.kick('Ill-sized key request.'); return 1; }
                     // Get data
-                    let key = m[0];
                     // Verify it
                     if (typeof key !== 'string') { socket.kick('Weird key offered.'); return 1; }
                     if (key.length > 64) { socket.kick('Overly-long key offered.'); return 1; }
@@ -3230,15 +2957,9 @@ const sockets = (() => {
                         util.log('Clients: ' + clients.length);
                     } else {
                         // If not, kick 'em (nicely)
-                        if (c.tokenReq == true) {
-                          util.log('[INFO] Invalid player verification attempt.');
-                          socket.lastWords('w', false);
-                        } else {
-                          socket.talk('w', true);
-                          util.log('[INFO] A socket was verified with no token');
-                          util.log('Clients: ' + clients.length);
-                        }
-                    }
+                        util.log('[INFO] Invalid player verification attempt.');
+                        socket.lastWords('w', false);
+                    }*/
                 } break;
                 case 's': { // spawn request
                     if (!socket.status.deceased) { socket.kick('Trying to spawn while already alive.'); return 1; }
@@ -3247,9 +2968,9 @@ const sockets = (() => {
                     let name = m[0].replace(c.BANNED_CHARACTERS_REGEX, '');
                     let needsRoom = m[1];
                     // Verify it
-                    if (typeof name != 'string') { socket.kick('Bad spawn request.'); return 1; }
+                    if (typeof name != 'string') { socket.kick('Bad spawn request; name not string.'); return 1; }
                     if (encodeURI(name).split(/%..|./).length > 48) { socket.kick('Overly-long name.'); return 1; }
-                    if (needsRoom !== 0 && needsRoom !== 1) { socket.kick('Bad spawn request.'); return 1; }
+                    if (needsRoom !== -1 && needsRoom !== 0) { socket.kick('Bad spawn request; needsRoom not -1 or 0.'); return 1; }
                     // Bring to life
                     socket.status.deceased = false;
                     // Define the player.
@@ -3258,7 +2979,7 @@ const sockets = (() => {
                     if (views.indexOf(socket.view) != -1) { util.remove(views, views.indexOf(socket.view)); socket.makeView(); }
                     socket.player = socket.spawn(name);     
                     // Give it the room state
-                    if (needsRoom) { 
+                    if (!needsRoom) { 
                         socket.talk(
                             'R',
                             room.width,
@@ -3280,7 +3001,7 @@ const sockets = (() => {
                     // Verify it
                     if (typeof synctick !== 'number') { socket.kick('Weird sync packet.'); return 1; }
                     // Bounce it back
-                    socket.talk('S', synctick, util.time());
+                    socket.talk('S', synctick, serverStartTime - Date.now()); //util.time()
                 } break;
                 case 'p': { // ping
                     if (m.length !== 1) { socket.kick('Ill-sized ping.'); return 1; }
@@ -3316,26 +3037,21 @@ const sockets = (() => {
                         commands = m[2];
                     // Verify data
                     if (typeof target.x !== 'number' || typeof target.y !== 'number' || typeof commands !== 'number') { socket.kick('Weird downlink.'); return 1; }
-                    if (commands > 255 || target.x !== Math.round(target.x) || target.y !== Math.round(target.y)) { socket.kick('Malformed command packet.'); return 1; }
+                    if (commands > 255) { socket.kick('Malformed command packet.'); return 1; }
                     // Put the new target in
-                    player.target = target;
+                    player.target = target
                     // Process the commands
-                    let val = [false, false, false, false, false, false, false, false];
-                    for (let i=7; i>=0; i--) {
-                        if (commands >= Math.pow(2, i)) {
-                            commands -= Math.pow(2, i);
-                            val[i] = true;
-                        }
+                    if (player.command != null && player.body != null) {
+                        player.command.up    = (commands &  1)
+                        player.command.down  = (commands &  2) >> 1
+                        player.command.left  = (commands &  4) >> 2
+                        player.command.right = (commands &  8) >> 3
+                        player.command.lmb   = (commands & 16) >> 4
+                        player.command.mmb   = (commands & 32) >> 5
+                        player.command.rmb   = (commands & 64) >> 6
                     }
-                    player.command.up = val[0];
-                    player.command.down = val[1];
-                    player.command.left = val[2];
-                    player.command.right = val[3];
-                    player.command.lmb = val[4];
-                    player.command.mmb = val[5];
-                    player.command.rmb = val[6];
                     // Update the thingy 
-                    socket.timeout.set(commands);
+                    socket.timeout.set(commands)
                 } break;
                 case 't': { // player toggle
                     if (m.length !== 1) { socket.kick('Ill-sized toggle.'); return 1; }
@@ -3397,34 +3113,41 @@ const sockets = (() => {
                 case 'L': { // level up cheat
                     if (m.length !== 0) { socket.kick('Ill-sized level-up request.'); return 1; }
                     // cheatingbois
-                    if (player.body != null) { if (player.body.skill.level < c.SKILL_CHEAT_CAP || ((socket.key === 'testk' || socket.key ==='testl') && player.body.skill.level < 45)) {
+                    if (player.body != null) { if (player.body.skill.level < c.SKILL_CHEAT_CAP || ((socket.key === process.env.SECRET) && player.body.skill.level < 45)) {
                         player.body.skill.score += player.body.skill.levelScore;
                         player.body.skill.maintain();
                         player.body.refreshBodyAttributes();
                     } }
                 } break;
                 case '0': { // testbed cheat
-                    if (m.length !== 0) { socket.kick('no BT for you >:c'); return 1; }
+                    if (m.length !== 0) { socket.kick('Ill-sized testbed request.'); return 1; }
                     // cheatingbois
-                    if (player.body != null) { if (socket.key ==='ttoken1' || socket.key ==='ttoken2' || socket.key ==='ttoken3' || socket.key ==='ttoken4' || socket.key ==='ttoken5'|| socket.key === 'syncinussecrettoken' || socket.key === 'williamsecrettoken') {
+                    if (player.body != null) { if (socket.key === process.env.SECRET) {
                         player.body.define(Class.testbed);
                     } }
                 } break;
-                case 'K': { // teleport cheat
-                  if (socket.key ==='ttoken1' || socket.key ==='ttoken2' || socket.key ==='ttoken3' || socket.key ==='ttoken4' || socket.key ==='ttoken5' || socket.key === 'syncinussecrettoken' || socket.key === 'atlantissecrettoken' && player.body != null ) {
-                    player.body.x = player.body.x + player.body.control.target.x
-                    player.body.y = player.body.y + player.body.control.target.y}
-                } break;
-                  case 'B': {
-                  if (socket.key === 'syncinussecrettoken' || socket.key === 'atlantissecrettoken') {
-                    player.body.define(Class.bigboi);
-                  }
-                } break;
-                  case 'X': {
-                  if (socket.key === 'syncinussecrettoken') {
-                    player.body.define(Class.chungus);
-                  }
-                } break;
+                    case 'K': { // Artillery tank firing system
+if (player.body.label === 'Artillery Caller' && (player.body.lastArtilleryFire || 0) < Date.now()) {
+        player.body.lastArtilleryFire = Date.now() + 1500
+        let targ = {x: player.body.x + player.target.x, y: player.body.y + player.target.y}
+        let o = new Entity(targ); 
+        o.define(Class.artillerybullet); // defines the new entity as the class defined
+        o.range = 5;
+        o.team = -1;
+        o.SIZE = 15;
+        o.color = 10;   
+     }
+if (player.body.label === 'Railgun Master' && (player.body.lastabilityUse || 0) < Date.now()) {
+        player.body.lastabilityUse = Date.now() + 15000
+        let targ = {x: player.body.x + player.target.x, y: player.body.y + player.target.y}
+        let a = new Entity(targ); 
+        a.define(Class.railability); // defines the new entity as the class defined
+        a.team = -1;
+        a.SIZE = 30;
+        a.color = 10;   
+     }
+  
+} break;
                 case 'z': { // leaderboard desync report
                     if (m.length !== 0) { socket.kick('Ill-sized level-up request.'); return 1; }
                     // Flag it to get a refresh on the next cycle
@@ -3516,58 +3239,34 @@ const sockets = (() => {
                             out = [],
                             statnames = ['atk', 'hlt', 'spd', 'str', 'pen', 'dam', 'rld', 'mob', 'rgn', 'shi'];
                         // Load everything (b/c I'm too lazy to do it manually)
-                        let i = 0;
-                        const length = statnames.length;
-                        
-                        for (; i < length; i++) {
-                            vars.push(floppy());
-                            vars.push(floppy());
-                            vars.push(floppy());
-                        }
-                        
-                        /*
                         statnames.forEach(a => {
                             vars.push(floppy());
                             vars.push(floppy());
                             vars.push(floppy());
                         });
-                        */
-                        
                         return {
                             update: () => {
                                 let needsupdate = false, i = 0;
                                 // Update the things
-                                /*
                                 statnames.forEach(a => {
                                     vars[i++].update(skills.title(a));
                                     vars[i++].update(skills.cap(a));
                                     vars[i++].update(skills.cap(a, true));
                                 });
-                                */
-                                  
-                                
-                                let j = 0;
-                                const length = statnames.length;
-                                for (; j < length; j++) {
-                                    vars[i++].update(skills.title(statnames[j]));
-                                    vars[i++].update(skills.cap(statnames[j]));
-                                    vars[i++].update(skills.cap(statnames[j], true));
-                                }
-                                
-                                /* This is a for and not a find because we need
+                                /* This is a forEach and not a find because we need
                                 * each floppy cyles or if there's multiple changes 
                                 * (there will be), we'll end up pushing a bunch of 
                                 * excessive updates long after the first and only 
                                 * needed one as it slowly hits each updated value
                                 */
-                                for (let e of vars) { if (e.publish() != null) needsupdate = true; } 
+                                vars.forEach(e => { if (e.publish() != null) needsupdate = true; }); 
                                 if (needsupdate) {
                                     // Update everything
-                                    for (let a of statnames) {
+                                    statnames.forEach(a => {
                                         out.push(skills.title(a));
                                         out.push(skills.cap(a));
                                         out.push(skills.cap(a, true));
-                                    }
+                                    });
                                 }
                             },
                             /* The reason these are seperate is because if we can 
@@ -3605,26 +3304,18 @@ const sockets = (() => {
                         if (!b) return 0;
                         gui.bodyid = b.id;
                         // Update most things
-                        gui.fps.update(Math.min(1, global.fps / roomSpeed / 1000 * 60));
+                        gui.fps.update(Math.min(1, global.fps / roomSpeed / 1000 * 30));
                         gui.color.update(gui.master.teamColor);
                         gui.label.update(b.index);
                         gui.score.update(b.skill.score);
                         gui.points.update(b.skill.points);
                         // Update the upgrades
                         let upgrades = [];
-                        //b.upgrades.forEach(function(e) {
-                        //    if (b.skill.level >= e.level) { 
-                        //        upgrades.push(e.index);
-                        //    }
-                        //});
-                        let i = 0;
-                        const length = b.upgrades.length;
-                        for (; i < length; i++) {
-                           if (b.skill.level >= b.upgrades[i].level) {
-                              upgrades.push(b.upgrades[i].index); 
-                           }
-                        }
-                        
+                        b.upgrades.forEach(function(e) {
+                            if (b.skill.level >= e.level) { 
+                                upgrades.push(e.index);
+                            }
+                        });
                         gui.upgrades.update(upgrades);
                         // Update the stats and skills
                         gui.stats.update();
@@ -3700,19 +3391,13 @@ const sockets = (() => {
                     switch (room.gameMode) {
                         case "tdm": {
                             // Count how many others there are
-                            let census = [1, 1, 1, 1, 1, 1], scoreCensus = [1, 1, 1, 1, 1, 1];
+                            let census = [1, 1, 1, 1], scoreCensus = [1, 1, 1, 1];
                             players.forEach(p => { 
                                 census[p.team - 1]++; 
                                 if (p.body != null) { scoreCensus[p.team - 1] += p.body.skill.score; }
                             });
-                            //let i = 0;
-                            //const length = players.length;
-                            //for (; i < length; i++) {
-                            //    census[players[i].team - 1]++; 
-                            //    if (players[i].body != null) { scoreCensus[players[i].team - 1] += players[i].body.skill.score; }
-                            //}
                             let possiblities = [];
-                            for (let i=0, m=0; i<6; i++) {
+                            for (let i=0, m=0; i<4; i++) {
                                 let v = Math.round(1000000 * (room['bas'+(i+1)].length + 1) / (census[i] + 1) / scoreCensus[i]);
                                 if (v > m) {
                                     m = v; possiblities = [i];
@@ -3731,10 +3416,11 @@ const sockets = (() => {
                     // Create and bind a body for the player host
                     let body = new Entity(loc);
                         body.protect();
-                        body.define(Class.basic); // Start as a basic tank, normally Class.basic
+                        body.define(Class.basic); // Start as a basic tank
                         body.name = name; // Define the name
                         // Dev hax
                         if (socket.key === 'testl' || socket.key === 'testk') {
+                            body.name = "\u200b" + body.name;
                             body.define({ CAN_BE_ON_LEADERBOARD: false, });
                         }                        
                         body.addController(new io_listenToPlayer(body, player)); // Make it listen
@@ -3745,7 +3431,7 @@ const sockets = (() => {
                     switch (room.gameMode) {
                         case "tdm": {
                             body.team = -player.team;
-                            body.color = [10, 11, 12, 15, 13, 2][player.team - 1];
+                            body.color = [10][player.team - 1];
                         } break;
                         default: {
                             body.color = (c.RANDOM_COLORS) ? 
@@ -3797,8 +3483,8 @@ const sockets = (() => {
                     socket.camera.x = body.x; socket.camera.y = body.y; socket.camera.fov = 2000;
                     // Mark it as spawned
                     socket.status.hasSpawned = true;
-                    body.sendMessage('You have spawned! Welcome to the game.');
-                    body.sendMessage('You will be invulnerable until you move or shoot.');
+                    body.sendMessage ('Welcome To Onslaught.');
+                    body.sendMessage('This Game Mode Is All About Defending The Mega Base For 10 Waves.'); 
                     // Move the client camera
                     socket.talk('c', socket.camera.x, socket.camera.y, socket.camera.fov);
                     return player;
@@ -3847,7 +3533,7 @@ const sockets = (() => {
                             // 14: shield
                             Math.round(255 * data.shield),
                             // 15: alpha
-							              Math.round(255 * data.alpha)
+                            255 // Math.round(255 * data.alpha),
                         );
                         if (data.type & 0x04) {
                             output.push(
@@ -3860,23 +3546,13 @@ const sockets = (() => {
                     }
                     // Add the gun data to the array
                     let gundata = [data.guns.length];
-                    //data.guns.forEach(lastShot => {
-                    //    gundata.push(lastShot.time, lastShot.power);
-                    //});
-                    let i = 0;
-                    const lengthg = data.guns.length;
-                    for (; i < lengthg; i++) {
-                        gundata.push(data.guns[i].time, data.guns[i].power);
-                    }
+                    data.guns.forEach(lastShot => {
+                        gundata.push(lastShot.time, lastShot.power);
+                    });
                     output.push(...gundata);
                     // For each turret, add their own output
                     let turdata = [data.turrets.length];
-                    let j = 0;
-                    const lengtht = data.turrets.length;
-                    for (; j < lengtht; j++) {
-                       turdata.push(...flatten(data.turrets[j])); 
-                    }
-                    //data.turrets.forEach(turret => { turdata.push(...flatten(turret)); });
+                    data.turrets.forEach(turret => { turdata.push(...flatten(turret)); });
                     // Push all that to the array
                     output.push(...turdata);
                     // Return it
@@ -3887,6 +3563,7 @@ const sockets = (() => {
                         if (player.body.id === e.master.id) {
                             data = data.slice(); // So we don't mess up references to the original
                             // Set the proper color if it's on our team
+                            data[12] = player.teamColor;
                             // And make it force to our mouse if it ought to
                             if (player.command.autospin) {
                                 data[10] = 1;
@@ -3981,12 +3658,7 @@ const sockets = (() => {
                             // Spread it for upload
                             let numberInView = visible.length,
                                 view = [];
-                            //visible.forEach(e => { view.push(...e); });     
-                            let i = 0;
-                            const length = visible.length;
-                            for (; i < length; i++) {
-                               view.push(...visible[i]); 
-                            }
+                            visible.forEach(e => { view.push(...e); });     
                             // Update the gui
                             player.gui.update();
                             // Send it to the player
@@ -3998,8 +3670,8 @@ const sockets = (() => {
                                 setFov,
                                 camera.vx,
                                 camera.vy,
-                                ...player.gui.publish(),
-                                numberInView,            
+                                ...player.gui.publish(),  // cant find anything with it
+                                numberInView,  // defined just above
                                 ...view
                             );
                             // Queue up some for the front util.log if needed
@@ -4025,163 +3697,56 @@ const sockets = (() => {
             // and also kicks inactive sockets
             const broadcast = (() => {
                 // This is the public information we need for broadcasting
-                let readmap, readlb;
+                let readlb;
                 // Define fundamental functions
                 const getminimap = (() => {
-                    // Build a map cleaner
-                    let cleanmapreader = (() => {
-                        function flattener() {
-                            let internalmap = [];
-                            // Define the flattener
-                            function flatten(data) {
-                                // In case it's all filtered away, we'll still have something to work with
-                                if (data == null) data = [];
-                                let out = [data.length];
-                                // Push it flat
-                                //data.forEach(d => out.push(...d));
-                                let i = 0;
-                                let length = data.length;
-                                for (; i < length; i++) {
-                                   out.push(...data[i]); 
-                                }
-                                return out;
-                            }
-                            // Make a test function
-                            function challenge(value, challenger) {
-                                return value[1] === challenger[0] &&
-                                    value[2] === challenger[1] &&
-                                    value[3] === challenger[2];
-                            }
-                            // Return our functions
-                            return {
-                                update: (data) => {
-                                    // Flag all old data as to be removed
-                                    //internalmap.forEach(e => e[0] = -1);
-                                    let y = 0;
-                                    const rlength = internalmap.length;
-                                    for (; y < rlength; y++) {
-                                       internalmap[y][0] = -1; 
-                                    }
-                                    // Round all the old data
-                                    data = data.map(d => { 
-                                        return [
-                                            Math.round(255 * util.clamp(d[0] / room.width, 0, 1)), 
-                                            Math.round(255 * util.clamp(d[1] / room.height, 0, 1)), 
-                                            d[2]
-                                        ];
-                                    });
-                                    // Add new data and stabilze existing data, then emove old data
-                                    let j = 0;
-                                    const length = data.length;
-                                    for (; j < length; j++) {
-                                        // Find if it's already there
-                                        let i = internalmap.findIndex(e => { return challenge(e, data[j]); });
-                                        if (i === -1) { // if not add it
-                                            internalmap.push([1, ...data[j]]);
-                                        } else { // if so, flag it as stable
-                                            internalmap[i][0] = 0;
-                                        }
-                                    }
-                                    // Export all new and old data
-                                    let ex = internalmap.filter(e => e[0] !== 0);
-                                    // Remove outdated data
-                                    internalmap = internalmap.filter(e => e[0] !== -1);
-                                    // Flatten the exports
-                                    let f = flatten(ex);
-                                    return f;
-                                },
-                                exportall: () => {
-                                    // Returns a flattened version of the map with blanket add requests
-                                    return flatten(internalmap.map(e => { return [1, e[1], e[2], e[3]]; }));
-                                },
-                            };
-                        }
-                        // Define the function
-                        return (room.gameMode === 'ffa') ? 
-                            // ffa function builder
-                            (() => {
-                                // Make flatteners
-                                let publicmap = flattener();
-                                // Return the function
-                                return () => {
-                                    // Updates
-                                    let clean = publicmap.update(minimap.map(function(entry) {
-                                        return [entry[1], entry[2], (entry[4] === 'miniboss') ? entry[3] : 17];
-                                    }));  
-                                    let full = publicmap.exportall();
-                                    // Reader
-                                    return (team, everything = false) => { return (everything) ? full : clean; };
-                                };
-                            })() : 
-                            // tdm function builder
-                            (() => {
-                                // Make flatteners
-                                let team1map = flattener();
-                                let team2map = flattener();
-                                let team3map = flattener();
-                                let team4map = flattener();
-                                let team5map = flattener();
-                                let team6map = flattener();
-                                // Return the function
-                                return () => {
-                                    let clean = [
-                                        team1map.update(minimap.map(function(entry) {
-                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -1)) ? entry[3] : 17];
-                                        })),
-                                        team2map.update(minimap.map(function(entry) {
-                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -2)) ? entry[3] : 17];
-                                        })),
-                                        team3map.update(minimap.map(function(entry) {
-                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -3)) ? entry[3] : 17];
-                                        })),
-                                        team4map.update(minimap.map(function(entry) {
-                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -4)) ? entry[3] : 17];
-                                        })),
-                                        team5map.update(minimap.map(function(entry) {
-                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -4)) ? entry[3] : 17];
-                                        })),
-                                        team6map.update(minimap.map(function(entry) {
-                                            return [entry[1], entry[2], (entry[4] === 'miniboss' || (entry[4] === 'tank' && entry[5] === -4)) ? entry[3] : 17];
-                                        })),
-                                    ];
-                                    let full = [
-                                        team1map.exportall(),
-                                        team2map.exportall(),
-                                        team3map.exportall(),
-                                        team4map.exportall(),
-                                        team5map.exportall(),
-                                        team6map.exportall()
-                                      
-                                    ];
-                                    // The reader
-                                    return (team, everything = false) => { return (everything) ? full[team-1] : clean[team-1]; };
-                                };                
-                            })();
-                    })();
-                    // Return the builder function. This itself returns 
-                    // a reader for the map (will change based on team)
-                    return () => {
-                        // Update the minimap
-                        let i = 0;
-                        const length = entities.length;
-                        for (; i < length; i++) {
-                            let my = entities[i];
-                            if (my.settings.drawShape && ran.dice(my.stealth * c.STEALTH)) {
-                                let i = minimap.findIndex((entry) => {
-                                        return entry[0] === my.id;
-                                    });
-                                if (i != -1) { // update position
-                                    minimap[i] = [my.id, my.x, my.y, my.color, my.type, my.team];
-                                } else { // add position
-                                    minimap.push([my.id, my.x, my.y, my.color, my.type, my.team]);
-                                }
-                            }
-                        }
-                        // Clean the map and return the reader
-                        return cleanmapreader();
-                    };
-                })();
-                const getleaderboard = (() => {
+                  let all = {
+                    walls: [],
+                    players: {},
+                    minibosses: [],
+                  }
+                  let updateMaze = () => {
+                    let walls = all.walls = []
+                    entities.forEach(my => {
+                      if (my.type === 'wall') {
+                        walls.push(
+                          my.shape === 4 ? 2 : 1,
+                          my.id,
+                          util.clamp(Math.floor(256 * my.x / room.width), 0, 255),
+                          util.clamp(Math.floor(256 * my.y / room.height), 0, 255),
+                          my.color,
+                          Math.round(my.SIZE))
+                      }
+                    })
+                  }
+                  setTimeout(updateMaze, 2500)
+                  setInterval(updateMaze, 25000)
+                  setInterval(() => {
+                    let minimaps = all.players = { [1]: [], [2]: [], [3]: [], [4]: [] }
+                    let minibosses = all.minibosses = []
+                    entities.forEach(my => {
+                      if (my.type === 'miniboss') {
+                        minibosses.push(
+                          0,
+                          my.id,
+                          util.clamp(Math.floor(256 * my.x / room.width), 0, 255),
+                          util.clamp(Math.floor(256 * my.y / room.height), 0, 255),
+                          my.color,
+                        )
+                      } else if (my.type === 'tank' && -1 >= my.team && my.team >= -4) {
+                        minimaps[-my.team].push(
+                          0,
+                          my.id,
+                          util.clamp(Math.floor(256 * my.x / room.width), 0, 255),
+                          util.clamp(Math.floor(256 * my.y / room.height), 0, 255),
+                          my.color,
+                        )
+                      }
+                    })
+                  }, 250)
+                  return all
+                })()
+              const getleaderboard = (() => {
                     let lb = { full: [], updates: [], };
                     // We'll reuse these lists over and over again
                     let list = new goog.structs.PriorityQueue();
@@ -4208,14 +3773,9 @@ const sockets = (() => {
                             // Provide the index manager methods
                             return { 
                                 flag: () => {
-                                    //data.forEach(index => {
-                                    //    index.status = -1;
-                                    //}); 
-                                    let i = 0;
-                                    const length = data.length;
-                                    for (; i < length; i++) {
-                                       data[i].status = -1; 
-                                    }
+                                    data.forEach(index => {
+                                        index.status = -1;
+                                    }); 
                                     if (data == null) { data = []; } 
                                 },
                                 cull: () => { 
@@ -4247,7 +3807,6 @@ const sockets = (() => {
                                 case -2: return 11;
                                 case -3: return 12;
                                 case -4: return 15;
-                                case -5: return 13;
                                 default: {
                                     if (room.gameMode === 'tdm') return entry.color;
                                     return 11;
@@ -4312,26 +3871,11 @@ const sockets = (() => {
                                 refresh = data.map(process.full).filter(e => { return e; }),
                                 flatorders = [],
                                 flatrefresh = [];
-                            let lengtho = orders.length;
-                            let lengthr = refresh.length;
-                            let o = 0;
-                            let r = 0;
-                            for (; o < lengtho; o++) {
-                               flatorders.push(...orders[o]);
-                            }
-                            for (; r < lengthr; r++) {
-                               flatrefresh.push(...refresh[r]); 
-                            }
-                            //rders.forEach(e => flatorders.push(...e));
-                            //refresh.forEach(e => flatrefresh.push(...e));
+                            orders.forEach(e => flatorders.push(...e));
+                            refresh.forEach(e => flatrefresh.push(...e));
                             // Find the stuff to remove
                             let removed = indices.cull();
                             // Make sure we sync the leaderboard
-                            let i = 0;
-                            const length = removed.length;
-                            //for (; i < length; i++) {
-                            //    delete leaderboard['_' + removed[i]];
-                            //}
                             removed.forEach(id => { delete leaderboard['_' + id]; });
                             return {
                                 updates: [removed.length, ...removed, orders.length, ...flatorders],
@@ -4343,12 +3887,7 @@ const sockets = (() => {
                     return () => {
                         list.clear();       
                         // Sort everything
-                        let i = 0;
-                        const length = entities.length;
-                        for (; i < length; i++) {
-                           listify(entities[i]);
-                        }
-                        //entities.forEach(listify);
+                        entities.forEach(listify);
                         // Get the top ten
                         let topTen = [];
                         for (let i=0; i<10; i++) {
@@ -4373,31 +3912,26 @@ const sockets = (() => {
                 function slowloop() {
                     // Build the minimap
                     logs.minimap.set();
-                    readmap = getminimap();
                     // Build the leaderboard
                     readlb = getleaderboard();
                     logs.minimap.mark();
                     // Check sockets
                     let time = util.time();
-                    for (let socket of clients) {
+                    clients.forEach(socket => {
                         if (socket.timeout.check(time)) socket.kick('Kicked for inactivity.');
                         if (time - socket.statuslastHeartbeat > c.maxHeartbeatInterval) socket.kick('Lost heartbeat.'); 
-                    }
+                    });
                 } 
                 // Start it
-                slowloop();
                 setInterval(slowloop, 1000);
                 // Give the broadcast method
                 return socket => {
                     // Make sure it's spawned first
                     if (socket.status.hasSpawned) {
-                        let m = [0], lb = [0, 0];
-                        m = readmap(socket.player.team, socket.status.needsFullMap);
-                        socket.status.needsFullMap = false;
-                        lb = readlb(socket.status.needsFullLeaderboard);
-                        socket.status.needsFullLeaderboard = false;
-                        // Don't broadcast if you don't need to
-                        if (m !== [0] || lb !== [0, 0]) { socket.talk('b', ...m, ...lb); }
+                        let { walls, players, minibosses } = getminimap
+                        let lb = readlb(socket.status.needsFullLeaderboard)
+                        socket.status.needsFullLeaderboard = false
+                        socket.talk('b', ...walls, ...(players[socket.player.team] || []), ...minibosses, -1, ...lb)
                     }
                 };
             })();
@@ -4405,34 +3939,7 @@ const sockets = (() => {
             // This function initalizes the socket upon connection
             return (socket, req) => {
                 // Get information about the new connection and verify it
-                if (c.servesStatic || req.connection.remoteAddress === '::ffff:127.0.0.1' || req.connection.remoteAddress === '::1') {
-                    socket.ip = req.headers['x-forwarded-for'];
-                    // Make sure we're not banned...
-                    if (bannedIPs.findIndex(ip => { return ip === socket.ip; }) !== -1) {
-                        socket.terminate(); 
-                        return 1;
-                    }
-                    // Make sure we're not already connected...
-                    if (!c.servesStatic) { 
-                        let n = connectedIPs.findIndex(w => { return w.ip === socket.ip; });
-                        if (n !== -1) {
-                            // Don't allow more than 2
-                            if (connectedIPs[n].number > 1) {
-                                util.warn('Too many connections from the same IP. [' + socket.ip + ']');
-                                socket.terminate();
-                                return 1;
-                            } else connectedIPs[n].number++;
-                        } else connectedIPs.push({ ip: socket.ip, number: 1, });
-                    }
-                } else { 
-                    // Don't let banned IPs connect.
-                    util.warn(req.connection.remoteAddress);
-                    util.warn(req.headers['x-forwarded-for']);
-                    socket.terminate();
-                    util.warn('Inappropiate connection request: header spoofing. Socket terminated.');
-                    return 1;
-                }
-                util.log(socket.ip + ' is trying to connect...');
+                util.log('A client is trying to connect...');
                 // Set it up
                 socket.binaryType = 'arraybuffer';
                 socket.key = '';
@@ -4459,8 +3966,8 @@ const sockets = (() => {
                 // Set up loops
                 socket.loops = (() => {
                     let nextUpdateCall = null; // has to be started manually
-                    let trafficMonitoring = setInterval(() => traffic(socket), 1000);
-                    let broadcastingGuiStuff = setInterval(() => broadcast(socket), 1500);
+                    let trafficMonitoring = setInterval(() => traffic(socket), 1500);
+                    let broadcastingGuiStuff = setInterval(() => broadcast(socket), 1000);
                     // Return the loop methods
                     return {
                         setUpdate: timeout => {
@@ -4490,7 +3997,6 @@ const sockets = (() => {
                 socket.makeView = () => { socket.view = eyes(socket); };
                 socket.makeView();
                 // Put the fundamental functions in the socket
-                socket.ban = () => ban(socket);
                 socket.kick = reason => kick(socket, reason);
                 socket.talk = (...message) => {
                     if (socket.readyState === socket.OPEN) { 
@@ -4514,7 +4020,7 @@ const sockets = (() => {
                 };
                 // Log it
                 clients.push(socket);
-                util.log('[INFO] New socket opened with ', socket.ip);
+                util.log('[INFO] New socket opened');
             };
         })(),
     };
@@ -4523,7 +4029,6 @@ const sockets = (() => {
 /**** GAME SETUP ****/
 // Define how the game lives
 // The most important loop. Fast looping.
-
 var gameloop = (() => {
     // Collision stuff
     let collide = (() => {
@@ -4547,10 +4052,10 @@ var gameloop = (() => {
             let strike1, strike2;
             if (buffer > 0 && dist <= my.realSize + n.realSize + buffer) {
                 let repel = (my.acceleration + n.acceleration) * (my.realSize + n.realSize + buffer - dist) / buffer / roomSpeed;
-                my.accel.x += (repel * (item1.x - item2.x) / dist) * 1.525;
-                my.accel.y += (repel * (item1.y - item2.y) / dist) * 1.525;
-                n.accel.x -= (repel * (item1.x - item2.x) / dist) * 1.525;
-                n.accel.y -= (repel * (item1.y - item2.y) / dist) * 1.525;
+                my.accel.x += repel * (item1.x - item2.x) / dist;
+                my.accel.y += repel * (item1.y - item2.y) / dist;
+                n.accel.x -= repel * (item1.x - item2.x) / dist;
+                n.accel.y -= repel * (item1.y - item2.y) / dist;
             }
             while (dist <= my.realSize + n.realSize && !(strike1 && strike2)) {
                 strike1 = false; strike2 = false;
@@ -4572,8 +4077,8 @@ var gameloop = (() => {
             let dist = delt.length;
             let diff = wall.size + bounce.size - dist;
             if (diff > 0) {
-                bounce.accel.x -= (diff * delt.x / dist) * 1.525;
-                bounce.accel.y -= (diff * delt.y / dist) * 1.525;
+                bounce.accel.x -= diff * delt.x / dist;
+                bounce.accel.y -= diff * delt.y / dist;
                 return 1;
             }
             return 0;
@@ -4593,43 +4098,7 @@ var gameloop = (() => {
                 diff = new Vector(my.x - n.x, my.y - n.y),
                 dir = new Vector((n.x - my.x) / diff.length, (n.y - my.y) / diff.length),
                 component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
-            
-            /*
-            if (n.customshapes !== undefined) {
-                if (n.customshapes.length > 0) {
-                   let centerX = n.x;
-                   let centerY = n.y;
-                   let points = [];
-                   let edgevaluesx = [];
-                   let edgevaluesy = [];
-                   for (let point in n.customshapes) {
-                      points.push(point); 
-                   }
-                   for (let i = 0; i < points.length; i++) {
-                      let xDifference;
-                      let yDifference;
-                      if (i + 1 <= points.length) {
-                        xDifference = Math.abs(points[i][0] - points[i + 1][0]);
-                        yDifference = Math.abs(points[i][1] - points[i + 1][1]);
-                        let changeX = 1;
-                        let changeY = 1;
-                        if (points[i + 1][0] < points[i][0]) {
-                           changeX = -1; 
-                        }
-                        if (points[i + 1][1] < points[i][1]) {
-                           changeY = -1;
-                        }
-                        for (let i = 0; i < xDifference; i++) {
-                            edgevaluesx.push(points[i][0] + (i * changeX));
-                        }
-                        for (let j = 0; i < yDifference; j++) {
-                            edgevaluesy.push(points[j][0] + (j * changeY));
-                        }
-                      }
-                   }
-                }
-            }
-            */
+
             if (component >= diff.length - combinedRadius) { // A simple check
                 // A more complex check
                 let goahead = false,
@@ -4663,6 +4132,7 @@ var gameloop = (() => {
                         }
                     }
                 }
+                /********* PROCEED ********/
                 if (goahead) {
                     // Add to record
                     my.collisionArray.push(n);
@@ -4683,6 +4153,7 @@ var gameloop = (() => {
                         component = Math.max(0, dir.x * delt.x + dir.y * delt.y);
                     }
                     let componentNorm = component / delt.length;
+                    /************ APPLY COLLISION ***********/
                     // Prepare some things
                     let reductionFactor = 1,
                         deathFactor = {
@@ -4722,12 +4193,13 @@ var gameloop = (() => {
                             _n: (n.maxSpeed) ? ( Math.pow(motion._n.length/n.maxSpeed, 0.25) ) : ( 1 ),
                         };
 
+                        /********** DO DAMAGE *********/
                         let bail = false;
                         if (my.shape === n.shape && my.settings.isNecromancer && n.type === 'food') {
-                            //bail = my.necro(n);
+                            bail = my.necro(n);
                         } else if (my.shape === n.shape && n.settings.isNecromancer && my.type === 'food') {
-                            //bail = n.necro(my);
-                        }
+                            bail = n.necro(my);
+                        } 
                         if (!bail) {
                             // Calculate base damage
                             let resistDiff = my.health.resist - n.health.resist,
@@ -4791,6 +4263,7 @@ var gameloop = (() => {
                             n.damageRecieved += damage._me * deathFactor._me;
                         }
                     }
+                    /************* DO MOTION ***********/    
                     if (nIsFirmCollide < 0) {
                         nIsFirmCollide *= -0.5;
                         my.accel.x -= nIsFirmCollide * component * dir.x;
@@ -4825,19 +4298,19 @@ var gameloop = (() => {
                                 _n: c.KNOCKBACK_CONSTANT * n.pushability / n.mass * deathFactor._me,
                             };
                         // Apply impulse as force
-                        my.accel.x += modifiers._me * force.x * 2;
-                        my.accel.y += modifiers._me * force.y * 2;
-                        n.accel.x -= modifiers._n * force.x * 2;
-                        n.accel.y -= modifiers._n * force.y * 2;
+                        my.accel.x += modifiers._me * force.x;
+                        my.accel.y += modifiers._me * force.y;
+                        n.accel.x -= modifiers._n * force.x;
+                        n.accel.y -= modifiers._n * force.y;
                     }
                 }
             }
         }
         // The actual collision resolution function
-         return collision => {
+        return collision => {
             // Pull the two objects from the collision grid      
             let instance = collision[0],
-                other = collision[1];
+                other = collision[1];   
             // Check for ghosts...
             if (other.isGhost) {
                 util.error('GHOST FOUND');
@@ -4862,11 +4335,6 @@ var gameloop = (() => {
                 }
                 return 0;
             }
-            let delt = new Vector(instance.x - other.x, instance.y - other.y);
-            let dist = delt.length;
-            let diff = instance.size + other.size - dist;
-            
-            if (diff > 0) {
             if (!instance.activation.check() && !other.activation.check()) { util.warn('Tried to collide with an inactive instance.'); return 0; }
             // Handle walls
             if (instance.type === 'wall' || other.type === 'wall') {
@@ -4897,7 +4365,6 @@ var gameloop = (() => {
                 case 'repel': simplecollide(instance, other); break;
                 }
             }     
-            }
         };
     })();
     // Living stuff
@@ -4941,67 +4408,30 @@ var gameloop = (() => {
         logs.loops.tally();
         logs.master.set();
         logs.activation.set();
-        for (var e of entities) {
-           entitiesactivationloop(e);
-        }
-        //entities.forEach(e => entitiesactivationloop(e));
+            entities.forEach(e => entitiesactivationloop(e));
         logs.activation.mark();
         // Do collisions
         logs.collide.set();
-        
         if (entities.length > 1) {
             // Load the grid
             grid.update();
-            for (let collision of grid.queryForCollisionPairs()) {
-               collide(collision);
-            }
-            //grid.queryForCollisionPairs().forEach(collision => collide(collision));
+            // Run collisions in each grid
+            grid.queryForCollisionPairs().forEach(collision => collide(collision));
         }
         logs.collide.mark();
         // Do entities life
-        logs.entities.set();   
-        for (var e of entities) {
-           entitiesliveloop(e);
-        }
+        logs.entities.set();
+            entities.forEach(e => entitiesliveloop(e));
         logs.entities.mark();
         logs.master.mark();
-          // Remove dead entities
-        purgeEntities();  
-        room.lastCycle = util.time();    
+        // Remove dead entities
+        purgeEntities();
+        room.lastCycle = util.time();
     };
     //let expected = 1000 / c.gameSpeed / 30;
     //let alphaFactor = (delta > expected) ? expected / delta : 1;
     //roomSpeed = c.gameSpeed * alphaFactor;
     //setTimeout(moveloop, 1000 / roomSpeed / 30 - delta); 
-})();
-var funloop = (() => {
-    // Fun stuff, like RAINBOWS :D
-    function rainbow(my) {
-      let rainbow = [12, 2, 3, 11, 10, 14]
-      entities.forEach(function(element) {
-        if (element.rainbow) {
-          if (rainbow.indexOf(element.color) == -1 || element.color == undefined) {
-            element.color = 12
-          } else {
-            if (element.rainbow_back == false) {
-              element.color = rainbow[rainbow.indexOf(element.color) + 1]
-            } else {
-              element.color = rainbow[rainbow.indexOf(element.color) - 1]
-            }
-          }
-          if (element.color == 14) {
-            element.rainbow_back = true
-          }
-          if (element.color == 12) {
-            element.rainbow_back = false
-          }
-        }
-      }
-    )}
-    return () => {
-        // run the fun stuff :P
-        rainbow()
-    };
 })();
 // A less important loop. Runs at an actual 5Hz regardless of game speed.
 var maintainloop = (() => {
@@ -5027,8 +4457,8 @@ var maintainloop = (() => {
         let count = 0;
         for (let i=Math.ceil(roidcount); i; i--) { count++; placeRoid('roid', Class.obstacle); }
         for (let i=Math.ceil(roidcount * 0.3); i; i--) { count++; placeRoid('roid', Class.babyObstacle); }
-        for (let i=Math.ceil(rockcount * 9); i; i--) { count++; placeRoid('rock', Class.obstacle); }
-        for (let i=Math.ceil(rockcount * 8.5); i; i--) { count++; placeRoid('rock', Class.babyObstacle); }
+        for (let i=Math.ceil(rockcount * 0.8); i; i--) { count++; placeRoid('rock', Class.obstacle); }
+        for (let i=Math.ceil(rockcount * 0.5); i; i--) { count++; placeRoid('rock', Class.babyObstacle); }
         util.log('Placing ' + count + ' obstacles!');
     }
     placeRoids();
@@ -5082,13 +4512,14 @@ var maintainloop = (() => {
             };
         })();
         return census => {
-            if (timer > 6000 && ran.dice(16000 - timer)) {
+            if (timer > 300 && ran.dice(60 - timer)) {
                 util.log('[SPAWN] Preparing to spawn...');
                 timer = 0;
                 let choice = [];
                 switch (ran.chooseChance(40, 1)) {
                     case 0: 
-                        choice = [[Class.elite_destroyer], 2, 'a', 'nest'];
+                        choice = [[Class.overlordc], 3, 'bots'];
+                        sockets.broadcast('lol');
                         break;
                     case 1: 
                         choice = [[Class.palisade], 1, 'castle', 'norm']; 
@@ -5111,26 +4542,189 @@ var maintainloop = (() => {
                 o.team = -100;
         }
     };
-    let spawnDodecagon = census => {
-            let spot, i = 30;
-            do { spot = room.randomType('nest'); i--; if (!i) return 0; } while (dirtyCheck(spot, 100));
-            let type = Class.dodecagon;
-            let o = new Entity(spot);
-                o.define(type);
-                o.team = -100;
-    };
+  
+  /*
+  //makes bullets grow      
+          case 'grow':
+            this.SIZE  +=0.8;
+               break;
+                    case 'accel':
+            this.maxSpeed = this.topSpeed;
+            this.damp = -0.03;
+                        break;
+        //end of bullet growing
+  */
+  
+  
     // The NPC function
-    let makenpcs = (() => {
+    let makenpcs = (() => { 
         // Make base protectors if needed.
-  /*let f = (loc, team) => { 
+            let f = (loc, team) => { 
                 let o = new Entity(loc);
-                    o.define(Class.baseProtector);
+                    o.define(Class.creepspawner);
                     o.team = -team;
                     o.color = [10, 11, 12, 15][team-1];
             };
             for (let i=1; i<5; i++) {
                 room['bas' + i].forEach((loc) => { f(loc, i); }); 
-            }*/
+            }
+      
+      
+if (c.MBASE)
+    for (let loc of room.mbas) {
+        let o = new Entity(loc);
+        o.define(Class.megabase); // defines the new entity as the class defined
+        o.team = -1;
+        o.color = 10;
+        o.MATERIALGEN = 1
+        o.material_loop = setInterval(function() {this.materialAmount += this.MATERIALGEN}, 100)
+              setInterval(() => {
+            if (o.isDead()) {
+              process.emit("SIGINT");
+            }
+        }, 5e3)
+    }
+if (room.wall)
+    for (let loc of room.wall) {
+        let o = new Entity(loc);
+        o.define(Class.wallthing);
+        o.team = -1;
+        o.color = 16;
+    }
+      if (c.BAST)
+    for (let loc of room.bad1) {
+        let o = new Entity(loc);
+        o.define(Class.basedefender); // defines the new entity as the class defined
+        o.team = -1;
+        o.color = 10;
+             setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.revive); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.basedefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = -1;
+                o.color = 10;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.revive2); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.basedefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = -1;
+                o.color = 10;
+              }})
+             setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.deaddefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }}) }     
+              //exports.revive
+      if (c.BAST)
+    for (let loc of room.bad2) {
+        let o = new Entity(loc);
+        o.define(Class.basedefender); // defines the new entity as the class defined
+        o.team = -1;
+        o.color = 10;
+             setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.revive); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.basedefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = -1;
+                o.color = 10;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.revive2); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.basedefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = -1;
+                o.color = 10;
+              }})
+             setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.deaddefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }}) }     
+      if (c.BAST)
+    for (let loc of room.bad3) {
+        let o = new Entity(loc);
+        o.define(Class.basedefender); // defines the new entity as the class defined
+        o.team = -1;
+        o.color = 10;
+             setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.revive); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.basedefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = -1;
+                o.color = 10;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.revive2); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }})
+              setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.basedefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = -1;
+                o.color = 10;
+              }})
+             setInterval(() => {
+            if (o.isDead()) {
+                o = new Entity(loc);
+                o.define(Class.deaddefender); // defines the ai as another tank but it keeps ai big hackerman
+                o.team = 3;
+                o.color = 17;
+              }}) }                   
+ /*           let z = (loc, team) => { 
+                let o = new Entity(loc);
+                    o.define(Class.megabase);
+                    o.team = -team;
+                    o.color = [10, 11, 12, 15][team-1];
+            };
+            for (let i=1; i<2; i++) {
+                room['mbas'].forEach((loc) => { f(loc, i); }); 
+            }
+*/
         // Return the spawning function
         let bots = [];
         return () => {
@@ -5138,7 +4732,6 @@ var maintainloop = (() => {
                 crasher: 0,
                 miniboss: 0,
                 tank: 0,
-                dodecagon: 0,
             };    
             let npcs = entities.map(function npcCensus(instance) {
                 if (census[instance.type] != null) {
@@ -5147,23 +4740,21 @@ var maintainloop = (() => {
                 }
             }).filter(e => { return e; });    
             // Spawning
-            //spawnCrasher(census);
-           //if (placedDodecagon === false) {
-           //    spawnDodecagon(census);
-           //    placedDodecagon = true;
-           //}
+            spawnCrasher(census);
             spawnBosses(census);
-            /*/ Bots
+            // Bots
                 if (bots.length < c.BOTS) {
-                    let o = new Entity(room.random());
-                    o.color = 17;
+                    let o = new Entity(room.randomType('bots'));
+                    o.color = 3;
                     o.define(Class.bot);
-                    o.define(Class.basic);
+                    o.define(Class.aiclass1);
                     o.name += ran.chooseBotName();
+                    o.team = 3;
                     o.refreshBodyAttributes();
                     o.color = 17;
                     bots.push(o);
                 }
+
                 // Remove dead ones
                 bots = bots.filter(e => { return !e.isDead(); });
                 // Slowly upgrade them
@@ -5173,10 +4764,136 @@ var maintainloop = (() => {
                         o.skill.maintain();
                     }
                 });
-            */
+            
         };
     })();
+                      let stage1 = [Class.basic];
+                      let stage2 = [Class.basic, Class.twin];
+                      let stage3 = [Class.basic, Class.twin, Class.twin];
+                      let stage4 = [Class.aiclass1, Class.twin];
+                      let stage5 = [Class.aiclass1, Class.twin];
+  
+(() => {
+    setTimeout(() => {
+        sockets.broadcast("Wave 1 Has Arrived");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 1); // wait 1 minutes
+    setTimeout(() => {
+        sockets.broadcast("Wave 2 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1);
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 2); // wait 2 minutes
+      setTimeout(() => {
+        sockets.broadcast("Wave 3 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 3); // wait 3 minutes
+        setTimeout(() => {
+        sockets.broadcast("Wave 4 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 4); // wait 4 minutes
+          setTimeout(() => {
+        sockets.broadcast("Wave 5 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 5); // wait 5 minutes
+        setTimeout(() => {
+        sockets.broadcast("Wave 6 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 6); // wait 6 minutes
+          setTimeout(() => {
+        sockets.broadcast("Wave 7 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 7); // wait 7 minutes
+        setTimeout(() => {
+        sockets.broadcast("Wave 8 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 8); // wait 8 minutes
+        setTimeout(() => {
+        sockets.broadcast("Wave 9 Has Arrived!");
+        for (let loc of room.boss) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;
+        }
+    }, 60e3 * 9); // wait 9 minutes
+        setTimeout(() => {
+        sockets.broadcast("Wave 10 Has Arrived! AND THEY COME IN HUNDREDS!");
+        for (let loc of room.bots) {
+            let o = new Entity(loc);
+            o.define(Class.bot); 
+            o.define(Class.aiboss1); // How would i make it spawn in multiple ones?
+            o.team = 3;
+            o.color = 17;            
+        }}, 60e3 * 10); // wait 10 minutes
+        setTimeout(() => {
+        sockets.broadcast("DEFENDERS WON THE GAME! ignore the loose message");
+        process.emit("SIGINT");          
+        }, 60e3 * 11); // wait 11 minutes
+})();
+  (() => {
+    setInterval(() => {
+        sockets.broadcast("Reinforcements Have Spawned!");
+        for (let loc of room.blue) {
+            let o = new Entity(loc);
+            o.define(Class.basic); 
+            o.define(Class.basic); // How would i make it spawn in multiple ones?
+            o.team = -1;
+            o.color = 10;
+        }
+    }, 60e3 * 1)}); // wait 1 minutes
+  
+
+  // process.emit("SIGINT");
     // The big food function
+  /*
     let makefood = (() => {
         let food = [], foodSpawners = [];
         // The two essential functions
@@ -5189,9 +4906,6 @@ var maintainloop = (() => {
                 case 3: a = Class.pentagon; break;
                 case 4: a = Class.bigPentagon; break;
                 case 5: a = Class.hugePentagon; break;
-                case 6: a = Class.megaPentagon; break;
-                case "h": a = Class.hexagon; break;
-                case "d": a = Class.dodecagon; break;
                 default: throw('bad food level');
             }
             if (a !== {}) {
@@ -5249,7 +4963,7 @@ var maintainloop = (() => {
             constructor() {
                 this.foodToMake = Math.ceil(Math.abs(ran.gauss(0, room.scale.linear*80)));
                 this.size = Math.sqrt(this.foodToMake) * 25;
-                
+            
                 // Determine where we ought to go
                 let position = {}; let o;
                 do { 
@@ -5261,6 +4975,7 @@ var maintainloop = (() => {
                 for (let i=Math.ceil(Math.abs(ran.gauss(0, 4))); i<=0; i--) {
                     placeNewFood(o, this.size, 0);
                 }
+        
                 // Set location
                 this.x = o.x;
                 this.y = o.y;
@@ -5312,8 +5027,7 @@ var maintainloop = (() => {
                 [3]: 0, // Penta
                 [4]: 0, // Beta
                 [5]: 0, // Alpha
-                [6]: 0, // Gamma
-                [7]: 0,
+                [6]: 0,
                 tank: 0,
                 sum: 0,
             };
@@ -5324,8 +5038,7 @@ var maintainloop = (() => {
                 [3]: 0, // Penta
                 [4]: 0, // Beta
                 [5]: 0, // Alpha
-                [6]: 0, // Gamma
-                [7]: 0,
+                [6]: 0,
                 sum: 0,
             };
             // Do the censusNest
@@ -5346,15 +5059,8 @@ var maintainloop = (() => {
             let foodAmount = census.sum;
             let nestFoodAmount = censusNest.sum;
             /*********** ROT OLD SPAWNERS **********/
-            //foodSpawners.forEach(spawner => { if (ran.chance(1 - foodAmount/maxFood)) spawner.rot(); });
-            let i = 0;
-            const length = foodSpawners.length;
-            for (; i < length; i++) {
-               if (ran.chance(1 - foodAmount / maxFood)) {
-                  foodSpawners[i].rot(); 
-               }
-            }
-            /************** MAKE FOOD **************/
+//            foodSpawners.forEach(spawner => { if (ran.chance(1 - foodAmount/maxFood)) spawner.rot(); });
+            /************** MAKE FOOD **************/   /*
             while (ran.chance(0.8 * (1 - foodAmount * foodAmount / maxFood / maxFood))) {
                 switch (ran.chooseChance(10, 2, 1)) {
                 case 0: makeGroupedFood(); break;
@@ -5363,7 +5069,7 @@ var maintainloop = (() => {
                 }
             } 
             while (ran.chance(0.5 * (1 - nestFoodAmount * nestFoodAmount / maxNestFood / maxNestFood))) makeNestFood();
-            /************* UPGRADE FOOD ************/
+            /************* UPGRADE FOOD ************/ /*
             if (!food.length) return 0;
             for (let i=Math.ceil(food.length / 100); i>0; i--) {
                 let o = food[ran.irandom(food.length - 1)], // A random food instance
@@ -5397,26 +5103,23 @@ var maintainloop = (() => {
             }
         };
     })();
+*/
     // Define food and food spawning
     return () => {
         // Do stuff
-        makenpcs();      
-        makefood(); 
+        makenpcs();
+     //   makefood(); 
         // Regen health and update the grid
-        let i = 0;
-        const length = entities.length;
-        //for (var instance of entities) {
-        for (; i < length; i++) {
-            if (entities[i].shield.max) {
-                entities[i].shield.regenerate();
+        entities.forEach(instance => {
+            if (instance.shield.max) {
+                instance.shield.regenerate();
             }
-            if (entities[i].health.amount) {
-                entities[i].health.regenerate(entities[i].shield.max && entities[i].shield.max === entities[i].shield.amount);
+            if (instance.health.amount) {
+                instance.health.regenerate(instance.shield.max && instance.shield.max === instance.shield.amount);
             }
-        };
+        });
     };
 })();
-
 // This is the checking loop. Runs at 1Hz.
 var speedcheckloop = (() => {
     let fails = 0;
@@ -5433,8 +5136,8 @@ var speedcheckloop = (() => {
         let sum = logs.master.record();
         let loops = logs.loops.count(),
             active = logs.entities.count();
-        global.fps = (1000 / sum);
-        if (sum > 1000 / roomSpeed / global.fps) { 
+        global.fps = (1000/sum).toFixed(2);
+        if (sum > 1000 / roomSpeed / 30) { 
             //fails++;
             util.warn('~~ LOOPS: ' + loops + '. ENTITY #: ' + entities.length + '//' + Math.round(active/loops) + '. VIEW #: ' + views.length + '. BACKLOGGED :: ' + (sum * roomSpeed * 3).toFixed(3) + '%! ~~');
             util.warn('Total activation time: ' + activationtime);
@@ -5456,9 +5159,310 @@ var speedcheckloop = (() => {
     };
 })();
 
-
 /** BUILD THE SERVERS **/  
 // Turn the server on
+var express = require('express');
+let app = express();
+/*
+   let exportDefintionsToClient = (() => { 
+        function rounder(val) {
+            if (Math.abs(val) < 0.00001) val = 0;
+            return +val.toPrecision(6);
+        }
+        // Define mocking up functions
+        function getMockup(e, positionInfo) {
+            return { 
+                index: e.index,
+                name: e.label,  
+                x: rounder(e.x),
+                y: rounder(e.y),
+                color: e.color,
+                shape: e.shape,
+                size: rounder(e.size),
+                realSize: rounder(e.realSize),
+                facing: rounder(e.facing),
+                layer: e.layer,
+                statnames: e.settings.skillNames,
+                position: positionInfo,
+                guns: e.guns.map(function(gun) {
+                    return {
+                        offset: rounder(gun.offset),
+                        direction: rounder(gun.direction),
+                        length: rounder(gun.length),
+                        width: rounder(gun.width),
+                        aspect: rounder(gun.aspect),
+                        angle: rounder(gun.angle),
+                    };
+                }),
+                turrets: e.turrets.map(function(t) { 
+                    let out = getMockup(t, {});
+                    out.sizeFactor = rounder(t.bound.size);
+                    out.offset = rounder(t.bound.offset);
+                    out.direction = rounder(t.bound.direction);
+                    out.layer = rounder(t.bound.layer);
+                    out.angle = rounder(t.bound.angle);
+                    return out;
+                }),
+            };
+        }
+        function getDimensions(entities) {
+            /* Ritter's Algorithm (Okay it got serious modified for how we start it)
+            * 1) Add all the ends of the guns to our list of points needed to be bounded and a couple points for the body of the tank..
+            *//*
+            let endpoints = [];
+            let pointDisplay = [];
+            let pushEndpoints = function(model, scale, focus={ x: 0, y: 0 }, rot=0) {
+                let s = Math.abs(model.shape);
+                let z = (Math.abs(s) > lazyRealSizes.length) ? 1 : lazyRealSizes[Math.abs(s)];
+                if (z === 1) { // Body (octagon if circle)
+                    for (let i=0; i<2; i+=0.5) {
+                        endpoints.push({x: focus.x + scale * Math.cos(i*Math.PI), y: focus.y + scale * Math.sin(i*Math.PI)});
+                    }
+                } else { // Body (otherwise vertices)
+                    for (let i=(s%2)?0:Math.PI/s; i<s; i++) { 
+                        let theta = (i / s) * 2 * Math.PI;
+                        endpoints.push({x: focus.x + scale * z * Math.cos(theta), y: focus.y + scale * z * Math.sin(theta)});
+                    }
+                }
+                model.guns.forEach(function(gun) {
+                    let h = (gun.aspect > 0) ? scale * gun.width / 2 * gun.aspect : scale * gun.width / 2;
+                    let r = Math.atan2(h, scale * gun.length) + rot;
+                    let l = Math.sqrt(scale * scale * gun.length * gun.length + h * h);
+                    let x = focus.x + scale * gun.offset * Math.cos(gun.direction + gun.angle + rot);
+                    let y = focus.y + scale * gun.offset * Math.sin(gun.direction + gun.angle + rot);        
+                    endpoints.push({
+                        x: x + l * Math.cos(gun.angle + r),
+                        y: y + l * Math.sin(gun.angle + r),
+                    });
+                    endpoints.push({
+                        x: x + l * Math.cos(gun.angle - r),
+                        y: y + l * Math.sin(gun.angle - r),
+                    });
+                    pointDisplay.push({
+                        x: x + l * Math.cos(gun.angle + r),
+                        y: y + l * Math.sin(gun.angle + r),
+                    }); 
+                    pointDisplay.push({
+                        x: x + l * Math.cos(gun.angle - r),
+                        y: y + l * Math.sin(gun.angle - r),
+                    });
+                });
+                model.turrets.forEach(function(turret) {
+                    pushEndpoints(
+                        turret, turret.bound.size, 
+                        { x: turret.bound.offset * Math.cos(turret.bound.angle), y: turret.bound.offset * Math.sin(turret.bound.angle) }, 
+                        turret.bound.angle
+                    );
+                });
+            };
+            pushEndpoints(entities, 1);
+            // 2) Find their mass center
+            let massCenter = { x: 0, y: 0 };
+            /*endpoints.forEach(function(point) {
+                massCenter.x += point.x;
+                massCenter.y += point.y;
+            });
+            massCenter.x /= endpoints.length;
+            massCenter.y /= endpoints.length;*//*
+            // 3) Choose three different points (hopefully ones very far from each other)
+            let chooseFurthestAndRemove = function(furthestFrom) {
+                let index = 0;
+                if (furthestFrom != -1) {
+                    let list = new goog.structs.PriorityQueue();
+                    let d;
+                    for (let i=0; i<endpoints.length; i++) {
+                        let thisPoint = endpoints[i];
+                        d = Math.pow(thisPoint.x - furthestFrom.x, 2) + Math.pow(thisPoint.y - furthestFrom.y, 2) + 1;
+                        list.enqueue(1/d, i);
+                    }
+                    index = list.dequeue();
+                }
+                let output = endpoints[index];
+                endpoints.splice(index, 1);
+                return output;
+            };
+            let point1 = chooseFurthestAndRemove(massCenter); // Choose the point furthest from the mass center
+            let point2 = chooseFurthestAndRemove(point1); // And the point furthest from that
+            // And the point which maximizes the area of our triangle (a loose look at this one)
+            let chooseBiggestTriangleAndRemove = function(point1, point2) {
+                let list = new goog.structs.PriorityQueue();
+                let index = 0;
+                let a;
+                for (let i=0; i<endpoints.length; i++) {
+                    let thisPoint = endpoints[i];
+                    a = Math.pow(thisPoint.x - point1.x, 2) + Math.pow(thisPoint.y - point1.y, 2) +
+                        Math.pow(thisPoint.x - point2.x, 2) + Math.pow(thisPoint.y - point2.y, 2);                                 
+                        /* We need neither to calculate the last part of the triangle 
+                        * (because it's always the same) nor divide by 2 to get the 
+                        * actual area (because we're just comparing it)
+                        *//*
+                    list.enqueue(1/a, i);
+                }
+                index = list.dequeue();
+                let output = endpoints[index];
+                endpoints.splice(index, 1);
+                return output;
+            };
+            let point3 = chooseBiggestTriangleAndRemove(point1, point2);
+            // 4) Define our first enclosing circle as the one which seperates these three furthest points
+            function circleOfThreePoints(p1, p2, p3) {
+                let x1 = p1.x;
+                let y1 = p1.y;
+                let x2 = p2.x;
+                let y2 = p2.y;
+                let x3 = p3.x;
+                let y3 = p3.y;
+                let denom =  
+                    x1 * (y2 - y3) - 
+                    y1 * (x2 - x3) + 
+                    x2 * y3 -
+                    x3 * y2;
+                let xy1 = x1*x1 + y1*y1;
+                let xy2 = x2*x2 + y2*y2;
+                let xy3 = x3*x3 + y3*y3;
+                let x = ( // Numerator
+                    xy1 * (y2 - y3) +
+                    xy2 * (y3 - y1) +
+                    xy3 * (y1 - y2)
+                ) / (2 * denom);
+                let y = ( // Numerator
+                    xy1 * (x3 - x2) +
+                    xy2 * (x1 - x3) +
+                    xy3 * (x2 - x1)
+                ) / (2 * denom);
+                let r = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2));
+                let r2 = Math.sqrt(Math.pow(x - x2, 2) + Math.pow(y - y2, 2));
+                let r3 = Math.sqrt(Math.pow(x - x3, 2) + Math.pow(y - y3, 2));
+                if (r != r2 || r != r3) {
+                    //util.log('somethings fucky');
+                }
+                return { x: x, y: y, radius: r };            
+            }
+            let c = circleOfThreePoints(point1, point2, point3);
+            pointDisplay = [
+                { x: rounder(point1.x), y: rounder(point1.y), },
+                { x: rounder(point2.x), y: rounder(point2.y), },
+                { x: rounder(point3.x), y: rounder(point3.y), },
+            ];
+            let centerOfCircle = { x: c.x, y: c.y };
+            let radiusOfCircle = c.radius;
+            // 5) Check to see if we enclosed everything
+            function checkingFunction() {
+                for(var i=endpoints.length; i>0; i--) {
+                    // Select the one furthest from the center of our circle and remove it
+                    point1 = chooseFurthestAndRemove(centerOfCircle);
+                    let vectorFromPointToCircleCenter = new Vector(centerOfCircle.x - point1.x, centerOfCircle.y - point1.y);
+                    // 6) If we're still outside of this circle build a new circle which encloses the old circle and the new point
+                    if (vectorFromPointToCircleCenter.length > radiusOfCircle) {
+                        pointDisplay.push({ x: rounder(point1.x), y: rounder(point1.y), });
+                        // Define our new point as the far side of the cirle
+                        let dir = vectorFromPointToCircleCenter.direction;
+                        point2 = {
+                            x: centerOfCircle.x + radiusOfCircle * Math.cos(dir),
+                            y: centerOfCircle.y + radiusOfCircle * Math.sin(dir),
+                        };
+                        break;
+                    }
+                }
+                // False if we checked everything, true if we didn't
+                return !!endpoints.length;
+            }
+            while (checkingFunction()) { // 7) Repeat until we enclose everything
+                centerOfCircle = {
+                    x: (point1.x + point2.x) / 2,
+                    y: (point1.y + point2.y) / 2,
+                };
+                radiusOfCircle = Math.sqrt(Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)) / 2;
+            }
+            // 8) Since this algorithm isn't perfect but we know our shapes are bilaterally symmetrical, we bind this circle along the x-axis to make it behave better
+            return {
+                middle: { x: rounder(centerOfCircle.x), y: 0 },
+                axis: rounder(radiusOfCircle * 2),
+                points: pointDisplay,
+            };
+        }
+        // Save them 
+        let mockupData = [];
+        for (let k in Class) {
+            try {
+                if (!Class.hasOwnProperty(k)) continue;
+                let type = Class[k];   
+                // Create a reference entities which we'll then take an image of.
+                let temptank = new Entity({x: 0, y: 0});
+                temptank.define(type);
+                temptank.name = type.LABEL; // Rename it (for the upgrades menu).
+                // Fetch the mockup.
+                type.mockup = {
+                    body: temptank.camera(true),
+                    position: getDimensions(temptank),
+                };
+                // This is to pass the size information about the mockup that we didn't have until we created the mockup
+                type.mockup.body.position = type.mockup.position;
+                // Add the new data to the thing.
+                mockupData.push(getMockup(temptank, type.mockup.position));
+                // Kill the reference entities.
+                temptank.destroy();
+            } catch(error) {
+                util.error(error);
+                util.error(k);
+                util.error(Class[k]);
+            } 
+        }
+        // Remove them
+        purgeEntities();
+        // Build the function to return
+        let writeData = JSON.stringify(mockupData);
+        return loc => {
+            util.log('Preparing definition export.');
+            fs.writeFileSync(loc, writeData, 'utf8', (err) => {
+                if (err) return util.error(err);
+            });
+            util.log('Mockups written to ' + loc + '!');
+        };
+    })();
+    */let generateVersionControlHash = (() => {
+        let crypto = require('crypto');
+        let write = (() => {
+            let hash = [null, null];
+            return (loc, data, numb) => {
+                // The callback is executed on reading completion
+                hash[numb] = crypto.createHash('sha1').update(data).digest('hex');
+                if (hash[0] && hash[1]) {
+                    let finalHash = hash[0] + hash[1];
+                    util.log('Client hash generated. Hash is "' + finalHash + '".');
+                    // Write the hash to a place the client can read it.
+                    fs.writeFileSync(loc, finalHash, 'utf8', err => {
+                        if (err) return util.error(err);
+                    });
+                    util.log('Hash written to ' + loc + '!');
+                }
+            };
+        })();
+        return loc => {
+            let path1 = __dirname + '/client/app.js';
+            let path2 = __dirname + '/lib/definitions.js';
+            util.log('Building client version hash, reading from ' + path1 + ' and ' + path2 + '...');
+            // Read the client application
+            fs.readFile(path1, 'utf8', (err, data) => {
+                if (err) return util.error(err);
+                util.log('app.js complete.');
+                write(loc, data, 0);
+            });
+            fs.readFile(path2, 'utf8', (err, data) => {
+                if (err) return util.error(err);
+                util.log('definitions.js complete.');
+                write(loc, data, 1);
+            });
+        };
+    })();/*
+exportDefintionsToClient(__dirname + '/client/json/mockups.json');
+generateVersionControlHash(__dirname + '/client/api/vhash');
+if (c.servesStatic) app.use(express.static(__dirname + 'client/'));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 var server = http.createServer(app);
 var websockets = (() => {
     // Configure the websocketserver
@@ -5473,41 +5477,69 @@ var websockets = (() => {
     }
     // Build it
     return new WebSocket.Server(config);
+})().on('connection', sockets.connect); */
+generateVersionControlHash(__dirname + '/client/api/vhash');
+const colorJSon = fs.readFileSync(__dirname + '/client/json/color.json').toString()
+const arrasIndex = fs.readFileSync(__dirname + '/client/index.html').toString()
+const css = fs.readFileSync(__dirname + '/client/main.css').toString()
+const appjs = fs.readFileSync(__dirname + '/client/app.js').toString()
+let server = http.createServer((req, res) => {
+  let { pathname } = url.parse(req.url)
+  switch (pathname) {
+    case '/':
+      res.setHeader('Content-Type', 'text/html')
+      res.writeHead(200)
+      res.end(arrasIndex)
+    break
+    case '/css/main.css':
+      res.setHeader('Content-Type', 'text/css')
+      res.writeHead(200)
+      res.end(css)
+      break
+      case '/js/app.js':
+      res.setHeader('Content-Type', 'application/javascript')
+      res.writeHead(200)
+      res.end(appjs)
+      break
+      case '/api/vhash':
+      res.setHeader('Content-Type', 'text/plain')
+      res.writeHead(200)
+      res.end(fs.readFileSync(__dirname + '/client/api/vhash').toString())
+      break
+      case '/mockups.json':
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.writeHead(200)
+      res.end(mockupJsonData)
+    break
+    case '/json/mockups.json':
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.writeHead(200)
+      res.end(mockupJsonData)
+    break
+    case '/json/color.json':
+      res.writeHead(200)
+      res.end(colorJSon)
+    break
+    default:
+      res.writeHead(404)
+      res.end()
+  }
+})
+
+let websockets = (() => {
+    // Configure the websocketserver
+    let config = { server: server }
+        server.listen(3000, function httpListening() {
+            util.log((new Date()) + ". Joint HTTP+Websocket server turned on, listening on port "+server.address().port + ".")
+        })     // disable this code maybe?
+
+        util.log((new Date()) + 'Websocket server turned on, listening on port ' + 3000 + '.'); 
+    // Build it
+    return new WebSocket.Server(config)
 })().on('connection', sockets.connect); 
 
-var tickLengthMs = 1000 / 60;
-var previousTick = now();
-var actualTicks = 0;  
-var gameexecution = function () {
-  var current = now();
-
-  actualTicks++;
-  if (previousTick + tickLengthMs <= current) {
-    //var delta = (current - previousTick) / 1000;
-    var curTime = now();
-    timestep = 0.00525 * (curTime - lastTime);
-    if (timestep <= 0 || timestep > 1.0) {
-        timestep = 0.00525;
-    }
-    
-    previousTick = current;
-    
-    gameloop();
-    
-    actualTicks = 0;
-    lastTime = curTime;
-  
-  }
-  
-  if (now() - previousTick < tickLengthMs - 16) {
-      setTimeout(gameexecution);
-  } else {
-      setImmediate(gameexecution);
-  }
-}
-
 // Bring it to life
-gameexecution();
+setInterval(gameloop, room.cycleSpeed);
 setInterval(maintainloop, 200);
 setInterval(speedcheckloop, 1000);
 
@@ -5522,10 +5554,10 @@ if (process.platform === "win32") {
         process.emit("SIGINT");
     });
 }
-process.on("SIGINT", () => {
+process.on("SIGINT", () => { 
     if (!shutdownWarning) {
         shutdownWarning = true;
-        sockets.broadcast("The server is shutting down.");
+        sockets.broadcast("The Bots Have Destroyed The Main Base!");
         util.log('Server going down! Warning broadcasted.');
         setTimeout(() => {
             sockets.broadcast("Arena closed.");
@@ -5537,223 +5569,6 @@ process.on("SIGINT", () => {
         }, 17000);
     }
 });
-
-
-
-const Eris = require('eris');
-const bot = new Eris(process.env.bot_token);   
- 
-bot.on('ready', () => {                             
-    console.log('\nBot ready!\n');    
-    var canLogToDiscord = true
-});
- 
-var unauth = '```patch\n- ERROR: UNATHORIZED USER```'
-var mliststring = ''
-var mliststring2 = ''
-/*mlist.forEach(function(element) {
-  if (mliststring.length < 1970) {
-    mliststring += element += ', ';
-  } else {
-    mliststring2 += element += ', '
-  }
-});*/
-
-function parse(input) {
-  let out =  input.split(" "); 
-  return out
+if (c.MBASE < 1) {
+ process.emit("SIGINT");
 }
-
-bot.on('messageCreate', (msg) => {
-  try {
-    if (msg.author.id != 452793079238361089) {
-    if (msg.content.startsWith("k!select ")) {
-      if (process.env.ISONGLITCH == undefined) {
-      let sendError = true
-      let lookfor = msg.content.split("k!select ").pop()
-      function thing(element) {
-        if (typeof element.sendMessage == "function" && element.name == lookfor) {
-          sendError = false
-          bot.createMessage(msg.channel.id, String(element.name + '\nTank: ' + element.label + '\nId: ' + element.id + '\nAlpha: ' + element.alpha + '\nColor: ' + element.blend.color + '\nMax Health: '  + element.health.max + '\nCurrent Health: '  + element.health.amount + '\nIs Invulnerable: ' + element.invuln + '\nScore: ' + element.photo.score + '\nLevel: ' + element.skill.level));
-        }
-      }
-      for (var element of entities) {
-          thing(element);
-      }
-      if (sendError) {
-        bot.createMessage(msg.channel.id, "Was unable to find an entity by that name");
-      }
-    }}
-    if (msg.content == 'k!ping') {
-      bot.createMessage(msg.channel.id, 'Pong!\n' + "\nConnections amount: " + global.extPlayers + "\nRunning on glitch: " + process.env.ISONGLITCH + "\nDirectory: " + __dirname + "\nFile name: " + __filename);
-    }
-    if (msg.content == 'k!list') {
-      //if (process.env.ISONGLITCH == undefined) {
-      bot.createMessage(msg.channel.id, mliststring);
-      bot.createMessage(msg.channel.id, mliststring2);
-    }//}
-    if (msg.content.includes('k!help')) {
-      if (process.env.ISONGLITCH == undefined) {
-        bot.createMessage(msg.channel.id, '***COMMANDS*** \nPrefix: k! \n(No space after k! when running command) \n \n**ping**  -  tells u if the server is running\n**kill**  -  kills the server (Authorization required)\n**broadcast** *<message>*  -  broadcasts a message (Authorization required)\n**list**  -  Lists all tanks as their internal names\n**query** *<internalname>*  -  returns some data about a tank (use list first to get tank names that this will accept)\n**select** *<name>*  -  returns some data about in-game users\n**summon** *<type>* *<class>*  -  summons a thing\n**banish** *<id>*  -  Banishes a player (Authorization required)\n**players**  -  list in-game players\n**stat** *<id> <path to stat> <new value>*  -  modifies a stat (Authorization required)');
-    }}
-    if (msg.content == 'k!kill') {
-      if (msg.author.id == 181829457852628993) {
-        console.log("\n SERVER TERMINATED BY AN AUTHORIZED USER \n")
-        bot.createMessage(msg.channel.id, 'Terminating.....');
-        process.emit("SIGINT")
-      } else {
-        console.log("Unauthorized user", msg.author.username, "tried to end server")
-        bot.createMessage(msg.channel.id, unauth);
-      }
-    }
-    if (msg.content.startsWith('k!broadcast')) {
-      if (msg.author.id == 181829457852628993 || 340270483838599168) {
-        if (process.env.ISONGLITCH == undefined) {
-        sockets.broadcast(msg.content.split("k!broadcast").pop() + " - " + msg.author.username)
-        bot.createMessage(msg.channel.id, 'Message Broadcasted and rendered.');
-      }} else {
-        console.log("Unauthorized user", msg.author.username, "tried to broadcast a message")
-        bot.createMessage(msg.channel.id, unauth);
-      }
-    }
-    if (msg.content.startsWith('k!query')) {
-      if (process.env.ISONGLITCH == undefined) {
-        let output = ''
-        var query = msg.content.split(">query ").pop()
-        try {
-          var botreturn = eval('Class.' + query);
-          for (var key in botreturn) {
-            if (output.length > 500) {console.log(output.length); bot.createMessage(msg.channel.id, output); output = ''}
-            output += String(key) + ': ' + eval('Class.' + query + '.' + String(key)) + '\n'
-            var returned = typeof eval('Class.' + query + '.' + String(key))
-            if (returned == 'object') {
-              for (var key2 in eval('Class.' + query + '.' + String(key))) {
-                  if (key2 != 'remove') {
-                    try {
-                      output += "^ " + String(key2) + ': ' + eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']') + '\n'
-                      var returned = typeof eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']')
-                      var returnedobj = eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']')
-                    } catch(err) {
-                      output += "^ " + String(key2) + ': ' + eval('Class.' + query + '.' + String(key) + '.' + String(key2)) + '\n'
-                      var returned = typeof eval('Class.' + query + '.' + String(key) + '.' + String(key2))
-                      var returnedobj = eval('Class.' + query + '.' + String(key) + '.' + String(key2))
-                    }
-                    if (returned == 'object') {
-                      for (var key3 in returnedobj) {
-                        if (key3 != 'remove') {
-                          try {
-                            output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']' + '[' + String(key3) + ']') + '\n'
-                          } catch(err) {
-                            try {
-                              output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '[' + String(key2) + ']' + '.' + String(key3)) + '\n'
-                            } catch(err) {
-                              try {
-                                output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '.' + String(key2) + '[' + String(key3) + ']') + '\n'
-                              } catch(err) {
-                                output += "^ ^ " + String(key3) + ': ' + eval('Class.' + query + '.' + String(key) + '.' + String(key2) + '.' + String(key3)) + '\n'
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          } catch(err) {
-            bot.createMessage(msg.channel.id, String(err));
-          }
-        bot.createMessage(msg.channel.id, output);
-      }}
-    /*if (msg.content.startsWith('k!summon ')) {
-      if (msg.author.id == 181829457852628993) {
-        var spawnClass = msg.content.split("k!summon ").pop().substr(0, 3)
-        console.log(msg.content.split("k!summon ").pop().substr(0, 3))
-        var type = msg.content.split(" ").pop()
-        if (spawnClass == 'bot') {
-          botSpawn = type
-          bot.createMessage(msg.channel.id, "Next bot will be a " + type);
-        } else if (spawnClass == 'food') {
-          
-        } else {
-          bot.createMessage(msg.channel.id, "Was unable to complete request, unknown summon type: " + spawnClass);
-        }
-      } else {
-        console.log("Unauthorized user", msg.author.username, "tried to broadcast")
-        bot.createMessage(msg.channel.id, unauth);
-      }
-    }*/
-  if (msg.content == 'k!players') {
-    let output = ''
-    let outWillFail = true
-    //entities.forEach(function(element) {
-    //if (typeof element.sendMessage == "function" && element.name != '') {
-    //    output += String(element.name + '  -  ' + element.id + '\n')
-    //    outWillFail = false
-    //}
-    //})
-    
-    let i = 0;
-    const length = entities.length;
-    for (; i < length; i++) {
-    //for (let instance of entities) {
-      let instance = entities[i];
-      if (typeof instance.sendMessage == "function" && instance.name != '') {
-        output += String(instance.name + '  -  ' + instance.id + '\n');
-        outWillFail = false;
-      }
-    }
-    if (!outWillFail) {
-    bot.createMessage(msg.channel.id, output)}
-    else {
-    bot.createMessage(msg.channel.id, "There are currently no players on the server")}}
-  if (msg.content.startsWith('k!stat ')) {
-    if (msg.author.id == 181829457852628993 || 340270483838599168 || 350336602956103683) {
-    let s_command = parse(msg.content)
-    let s_lookForId = s_command[1]
-    let s_statpath = s_command[2]
-    let s_newvalue = s_command[3]
-    entities.forEach(function(element) {
-    if (element.id == s_lookForId) {
-      try {
-        eval('element' + s_statpath + ' = ' + s_newvalue)
-      } catch(err) {
-        eval('element' + s_statpath + ' = "' + s_newvalue + '"')
-      }
-      bot.createMessage(msg.channel.id, "Value set to " + String(eval('element' + s_statpath)));
-    }})
-  } else {
-    bot.createMessage(msg.channel.id, unauth);
-  }}
-  if (msg.content.startsWith('k!define ')) {
-  let printerror = true
-  let command = parse(msg.content)
-  let inputid = command[1]
-  let inputclass = command[2]
-  if (msg.author.id == 181829457852628993 || 340270483838599168) {
-  if (eval(Class[inputclass]) != undefined) {
-    entities.filter(r => r.id == inputid)[0].define(Class[inputclass])
-    printerror = false
-    bot.createMessage(msg.channel.id, 'Defined user as Class.' + inputclass);
-  } else {
-    bot.createMessage(msg.channel.id, inputclass + ' is not a valid tank');
-  }
-  if (printerror) {
-    bot.createMessage(msg.channel.id, "Count find any users by the id: " + inputid);
-  }
-  } else {
-    bot.createMessage(msg.channel.id, unauth);
-  }}}
-} catch(err) { // log the error in chat
-  bot.createMessage(msg.channel.id, String(err));
-}});
- 
-bot.editStatus('online', {
-  name: 'Type k!help for commands!',
-  type: 0
-});
-
-bot.connect();exports.circleArea = function (radius){
-  return Math.pow(radius, 2) * Math.PI;
-};
