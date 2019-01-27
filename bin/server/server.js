@@ -1276,11 +1276,11 @@ class Gun {
     syncChildren() {
         if (this.syncsSkills) {
             let self = this;
-            //let i = 0;
-            //const length = this.children.length;
-            //for (; i < length; i++) {
-            for (let instance of this.children) {
-                //let instance = this.children[i];
+            let i = 0;
+            const length = this.children.length;
+            for (; i < length; i++) {
+                //for (let instance of this.children) {
+                let instance = this.children[i];
                 instance.define({
                     BODY: self.interpret(),
                     SKILL: self.getSkillRaw()
@@ -2648,12 +2648,12 @@ class Entity {
         });
         if (i != -1) util.remove(minimap, i);
         // Remove this from views
-        views.forEach(v => v.remove(this));
-        //let v = 0;
-        //const length = views.length;
-        //for (; v < length; v++) {
-        //    views[v].remove(this); 
-        //}
+        //views.forEach(v => v.remove(this));
+        let v = 0;
+        const length = views.length;
+        for (; v < length; v++) {
+            views[v].remove(this);
+        }
         // Remove from parent lists if needed
         if (this.parent != null) util.remove(this.parent.children, this.parent.children.indexOf(this));
         // Kill all of its children
@@ -3576,6 +3576,7 @@ const sockets = (() => {
                             vars.push(floppy());
                             vars.push(floppy());
                         }
+
                         /*
                         statnames.forEach(a => {
                             vars.push(floppy());
@@ -3583,16 +3584,19 @@ const sockets = (() => {
                             vars.push(floppy());
                         });
                         */
+
                         return {
                             update: () => {
                                 let needsupdate = false,
                                     i = 0;
                                 // Update the things
-                                //statnames.forEach(a => {
-                                //    vars[i++].update(skills.title(a));
-                                //    vars[i++].update(skills.cap(a));
-                                //    vars[i++].update(skills.cap(a, true));
-                                //});
+                                /*
+                                statnames.forEach(a => {
+                                    vars[i++].update(skills.title(a));
+                                    vars[i++].update(skills.cap(a));
+                                    vars[i++].update(skills.cap(a, true));
+                                });
+                                */
 
                                 let j = 0;
                                 const length = statnames.length;
@@ -3601,6 +3605,7 @@ const sockets = (() => {
                                     vars[i++].update(skills.cap(statnames[j]));
                                     vars[i++].update(skills.cap(statnames[j], true));
                                 }
+
                                 /* This is a for and not a find because we need
                                 * each floppy cyles or if there's multiple changes 
                                 * (there will be), we'll end up pushing a bunch of 
@@ -4063,12 +4068,14 @@ const sockets = (() => {
                             // Spread it for upload
                             let numberInView = visible.length,
                                 view = [];
-                            //visible.forEach(e => { view.push(...e); });     
+                            visible.forEach(e => {
+                                view.push(...e);
+                            });
                             let i = 0;
                             const length = visible.length;
-                            for (; i < length; i++) {
-                                view.push(...visible[i]);
-                            }
+                            //for (; i < length; i++) {
+                            //   view.push(...visible[i]); 
+                            //}
                             // Update the gui
                             player.gui.update();
                             // Send it to the player
@@ -4367,18 +4374,18 @@ const sockets = (() => {
                             }),
                                 flatorders = [],
                                 flatrefresh = [];
-                            let lengtho = orders.length;
-                            let lengthr = refresh.length;
-                            let o = 0;
-                            let r = 0;
-                            for (; o < lengtho; o++) {
-                                flatorders.push(...orders[o]);
-                            }
-                            for (; r < lengthr; r++) {
-                                flatrefresh.push(...refresh[r]);
-                            }
-                            //orders.forEach(e => flatorders.push(...e));
-                            //refresh.forEach(e => flatrefresh.push(...e));
+                            //let lengtho = orders.length;
+                            //let lengthr = refresh.length;
+                            //let o = 0;
+                            //let r = 0;
+                            //for (; o < lengtho; o++) {
+                            //   flatorders.push(...orders[o]);
+                            //}
+                            //for (; r < lengthr; r++) {
+                            //   flatrefresh.push(...refresh[r]); 
+                            //}
+                            orders.forEach(e => flatorders.push(...e));
+                            refresh.forEach(e => flatrefresh.push(...e));
                             // Find the stuff to remove
                             let removed = indices.cull();
                             // Make sure we sync the leaderboard
@@ -4400,10 +4407,10 @@ const sockets = (() => {
                         // Sort everything
                         let i = 0;
                         const length = entities.length;
-                        //for (; i < length; i++) {
-                        //   listify(entities[i]);
-                        //}
-                        entities.forEach(listify);
+                        for (; i < length; i++) {
+                            listify(entities[i]);
+                        }
+                        //entities.forEach(listify);
                         // Get the top ten
                         let topTen = [];
                         for (let i = 0; i < 10; i++) {
