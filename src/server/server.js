@@ -3981,12 +3981,12 @@ const sockets = (() => {
                             // Spread it for upload
                             let numberInView = visible.length,
                                 view = [];
-                            visible.forEach(e => { view.push(...e); });     
+                            //visible.forEach(e => { view.push(...e); });     
                             let i = 0;
                             const length = visible.length;
-                            //for (; i < length; i++) {
-                            //   view.push(...visible[i]); 
-                            //}
+                            for (; i < length; i++) {
+                               view.push(...visible[i]); 
+                            }
                             // Update the gui
                             player.gui.update();
                             // Send it to the player
@@ -4312,27 +4312,27 @@ const sockets = (() => {
                                 refresh = data.map(process.full).filter(e => { return e; }),
                                 flatorders = [],
                                 flatrefresh = [];
-                            //let lengtho = orders.length;
-                            //let lengthr = refresh.length;
-                            //let o = 0;
-                            //let r = 0;
-                            //for (; o < lengtho; o++) {
-                            //   flatorders.push(...orders[o]);
-                            //}
-                            //for (; r < lengthr; r++) {
-                            //   flatrefresh.push(...refresh[r]); 
-                            //}
-                            orders.forEach(e => flatorders.push(...e));
-                            refresh.forEach(e => flatrefresh.push(...e));
+                            let lengtho = orders.length;
+                            let lengthr = refresh.length;
+                            let o = 0;
+                            let r = 0;
+                            for (; o < lengtho; o++) {
+                               flatorders.push(...orders[o]);
+                            }
+                            for (; r < lengthr; r++) {
+                               flatrefresh.push(...refresh[r]); 
+                            }
+                            //rders.forEach(e => flatorders.push(...e));
+                            //refresh.forEach(e => flatrefresh.push(...e));
                             // Find the stuff to remove
                             let removed = indices.cull();
                             // Make sure we sync the leaderboard
                             let i = 0;
                             const length = removed.length;
-                            for (; i < length; i++) {
-                                delete leaderboard['_' + removed[i]];
-                            }
-                            //removed.forEach(id => { delete leaderboard['_' + id]; });
+                            //for (; i < length; i++) {
+                            //    delete leaderboard['_' + removed[i]];
+                            //}
+                            removed.forEach(id => { delete leaderboard['_' + id]; });
                             return {
                                 updates: [removed.length, ...removed, orders.length, ...flatorders],
                                 full: [-1, refresh.length, ...flatrefresh], // The -1 tells the client it'll be a full refresh

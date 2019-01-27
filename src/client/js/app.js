@@ -1494,7 +1494,7 @@ const socketInit = (() => {
                            const length = a.length;
                            for (; i < length; i++) {
                              physics(a[i]);
-                           } 
+                          } 
                         }
                         return (n) => {
                             let a = [];
@@ -1696,12 +1696,12 @@ const socketInit = (() => {
                         output.push(process());
                     }
                     // Handle the dead/leftover entities
-                    //let f = 0;
-                    //const flength = entities.length;
-                    for (var e of entities) {
-                    //for (; f < flength; f++) {
+                    let f = 0;
+                    const flength = entities.length;
+                    //for (var e of entities) {
+                    for (; f < flength; f++) {
                         // Kill them
-                        //let e = entities[f];
+                        let e = entities[f];
                         e.render.status.set((e.health === 1) ? 'dying' : 'killed');
                         // And only push them if they're not entirely dead and still visible
                         if (e.render.status.getFade() !== 0 && isInView(e.render.x - player.renderx, e.render.y - player.rendery, e.size, true)) {

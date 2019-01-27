@@ -1751,53 +1751,30 @@ var app =
 							output.push(process());
 						}
 						// Handle the dead/leftover entities
-						//let f = 0;
-						//const flength = entities.length;
-						var _iteratorNormalCompletion2 = true;
-						var _didIteratorError2 = false;
-						var _iteratorError2 = undefined;
-
-						try {
-							for (var _iterator2 = entities[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-								var e = _step2.value;
-
-								//for (; f < flength; f++) {
-								// Kill them
-								//let e = entities[f];
-								e.render.status.set(e.health === 1 ? 'dying' : 'killed');
-								// And only push them if they're not entirely dead and still visible
-								if (e.render.status.getFade() !== 0 && isInView(e.render.x - player.renderx, e.render.y - player.rendery, e.size, true)) {
-									output.push(e);
-								} else {
-									if (e.render.textobjs != null) {
-										//e.render.textobjs.forEach(o => o.remove());
-										var _i8 = 0;
-										var length = e.render.textobjs.length;
-										for (; _i8 < length; _i8++) {
-											e.render.textobjs.remove();
-										}
-										//for (let o of e.render.textobjs) {
-										//   o.remove(); 
-										//}
+						var f = 0;
+						var flength = entities.length;
+						//for (var e of entities) {
+						for (; f < flength; f++) {
+							// Kill them
+							var e = entities[f];
+							e.render.status.set(e.health === 1 ? 'dying' : 'killed');
+							// And only push them if they're not entirely dead and still visible
+							if (e.render.status.getFade() !== 0 && isInView(e.render.x - player.renderx, e.render.y - player.rendery, e.size, true)) {
+								output.push(e);
+							} else {
+								if (e.render.textobjs != null) {
+									//e.render.textobjs.forEach(o => o.remove());
+									var _i8 = 0;
+									var length = e.render.textobjs.length;
+									for (; _i8 < length; _i8++) {
+										e.render.textobjs.remove();
 									}
+									//for (let o of e.render.textobjs) {
+									//   o.remove(); 
+									//}
 								}
 							}
-						} catch (err) {
-							_didIteratorError2 = true;
-							_iteratorError2 = err;
-						} finally {
-							try {
-								if (!_iteratorNormalCompletion2 && _iterator2.return) {
-									_iterator2.return();
-								}
-							} finally {
-								if (_didIteratorError2) {
-									throw _iteratorError2;
-								}
-							}
-						}
-
-						;
+						};
 						// Save the new entities list
 						entities = output;
 						entities.sort(function (a, b) {
@@ -2105,6 +2082,33 @@ var app =
 								var sd = 0,
 								    sum = 0,
 								    valid = 0;
+								var _iteratorNormalCompletion2 = true;
+								var _didIteratorError2 = false;
+								var _iteratorError2 = undefined;
+
+								try {
+									for (var _iterator2 = sync[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+										var e = _step2.value;
+
+										sd += Math.pow(e.latency - median, 2);
+									}
+								} catch (err) {
+									_didIteratorError2 = true;
+									_iteratorError2 = err;
+								} finally {
+									try {
+										if (!_iteratorNormalCompletion2 && _iterator2.return) {
+											_iterator2.return();
+										}
+									} finally {
+										if (_didIteratorError2) {
+											throw _iteratorError2;
+										}
+									}
+								}
+
+								;
+								sd = Math.sqrt(sd / sync.length);
 								var _iteratorNormalCompletion3 = true;
 								var _didIteratorError3 = false;
 								var _iteratorError3 = undefined;
@@ -2113,7 +2117,10 @@ var app =
 									for (var _iterator3 = sync[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 										var e = _step3.value;
 
-										sd += Math.pow(e.latency - median, 2);
+										if (Math.abs(e.latency - median) < sd) {
+											sum += e.delta;
+											valid++;
+										}
 									}
 								} catch (err) {
 									_didIteratorError3 = true;
@@ -2126,36 +2133,6 @@ var app =
 									} finally {
 										if (_didIteratorError3) {
 											throw _iteratorError3;
-										}
-									}
-								}
-
-								;
-								sd = Math.sqrt(sd / sync.length);
-								var _iteratorNormalCompletion4 = true;
-								var _didIteratorError4 = false;
-								var _iteratorError4 = undefined;
-
-								try {
-									for (var _iterator4 = sync[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-										var e = _step4.value;
-
-										if (Math.abs(e.latency - median) < sd) {
-											sum += e.delta;
-											valid++;
-										}
-									}
-								} catch (err) {
-									_didIteratorError4 = true;
-									_iteratorError4 = err;
-								} finally {
-									try {
-										if (!_iteratorNormalCompletion4 && _iterator4.return) {
-											_iterator4.return();
-										}
-									} finally {
-										if (_didIteratorError4) {
-											throw _iteratorError4;
 										}
 									}
 								}
@@ -2595,17 +2572,43 @@ var app =
 			context.beginPath();
 			if (Array.isArray(sides)) {
 				context.moveTo(centerX, centerY);
+				var _iteratorNormalCompletion4 = true;
+				var _didIteratorError4 = false;
+				var _iteratorError4 = undefined;
+
+				try {
+					for (var _iterator4 = sides[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+						var point = _step4.value;
+
+						context.lineTo(centerX + point[0], centerY + point[1]);
+					}
+					// And for some experimental testing we will draw the bounding box
+				} catch (err) {
+					_didIteratorError4 = true;
+					_iteratorError4 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion4 && _iterator4.return) {
+							_iterator4.return();
+						}
+					} finally {
+						if (_didIteratorError4) {
+							throw _iteratorError4;
+						}
+					}
+				}
+
+				var boundingbox = [];
 				var _iteratorNormalCompletion5 = true;
 				var _didIteratorError5 = false;
 				var _iteratorError5 = undefined;
 
 				try {
 					for (var _iterator5 = sides[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-						var point = _step5.value;
+						var _point = _step5.value;
 
-						context.lineTo(centerX + point[0], centerY + point[1]);
+						boundingbox.push(_point);
 					}
-					// And for some experimental testing we will draw the bounding box
 				} catch (err) {
 					_didIteratorError5 = true;
 					_iteratorError5 = err;
@@ -2617,32 +2620,6 @@ var app =
 					} finally {
 						if (_didIteratorError5) {
 							throw _iteratorError5;
-						}
-					}
-				}
-
-				var boundingbox = [];
-				var _iteratorNormalCompletion6 = true;
-				var _didIteratorError6 = false;
-				var _iteratorError6 = undefined;
-
-				try {
-					for (var _iterator6 = sides[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-						var _point = _step6.value;
-
-						boundingbox.push(_point);
-					}
-				} catch (err) {
-					_didIteratorError6 = true;
-					_iteratorError6 = err;
-				} finally {
-					try {
-						if (!_iteratorNormalCompletion6 && _iterator6.return) {
-							_iterator6.return();
-						}
-					} finally {
-						if (_didIteratorError6) {
-							throw _iteratorError6;
 						}
 					}
 				}
@@ -2884,13 +2861,13 @@ var app =
 				// Draw points
 				ctx.beginPath();
 				var i = -1;
-				var _iteratorNormalCompletion7 = true;
-				var _didIteratorError7 = false;
-				var _iteratorError7 = undefined;
+				var _iteratorNormalCompletion6 = true;
+				var _didIteratorError6 = false;
+				var _iteratorError6 = undefined;
 
 				try {
-					for (var _iterator7 = data[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
-						var p = _step7.value;
+					for (var _iterator6 = data[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+						var p = _step6.value;
 
 						if (!++i) {
 							ctx.moveTo(x, y + h * (max - p) / range);
@@ -2899,16 +2876,16 @@ var app =
 						}
 					}
 				} catch (err) {
-					_didIteratorError7 = true;
-					_iteratorError7 = err;
+					_didIteratorError6 = true;
+					_iteratorError6 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion7 && _iterator7.return) {
-							_iterator7.return();
+						if (!_iteratorNormalCompletion6 && _iterator6.return) {
+							_iterator6.return();
 						}
 					} finally {
-						if (_didIteratorError7) {
-							throw _iteratorError7;
+						if (_didIteratorError6) {
+							throw _iteratorError6;
 						}
 					}
 				}
@@ -3041,22 +3018,22 @@ var app =
 				var W = roomSetup[0].length,
 				    H = roomSetup.length,
 				    i = 0;
-				var _iteratorNormalCompletion8 = true;
-				var _didIteratorError8 = false;
-				var _iteratorError8 = undefined;
+				var _iteratorNormalCompletion7 = true;
+				var _didIteratorError7 = false;
+				var _iteratorError7 = undefined;
 
 				try {
-					for (var _iterator8 = roomSetup[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
-						var row = _step8.value;
+					for (var _iterator7 = roomSetup[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+						var row = _step7.value;
 
 						var j = 0;
-						var _iteratorNormalCompletion9 = true;
-						var _didIteratorError9 = false;
-						var _iteratorError9 = undefined;
+						var _iteratorNormalCompletion8 = true;
+						var _didIteratorError8 = false;
+						var _iteratorError8 = undefined;
 
 						try {
-							for (var _iterator9 = row[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
-								var cell = _step9.value;
+							for (var _iterator8 = row[Symbol.iterator](), _step8; !(_iteratorNormalCompletion8 = (_step8 = _iterator8.next()).done); _iteratorNormalCompletion8 = true) {
+								var cell = _step8.value;
 
 								var left = Math.max(0, ratio * j * global.gameWidth / W - px + global.screenWidth / 2),
 								    top = Math.max(0, ratio * i * global.gameHeight / H - py + global.screenHeight / 2),
@@ -3071,16 +3048,16 @@ var app =
 								j++;
 							}
 						} catch (err) {
-							_didIteratorError9 = true;
-							_iteratorError9 = err;
+							_didIteratorError8 = true;
+							_iteratorError8 = err;
 						} finally {
 							try {
-								if (!_iteratorNormalCompletion9 && _iterator9.return) {
-									_iterator9.return();
+								if (!_iteratorNormalCompletion8 && _iterator8.return) {
+									_iterator8.return();
 								}
 							} finally {
-								if (_didIteratorError9) {
-									throw _iteratorError9;
+								if (_didIteratorError8) {
+									throw _iteratorError8;
 								}
 							}
 						}
@@ -3089,16 +3066,16 @@ var app =
 						i++;
 					}
 				} catch (err) {
-					_didIteratorError8 = true;
-					_iteratorError8 = err;
+					_didIteratorError7 = true;
+					_iteratorError7 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion8 && _iterator8.return) {
-							_iterator8.return();
+						if (!_iteratorNormalCompletion7 && _iterator7.return) {
+							_iterator7.return();
 						}
 					} finally {
-						if (_didIteratorError8) {
-							throw _iteratorError8;
+						if (_didIteratorError7) {
+							throw _iteratorError7;
 						}
 					}
 				}
@@ -3326,27 +3303,27 @@ var app =
 				var _y2 = global.screenHeight - spacing - _height;
 				var ticker = 11;
 				var namedata = _gui.getStatNames(mockups[_gui.type].statnames || -1);
-				var _iteratorNormalCompletion10 = true;
-				var _didIteratorError10 = false;
-				var _iteratorError10 = undefined;
+				var _iteratorNormalCompletion9 = true;
+				var _didIteratorError9 = false;
+				var _iteratorError9 = undefined;
 
 				try {
-					for (var _iterator10 = _gui.skills[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
-						var skill = _step10.value;
+					for (var _iterator9 = _gui.skills[Symbol.iterator](), _step9; !(_iteratorNormalCompletion9 = (_step9 = _iterator9.next()).done); _iteratorNormalCompletion9 = true) {
+						var skill = _step9.value;
 
 						drawASkillBar(skill);
 					}
 				} catch (err) {
-					_didIteratorError10 = true;
-					_iteratorError10 = err;
+					_didIteratorError9 = true;
+					_iteratorError9 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion10 && _iterator10.return) {
-							_iterator10.return();
+						if (!_iteratorNormalCompletion9 && _iterator9.return) {
+							_iterator9.return();
 						}
 					} finally {
-						if (_didIteratorError10) {
-							throw _iteratorError10;
+						if (_didIteratorError9) {
+							throw _iteratorError9;
 						}
 					}
 				}
@@ -3398,37 +3375,37 @@ var app =
 				var _W = roomSetup[0].length,
 				    _H = roomSetup.length,
 				    _i17 = 0;
-				var _iteratorNormalCompletion11 = true;
-				var _didIteratorError11 = false;
-				var _iteratorError11 = undefined;
+				var _iteratorNormalCompletion10 = true;
+				var _didIteratorError10 = false;
+				var _iteratorError10 = undefined;
 
 				try {
-					for (var _iterator11 = roomSetup[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
-						var _row = _step11.value;
+					for (var _iterator10 = roomSetup[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+						var _row = _step10.value;
 
 						var _j4 = 0;
-						var _iteratorNormalCompletion13 = true;
-						var _didIteratorError13 = false;
-						var _iteratorError13 = undefined;
+						var _iteratorNormalCompletion12 = true;
+						var _didIteratorError12 = false;
+						var _iteratorError12 = undefined;
 
 						try {
-							for (var _iterator13 = _row[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
-								var _cell = _step13.value;
+							for (var _iterator12 = _row[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+								var _cell = _step12.value;
 
 								ctx.fillStyle = getZoneColor(_cell, false);
 								drawGuiRect(_x31 + _j4++ * _len9 / _W, _y4 + _i17 * _height3 / _H, _len9 / _W, _height3 / _H);
 							}
 						} catch (err) {
-							_didIteratorError13 = true;
-							_iteratorError13 = err;
+							_didIteratorError12 = true;
+							_iteratorError12 = err;
 						} finally {
 							try {
-								if (!_iteratorNormalCompletion13 && _iterator13.return) {
-									_iterator13.return();
+								if (!_iteratorNormalCompletion12 && _iterator12.return) {
+									_iterator12.return();
 								}
 							} finally {
-								if (_didIteratorError13) {
-									throw _iteratorError13;
+								if (_didIteratorError12) {
+									throw _iteratorError12;
 								}
 							}
 						}
@@ -3437,16 +3414,16 @@ var app =
 						_i17++;
 					}
 				} catch (err) {
-					_didIteratorError11 = true;
-					_iteratorError11 = err;
+					_didIteratorError10 = true;
+					_iteratorError10 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion11 && _iterator11.return) {
-							_iterator11.return();
+						if (!_iteratorNormalCompletion10 && _iterator10.return) {
+							_iterator10.return();
 						}
 					} finally {
-						if (_didIteratorError11) {
-							throw _iteratorError11;
+						if (_didIteratorError10) {
+							throw _iteratorError10;
 						}
 					}
 				}
@@ -3454,13 +3431,13 @@ var app =
 				;
 				ctx.fillStyle = color.grey;
 				drawGuiRect(_x31, _y4, _len9, _height3);
-				var _iteratorNormalCompletion12 = true;
-				var _didIteratorError12 = false;
-				var _iteratorError12 = undefined;
+				var _iteratorNormalCompletion11 = true;
+				var _didIteratorError11 = false;
+				var _iteratorError11 = undefined;
 
 				try {
-					for (var _iterator12 = minimap[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
-						var o = _step12.value;
+					for (var _iterator11 = minimap[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+						var o = _step11.value;
 
 						if (o[2] === 17) {
 							ctx.fillStyle = mixColors(getColor(o[2]), color.black, 0.5);
@@ -3475,16 +3452,16 @@ var app =
 						}
 					}
 				} catch (err) {
-					_didIteratorError12 = true;
-					_iteratorError12 = err;
+					_didIteratorError11 = true;
+					_iteratorError11 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion12 && _iterator12.return) {
-							_iterator12.return();
+						if (!_iteratorNormalCompletion11 && _iterator11.return) {
+							_iterator11.return();
 						}
 					} finally {
-						if (_didIteratorError12) {
-							throw _iteratorError12;
+						if (_didIteratorError11) {
+							throw _iteratorError11;
 						}
 					}
 				}
@@ -3521,13 +3498,13 @@ var app =
 				var _y5 = spacing + _height4 + 7;
 				text.lbtitle.draw('Leaderboard:', Math.round(_x32 + _len10 / 2) + 0.5, Math.round(_y5 - 6) + 0.5, _height4 + 4, color.guiwhite, 'center');
 				var _i18 = 0;
-				var _iteratorNormalCompletion14 = true;
-				var _didIteratorError14 = false;
-				var _iteratorError14 = undefined;
+				var _iteratorNormalCompletion13 = true;
+				var _didIteratorError13 = false;
+				var _iteratorError13 = undefined;
 
 				try {
-					for (var _iterator14 = lb.data[Symbol.iterator](), _step14; !(_iteratorNormalCompletion14 = (_step14 = _iterator14.next()).done); _iteratorNormalCompletion14 = true) {
-						var entry = _step14.value;
+					for (var _iterator13 = lb.data[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
+						var entry = _step13.value;
 
 						drawBar(_x32, _x32 + _len10, _y5 + _height4 / 2, _height4 - 3 + config.graphical.barChunk, color.black);
 						drawBar(_x32, _x32 + _len10, _y5 + _height4 / 2, _height4 - 3, color.grey);
@@ -3544,16 +3521,16 @@ var app =
 						_y5 += _vspacing3 + _height4;
 					}
 				} catch (err) {
-					_didIteratorError14 = true;
-					_iteratorError14 = err;
+					_didIteratorError13 = true;
+					_iteratorError13 = err;
 				} finally {
 					try {
-						if (!_iteratorNormalCompletion14 && _iterator14.return) {
-							_iterator14.return();
+						if (!_iteratorNormalCompletion13 && _iterator13.return) {
+							_iterator13.return();
 						}
 					} finally {
-						if (_didIteratorError14) {
-							throw _iteratorError14;
+						if (_didIteratorError13) {
+							throw _iteratorError13;
 						}
 					}
 				}
