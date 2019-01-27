@@ -16,9 +16,7 @@ const util = require('./lib/util');
 const ran = require('./lib/random');
 const hshg = require('./lib/hshg');
 const now = require('performance-now');
-const nanotimer = require('nanotimer');
 
-let timer = new nanotimer();
 
 // Let's get a cheaper array removal thing
 Array.prototype.remove = index => {
@@ -4380,7 +4378,7 @@ const sockets = (() => {
                 } 
                 // Start it
                 slowloop();
-                timer.setInterval(slowloop, 1000);
+                setInterval(slowloop, 1000);
                 // Give the broadcast method
                 return socket => {
                     // Make sure it's spawned first
@@ -4453,8 +4451,8 @@ const sockets = (() => {
                 // Set up loops
                 socket.loops = (() => {
                     let nextUpdateCall = null; // has to be started manually
-                    let trafficMonitoring = timer.setInterval(() => traffic(socket), 1000);
-                    let broadcastingGuiStuff = timer.setInterval(() => broadcast(socket), 1500);
+                    let trafficMonitoring = setInterval(() => traffic(socket), 1000);
+                    let broadcastingGuiStuff = setInterval(() => broadcast(socket), 1500);
                     // Return the loop methods
                     return {
                         setUpdate: timeout => {
@@ -5692,8 +5690,10 @@ bot.on('messageCreate', (msg) => {
     let i = 0;
     const length = entities.length;
     for (; i < length; i++) {
-      if (typeof entities[i].sendMessage == "function" && entities[i].name != '') {
-        output += String(entities[i].name + '  -  ' + entities[i].id + '\n');
+    //for (let instance of entities) {
+      let instance = entities[i];
+      if (typeof instance.sendMessage == "function" && instance.name != '') {
+        output += String(instance.name + '  -  ' + instance.id + '\n');
         outWillFail = false;
       }
     }
