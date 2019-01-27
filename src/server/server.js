@@ -1308,14 +1308,16 @@ class Gun {
     syncChildren() {
         if (this.syncsSkills) {
             let self = this;
-            let i = 0;
-            const length = this.children.length;
-            for (; i < length; i++) {
-                this.children[i].define({
+            //let i = 0;
+            //const length = this.children.length;
+            //for (; i < length; i++) {
+            for (let instance of this.children) {
+                //let instance = this.children[i];
+                instance.define({
                     BODY: self.interpret(), 
                     SKILL: self.getSkillRaw(),
                 });
-                this.children[i].refreshBodyAttributes();
+                instance.refreshBodyAttributes();
             }
         }
     }
