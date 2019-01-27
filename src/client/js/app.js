@@ -70,6 +70,7 @@ var global = {
     toggleMassState: 0,
     backgroundColor: '#f2fbff',
     lineColor: '#000000',
+    updateRate: 10,
 };
 
 var submitToLocalStorage = name => {
@@ -334,12 +335,14 @@ function getZoneColor(cell, real) {
             return color.red;
         case 'bas4':
             return color.pink;
-                case 'bas5':
+        case 'bas5':
             return color.gold;
         case 'bas6':
             return color.orange;
         case 'nest':
             return (real) ? color.purple : color.lavender;
+        case 'ifnt':
+            return (real) ? color.gold : color.orange;
         default:
             return (real) ? color.white : color.lgrey;
     }
@@ -404,15 +407,7 @@ function getEntityImageFromMockup(index, color = mockups[index].color) {
             length: mockup.guns.length,
             getPositions: () => {
                 let a = [];
-                //mockup.guns.forEach(() => a.push(0));
-                let i = 0;
-                const length = mockup.guns.length;
-                for (; i < length; i++) {
-                   a.push(0); 
-                }
-                //for (let i = 0; i < mockup.guns.length; i++) {
-                //   a.push(0); 
-                //}
+                mockup.guns.forEach(() => a.push(0));
                 return a;
             },
             update: () => {},
@@ -478,14 +473,9 @@ global.clickables = (() => {
                     data[index].set(...a);
                 },
                 hide: () => {
-                    let i = 0;
-                    const length = data.length;
-                    for (; i < length; i++) {
-                       data[i].hide(); 
+                    for (var r of data) { 
+                        r.hide();
                     }
-                    //for (var r of data) { 
-                    //    r.hide();
-                    //}
                 },
                 check: x => {
                     return data.findIndex(r => {
@@ -1489,13 +1479,6 @@ const socketInit = (() => {
                                 }
                             }
                         }
-                        function updatePhysics(a) {
-                           let i = 0;
-                           const length = a.length;
-                           for (; i < length; i++) {
-                             physics(a[i]);
-                          } 
-                        }
                         return (n) => {
                             let a = [];
                             for (let i = 0; i < n; i++) {
@@ -1509,8 +1492,7 @@ const socketInit = (() => {
                                 getPositions: () => a.map(g => {
                                     return g.position;
                                 }),
-                                //update: () => a.forEach(physics),
-                                update: () => updatePhysics(a),
+                                update: () => a.forEach(physics),
                                 fire: (i, power) => {
                                     if (a[i].isUpdated) a[i].motion += Math.sqrt(power) / 20;
                                     a[i].isUpdated = false;
@@ -1519,8 +1501,6 @@ const socketInit = (() => {
                             };
                         };
                     })();
-                  
-                 
 
                     function Status() {
                         let state = 'normal',
@@ -1673,15 +1653,7 @@ const socketInit = (() => {
                             if (z.turrets.length !== turnumb) {
                                 throw new Error('Mismatch between data turret number and remembered turret number!');
                             }
-                            //z.turrets.forEach(tur => { tur = process(tur); });
-                            let i = 0;
-                            const length = z.turrets.length;
-                            for (; i < length; i++) {
-                               z.turrets[i] = process(z.turrets[i]); 
-                            }
-                            //for (let tur of z.turrets) {
-                            //   tur = process(tur); 
-                            //}
+                            z.turrets.forEach(tur => { tur = process(tur); });
                         }
                         // Return our monsterous creation
                         return z;
@@ -1696,28 +1668,14 @@ const socketInit = (() => {
                         output.push(process());
                     }
                     // Handle the dead/leftover entities
-                    let f = 0;
-                    const flength = entities.length;
-                    //for (var e of entities) {
-                    for (; f < flength; f++) {
+                    for (var e of entities) {
                         // Kill them
-                        let e = entities[f];
                         e.render.status.set((e.health === 1) ? 'dying' : 'killed');
                         // And only push them if they're not entirely dead and still visible
                         if (e.render.status.getFade() !== 0 && isInView(e.render.x - player.renderx, e.render.y - player.rendery, e.size, true)) {
                             output.push(e);
                         } else {
-                            if (e.render.textobjs != null) { 
-                              //e.render.textobjs.forEach(o => o.remove());
-                              let i = 0;
-                              const length = e.render.textobjs.length;
-                              for (; i < length; i++) {
-                                 e.render.textobjs.remove(); 
-                              }
-                              //for (let o of e.render.textobjs) {
-                              //   o.remove(); 
-                              //}
-                            }
+                            if (e.render.textobjs != null) e.render.textobjs.forEach(o => o.remove());
                         }
                     };
                     // Save the new entities list
@@ -1947,7 +1905,7 @@ const socketInit = (() => {
                 socket.talk('p', payload);
             };
             console.log(socket.ping, global.socket, global.socket.ping)
-            socket.commandCycle = timer.setInterval(() => {
+            socket.commandCycle = setInterval(() => {
                 if (socket.cmd.check()) socket.cmd.talk();
             });
         };
@@ -2003,10 +1961,10 @@ const socketInit = (() => {
                         // Do it again a couple times
                         if (sync.length < 10) {
                             // Wait a bit just to space things out
-                            setTimeout(() => { 
+                            setTimeout(() => {
                                 socket.talk('S', getNow());
                             }, 10);
-                            global.message = "If your name starts with a h, ends with a t, and has 7 letters then i hope you die in real life. - " + sync.length + "/10...";
+                            global.message = "Tip: Beware of safety. - " + sync.length + "/10...";
                         } else {
                             // Calculate the clock error
                             sync.sort((e, f) => {
@@ -2226,7 +2184,7 @@ function startGame() {
     }
     window.canvas.socket = global.socket;
     minimap = [];
-    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()));
+    setInterval(() => moveCompensation.iterate(global.socket.cmd.getMotion()), 1000 / 120);
     document.getElementById('gameCanvas').focus();
     window.onbeforeunload = () => {
         return true;
@@ -2437,18 +2395,7 @@ const drawEntity = (() => {
         angle += (sides % 2) ? 0 : Math.PI / sides;
         // Start drawing
         context.beginPath();
-        if (Array.isArray(sides)) {
-            context.moveTo(centerX, centerY);
-            for (let point of sides) {
-                context.lineTo(centerX + point[0], centerY + point[1]); 
-            }       
-            // And for some experimental testing we will draw the bounding box
-            let boundingbox = [];
-            for (let point of sides) {
-              boundingbox.push(point);
-            }
-                        
-        } else if (!sides) { // Circle
+        if (!sides) { // Circle
             context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
         } else if (sides < 0) { // Star
             if (config.graphical.pointy) context.lineJoin = 'miter';
@@ -2592,11 +2539,7 @@ const drawEntity = (() => {
         // Draw body
         context.globalAlpha = 1;
         setColor(context, mixColors(getColor(instance.color), render.status.getColor(), render.status.getBlend()));
-        //if (m.customshape !== undefined) {
-        //drawPoly(context, xx, yy, drawSize / m.size * m.realSize, m.customshape, rot);
-        //} else {
         drawPoly(context, xx, yy, drawSize / m.size * m.realSize, m.shape, rot);
-        //}
         // Draw turrets above us
         if (source.turrets.length === m.turrets.length) {
             for (let i = 0; i < m.turrets.length; i++) {
@@ -2686,8 +2629,7 @@ window.requestAnimFrame = (() => {
         window.mozRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
         function(callback) {
-            window.setTimeout(callback, 1000 / 60);
-            //timer.setTimeout(callback, '', '16.666666667m');
+            window.setTimeout(callback, 1000 / 120);
         };
 })();
 window.cancelAnimFrame = (() => {
@@ -2768,7 +2710,7 @@ const gameDraw = (() => {
                         t = 1000 * 1000 * Math.sin(t / 1000 - 1) / t + 1000;
                     }
                     tt = t / interval;
-                    ts = config.roomSpeed * 60 * t / 1000;
+                    ts = config.roomSpeed * 30 * t / 1000;
                 },
                 predict: (p1, p2, v1, v2) => {
                     return (t >= 0) ? extrapolate(p1, p2, v1, v2, ts, tt) : interpolate(p1, p2, v1, v2, ts, tt);
@@ -2998,17 +2940,11 @@ const gameDraw = (() => {
                     y = (instance.id === gui.playerid) ? 0 : ratio * instance.render.y - py;
                 x += global.screenWidth / 2;
                 y += global.screenHeight / 2;
-                drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);       
+                drawEntity(x, y, instance, ratio, instance.alpha, 1.1, instance.render.f);
             }
-            
-            //let i = entities.length;
-            //while (i--) {
-            //   entitydrawingloop(entities[i]); 
-            //}
-            let i = 0;
-            const length = entities.length;
-            for (; i < length; i++) {
-               entitydrawingloop(entities[i]); 
+          
+            for (var instance of entities) {
+                entitydrawingloop(instance);
             }
                      
             if (!config.graphical.screenshotMode) {
@@ -3028,15 +2964,9 @@ const gameDraw = (() => {
                     y += global.screenHeight / 2;
                     drawHealth(x, y, instance, ratio, instance.alpha);
                 }
-                
-                //let j = entities.length;
-                //while (j--) {
-                //   entityhealthdrawingloop(entities[j]); 
-                //}
-                let j = 0;
-                const length = entities.length;
-                for (; j < length; j++) {
-                  entityhealthdrawingloop(entities[j]); 
+              
+                for (var instance of entities) {
+                   entityhealthdrawingloop(instance); 
                 }
             }
         }
@@ -3103,7 +3033,7 @@ const gameDraw = (() => {
             let y = global.screenHeight - spacing - height;
             let ticker = 11;
             let namedata = gui.getStatNames(mockups[gui.type].statnames || -1);
-            function drawASkillBar(skill) { // Individual skill bars 
+            gui.skills.forEach(function drawASkillBar(skill) { // Individual skill bars 
                 ticker--;
                 let name = namedata[ticker - 1],
                     level = skill.amount,
@@ -3169,10 +3099,7 @@ const gameDraw = (() => {
                     // Move on 
                     y -= height + vspacing;
                 }
-            }
-            for (let skill of gui.skills) {
-               drawASkillBar(skill);
-            }
+            });
             global.clickables.hover.place(0, 0, y, 0.8 * len, 0.8 * (global.screenHeight - y));
             if (gui.points !== 0) { // Draw skillpoints to spend
                 text.skillPoints.draw('x' + gui.points, Math.round(x + len - 2) + 0.5, Math.round(y + height - 4) + 0.5, 20, color.guiwhite, 'right');
@@ -3229,9 +3156,9 @@ const gameDraw = (() => {
             let W = roomSetup[0].length,
                 H = roomSetup.length,
                 i = 0;
-            for (let row of roomSetup) {
+            for (var row of roomSetup) {
                 let j = 0;
-                for (let cell of row) {
+                for (var cell of row) {
                     ctx.fillStyle = getZoneColor(cell, false);
                     drawGuiRect(x + (j++) * len / W, y + i * height / H, len / W, height / H);
                 };
@@ -3239,7 +3166,7 @@ const gameDraw = (() => {
             };
             ctx.fillStyle = color.grey;
             drawGuiRect(x, y, len, height);
-            for (let o of minimap) {
+            for (var o of minimap) {
                 if (o[2] === 17) {
                     ctx.fillStyle = mixColors(getColor(o[2]), color.black, 0.5);
                     ctx.globalAlpha = 0.8;
@@ -3376,7 +3303,7 @@ const gameDraw = (() => {
                 upgradeSpin += 0.01;
                 let colorIndex = 10;
                 let i = 0;
-                function drawAnUpgrade(model) {
+                gui.upgrades.forEach(function drawAnUpgrade(model) {
                     if (y > yo) yo = y;
                     xxx = x;
                     global.clickables.upgrade.place(i++, x, y, len, height);
@@ -3420,16 +3347,7 @@ const gameDraw = (() => {
                     } else {
                         y += height + internalSpacing;
                     }
-                }
-                //gui.upgrades.forEach();
-                let z = 0;
-                const length = gui.upgrades.length;
-                for (; z < length; z++) {
-                   drawAnUpgrade(gui.upgrades[z]); 
-                }
-                //for (var model of gui.upgrades) {
-                //   drawAnUpgrade(model); 
-                //}
+                });
                 // Draw box
                 let h = 14,
                     msg = "Ignore",
@@ -3558,9 +3476,10 @@ const gameDrawDisconnected = (() => {
 })();
 
 // The main function
+var fps;
 function animloop() {
     global.animLoopHandle = window.requestAnimFrame(animloop);
-    player.renderv += (player.view - player.renderv) / 60;
+    player.renderv += (player.view - player.renderv) / 120;
     var ratio = (config.graphical.screenshotMode) ? 2 : getRatio();
     // Set the drawing style
     ctx.lineCap = 'round';
@@ -3577,7 +3496,7 @@ function animloop() {
             metrics.rendertime = renderTimes;
             renderTimes = 0;
             // Do update rate.
-            metrics.updatetime = updateTimes;
+            metrics.updatetime = updateTimes; //updateTimes;
             updateTimes = 0;
         }
         metrics.lag = global.time - player.time;

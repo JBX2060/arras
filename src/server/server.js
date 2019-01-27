@@ -5493,7 +5493,6 @@ var gameexecution = function () {
     previousTick = current;
     
     gameloop();
-    //maintainloop();
     
     actualTicks = 0;
     lastTime = curTime;
